@@ -28,6 +28,7 @@
 
     h1 {
       text-align: center;
+      margin-bottom: 25px;
     }
 
     .card {
@@ -35,7 +36,6 @@
       border: 1px solid #293653;
       border-radius: 18px;
       padding: 20px;
-      margin-top: 18px;
     }
 
     label {
@@ -69,16 +69,21 @@
       cursor: pointer;
     }
 
+    button:active {
+      transform: scale(0.98);
+    }
+
     .back {
       background: #18233a;
     }
 
     #status {
       text-align: center;
-      padding: 12px;
+      padding: 13px;
       border-radius: 12px;
       background: #18233a;
-      margin-top: 15px;
+      margin-bottom: 18px;
+      line-height: 1.5;
     }
 
     .success {
@@ -94,7 +99,16 @@
       padding: 15px;
       background: #18233a;
       border-radius: 12px;
-      line-height: 1.7;
+      line-height: 1.8;
+    }
+
+    .info {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #0d1426;
+      font-size: 13px;
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -111,7 +125,7 @@
 
   <div class="card">
 
-    <h2>⚙️ Configuration de la partie</h2>
+    <h2>⚙️ Configuration</h2>
 
     <label for="playerCount">
       👥 Nombre de joueurs
@@ -128,6 +142,7 @@
       <option value="10">10 joueurs</option>
     </select>
 
+
     <label for="undercoverCount">
       🕵️ Nombre d'Undercover
     </label>
@@ -137,6 +152,7 @@
       <option value="2">2 Undercover</option>
       <option value="3">3 Undercover</option>
     </select>
+
 
     <label for="topic">
       📝 Thème
@@ -149,34 +165,49 @@
       placeholder="Exemple : nourriture"
     >
 
+
     <div id="preview">
       👥 3 joueurs<br>
       🕵️ 1 Undercover<br>
       🧑‍🌾 2 joueurs classiques
     </div>
 
+
     <button id="saveButton">
       💾 Enregistrer
     </button>
 
-    <button
-      id="backButton"
-      class="back"
-    >
+
+    <button id="backButton" class="back">
       ← Retour au lobby
     </button>
+
+
+    <div class="info">
+      La configuration est enregistrée sur cet appareil.
+    </div>
 
   </div>
 
 </main>
 
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
-  /* ============================
+  /* ==================================================
      SUPABASE
-  ============================ */
+     ================================================== */
+
+  /*
+    ⚠️ GARDE TES VRAIES VALEURS ICI.
+    Utilise exactement les mêmes que dans
+    ton supabase-test.html.
+  */
 
   const SUPABASE_URL =
     "https://sarszeuyxrozsljhgyos.supabase.co";
@@ -186,215 +217,178 @@
     "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
 
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
-console.log("Supabase chargé :", !!window.supabase);
-console.log("URL Supabase :", SUPABASE_URL);
+  /* ==================================================
+     CLIENT SUPABASE
+     ================================================== */
 
-  /* ============================
+  let supabaseClient = null;
+
+
+  /* ==================================================
      ÉLÉMENTS
-  ============================ */
+     ================================================== */
 
-  const status =
+  const statusElement =
     document.getElementById("status");
 
-  const playerCount =
+  const playerCountElement =
     document.getElementById("playerCount");
 
-  const undercoverCount =
+  const undercoverCountElement =
     document.getElementById("undercoverCount");
 
-  const topic =
+  const topicElement =
     document.getElementById("topic");
 
-  const preview =
+  const previewElement =
     document.getElementById("preview");
 
 
-  /* ============================
-     STATUT
-  ============================ */
+  /* ==================================================
+     MESSAGE
+     ================================================== */
 
-  function setStatus(
-    text,
-    type = ""
-  ) {
+  function showStatus(message, type) {
 
-    status.textContent = text;
-    status.className = type;
+    statusElement.textContent = message;
 
-  }
+    statusElement.className = "";
 
-
-  /* ============================
-     APERÇU
-  ============================ */
-
-  function updatePreview() {
-
-    const players =
-      Number(playerCount.value);
-
-    let undercover =
-      Number(undercoverCount.value);
-
-
-    if (undercover >= players) {
-
-      undercover =
-        players - 1;
-
-      undercoverCount.value =
-        undercover;
-
+    if (type) {
+      statusElement.classList.add(type);
     }
 
-
-    const villagers =
-      players - undercover;
-
-
-    preview.innerHTML =
-      "👥 " +
-      players +
-      " joueurs<br>" +
-
-      "🕵️ " +
-      undercover +
-      " Undercover<br>" +
-
-      "🧑‍🌾 " +
-      villagers +
-      " joueur" +
-      (
-        villagers > 1
-          ? "s"
-          : ""
-      ) +
-      " classique";
-
   }
 
 
-  playerCount.addEventListener(
-    "change",
-    updatePreview
-  );
+  /* ==================================================
+     CRÉER LE CLIENT SUPABASE
+     ================================================== */
 
+  function createSupabaseClient() {
 
-  undercoverCount.addEventListener(
-    "change",
-    updatePreview
-  );
+    if (!window.supabase) {
 
-
-  /* ============================
-     TEST SUPABASE
-  ============================ */
-
- async function testSupabase() {
-
-  if (!window.supabase) {
-    setStatus(
-      "❌ La bibliothèque Supabase ne se charge pas.",
-      "error"
-    );
-    return;
-  }
-
-  setStatus(
-    "Supabase chargé. Test en cours..."
-  );
-
-  try {
-
-    const testClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
-
-    const {
-      data,
-      error
-    } =
-      await testClient
-        .from("games")
-        .select("id")
-        .limit(1);
-
-    if (error) {
-
-      setStatus(
-        "❌ Supabase : " +
-        error.message,
+      showStatus(
+        "❌ Supabase ne s'est pas chargé.",
         "error"
       );
 
-      console.error(error);
-      return;
+      return false;
     }
 
-    setStatus(
-      "✅ SUPABASE FONCTIONNE",
-      "success"
-    );
 
-  } catch (error) {
+    if (
+      !SUPABASE_URL ||
+      SUPABASE_URL === "TON_URL_SUPABASE"
+    ) {
 
-    setStatus(
-      "❌ Erreur JavaScript : " +
-      error.message,
-      "error"
-    );
+      showStatus(
+        "❌ URL Supabase manquante.",
+        "error"
+      );
 
-    console.error(error);
+      return false;
+    }
 
-  }
 
- }  {
+    if (
+      !SUPABASE_KEY ||
+      SUPABASE_KEY === "TA_CLE_PUBLISHABLE"
+    ) {
+
+      showStatus(
+        "❌ Clé Supabase manquante.",
+        "error"
+      );
+
+      return false;
+    }
+
 
     try {
 
-      const {
-        error
-      } =
+      supabaseClient =
+        window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+      return true;
+
+    } catch (error) {
+
+      console.error(error);
+
+      showStatus(
+        "❌ Impossible de créer la connexion Supabase.",
+        "error"
+      );
+
+      return false;
+    }
+
+  }
+
+
+  /* ==================================================
+     TEST SUPABASE
+     ================================================== */
+
+  async function testSupabase() {
+
+    if (!createSupabaseClient()) {
+      return;
+    }
+
+
+    showStatus(
+      "Connexion à Supabase..."
+    );
+
+
+    try {
+
+      const result =
         await supabaseClient
           .from("games")
           .select("id")
           .limit(1);
 
 
-      if (error) {
+      if (result.error) {
 
-        console.error(error);
+        console.error(
+          "Erreur Supabase :",
+          result.error
+        );
 
-        setStatus(
-          "Erreur Supabase : " +
-          error.message,
+        showStatus(
+          "❌ Supabase : " +
+          result.error.message,
           "error"
         );
 
         return;
-
       }
 
 
-      setStatus(
-        "Supabase connecté ✅",
+      showStatus(
+        "✅ SUPABASE FONCTIONNE",
         "success"
       );
 
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "Erreur :",
+        error
+      );
 
-      setStatus(
-        "Erreur de connexion.",
+      showStatus(
+        "❌ Erreur : " +
+        error.message,
         "error"
       );
 
@@ -403,9 +397,205 @@ console.log("URL Supabase :", SUPABASE_URL);
   }
 
 
-  /* ============================
-     ENREGISTRER
-  ============================ */
+  /* ==================================================
+     APERÇU
+     ================================================== */
+
+  function updatePreview() {
+
+    const players =
+      Number(
+        playerCountElement.value
+      );
+
+
+    let undercover =
+      Number(
+        undercoverCountElement.value
+      );
+
+
+    /*
+      Il faut toujours garder
+      au moins un joueur normal.
+    */
+
+    if (undercover >= players) {
+
+      undercover =
+        players - 1;
+
+      undercoverCountElement.value =
+        undercover;
+    }
+
+
+    const normalPlayers =
+      players - undercover;
+
+
+    previewElement.innerHTML =
+      "👥 " +
+      players +
+      " joueurs<br>" +
+
+      "🕵️ " +
+      undercover +
+      (
+        undercover > 1
+          ? " Undercover"
+          : " Undercover"
+      ) +
+      "<br>" +
+
+      "🧑‍🌾 " +
+      normalPlayers +
+      (
+        normalPlayers > 1
+          ? " joueurs classiques"
+          : " joueur classique"
+      );
+
+  }
+
+
+  /* ==================================================
+     CHANGEMENT DES MENUS
+     ================================================== */
+
+  playerCountElement.addEventListener(
+    "change",
+    updatePreview
+  );
+
+
+  undercoverCountElement.addEventListener(
+    "change",
+    updatePreview
+  );
+
+
+  /* ==================================================
+     ENREGISTRER LA CONFIGURATION
+     ================================================== */
 
   document
-    .
+    .getElementById("saveButton")
+    .addEventListener(
+      "click",
+      function() {
+
+        const players =
+          Number(
+            playerCountElement.value
+          );
+
+
+        const undercover =
+          Number(
+            undercoverCountElement.value
+          );
+
+
+        const topic =
+          topicElement.value.trim();
+
+
+        if (!topic) {
+
+          showStatus(
+            "❌ Écris un thème.",
+            "error"
+          );
+
+          topicElement.focus();
+
+          return;
+        }
+
+
+        if (undercover >= players) {
+
+          showStatus(
+            "❌ Il faut au moins un joueur classique.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        const configuration = {
+
+          playerCount:
+            players,
+
+          undercoverCount:
+            undercover,
+
+          topic:
+            topic,
+
+          savedAt:
+            Date.now()
+
+        };
+
+
+        localStorage.setItem(
+          "undercover_configuration",
+          JSON.stringify(
+            configuration
+          )
+        );
+
+
+        showStatus(
+          "✅ Configuration enregistrée !",
+          "success"
+        );
+
+
+        console.log(
+          "Configuration enregistrée :",
+          configuration
+        );
+
+      }
+    );
+
+
+  /* ==================================================
+     RETOUR AU MULTIJOUEUR
+     ================================================== */
+
+  document
+    .getElementById("backButton")
+    .addEventListener(
+      "click",
+      function() {
+
+        /*
+          On revient simplement à la page
+          multijoueur qui fonctionne déjà.
+        */
+
+        window.location.href =
+          "index-multiplayer.html";
+
+      }
+    );
+
+
+  /* ==================================================
+     DÉMARRAGE
+     ================================================== */
+
+  updatePreview();
+
+  testSupabase();
+
+</script>
+
+</body>
+</html>
