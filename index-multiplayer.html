@@ -709,10 +709,18 @@ configButton.addEventListener(
 
     if (
       !currentPlayer ||
-      !currentPlayer.is_host
+      !currentPlayer.is_host ||
+      !currentGame
     ) {
       return;
     }
+
+    window.location.href =
+      "config.html?game=" +
+      encodeURIComponent(currentGame.id);
+
+  }
+);
 
     window.location.href =
       "config.html";
