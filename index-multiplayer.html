@@ -2,7 +2,6 @@
 <html lang="fr">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -12,223 +11,139 @@
 
   <title>Undercover Notes - Multijoueur</title>
 
-
   <style>
-
     * {
       box-sizing: border-box;
     }
 
-
     body {
-
       margin: 0;
-
       min-height: 100vh;
-
       background: #080c18;
-
       color: white;
-
       font-family: Arial, sans-serif;
-
     }
-
 
     main {
-
       width: 100%;
-
       max-width: 600px;
-
       margin: auto;
-
       padding: 30px 18px 50px;
-
     }
-
 
     h1 {
-
       text-align: center;
-
       margin-bottom: 25px;
-
     }
-
 
     .card {
-
       background: #111a2e;
-
       border: 1px solid #293653;
-
       border-radius: 18px;
-
       padding: 20px;
-
       margin: 15px 0;
-
     }
-
 
     input {
-
       width: 100%;
-
       padding: 14px;
-
       margin: 7px 0;
-
       border-radius: 12px;
-
       border: 1px solid #293653;
-
       background: #090f20;
-
       color: white;
-
       font-size: 16px;
-
     }
-
 
     button {
-
       width: 100%;
-
       padding: 15px;
-
       margin-top: 10px;
-
       border: 0;
-
       border-radius: 12px;
-
       background: #7c3aed;
-
       color: white;
-
       font-size: 16px;
-
       font-weight: bold;
-
       cursor: pointer;
-
     }
-
 
     button.secondary {
-
       background: #18233a;
-
       border: 1px solid #293653;
-
     }
 
+    button.green {
+      background: #16a34a;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
     #status {
-
       text-align: center;
-
       padding: 12px;
-
       border-radius: 12px;
-
       background: #18233a;
-
       margin-bottom: 15px;
-
       line-height: 1.5;
-
     }
-
 
     .success {
-
       color: #86efac;
-
     }
-
 
     .error {
-
       color: #fca5a5;
-
     }
-
 
     .hidden {
-
       display: none;
-
     }
-
 
     .game-code {
-
       font-size: 42px;
-
       font-weight: bold;
-
       text-align: center;
-
       letter-spacing: 8px;
-
       margin: 20px 0;
-
     }
-
 
     .player {
-
       padding: 12px;
-
       margin: 7px 0;
-
       background: #18233a;
-
       border-radius: 10px;
-
     }
-
   </style>
-
 </head>
-
 
 <body>
 
-
 <main>
 
-
   <h1>🕵️ Undercover Notes</h1>
-
 
   <div id="status">
     Connexion à Supabase...
   </div>
 
 
-  <!-- =========================
-       ACCUEIL
-  ========================== -->
+  <!-- ACCUEIL -->
 
   <section id="home">
-
 
     <div class="card">
 
       <h2>🎮 Créer une partie</h2>
-
 
       <input
         id="createName"
         placeholder="Ton prénom"
         maxlength="20"
       >
-
 
       <button id="createButton">
         Créer une partie
@@ -237,11 +152,9 @@
     </div>
 
 
-
     <div class="card">
 
       <h2>👥 Rejoindre une partie</h2>
-
 
       <input
         id="joinCode"
@@ -249,13 +162,11 @@
         maxlength="6"
       >
 
-
       <input
         id="joinName"
         placeholder="Ton prénom"
         maxlength="20"
       >
-
 
       <button id="joinButton">
         Rejoindre
@@ -263,25 +174,19 @@
 
     </div>
 
-
   </section>
 
 
-
-  <!-- =========================
-       LOBBY
-  ========================== -->
+  <!-- LOBBY -->
 
   <section
     id="lobby"
     class="hidden"
   >
 
-
     <div class="card">
 
       <h2>🎮 Partie</h2>
-
 
       <div
         id="gameCode"
@@ -290,7 +195,6 @@
         ----
       </div>
 
-
       <p style="text-align:center;">
         Envoie ce code à tes amis.
       </p>
@@ -298,18 +202,15 @@
     </div>
 
 
-
     <div class="card">
 
       <h2>👥 Joueurs</h2>
-
 
       <div id="playerList">
         Aucun joueur.
       </div>
 
     </div>
-
 
 
     <button
@@ -320,6 +221,13 @@
     </button>
 
 
+    <button
+      id="startButton"
+      class="hidden green"
+    >
+      🎮 Lancer la partie
+    </button>
+
 
     <button
       id="leaveButton"
@@ -328,37 +236,24 @@
       ← Quitter le lobby
     </button>
 
-
   </section>
-
 
 </main>
 
 
-
-<!-- =========================
-     SUPABASE
-========================== -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-
 <script>
-
 
 /* ==================================================
    SUPABASE
 ================================================== */
 
-
 const SUPABASE_URL =
   "https://sarszeuyxrozsljhgyos.supabase.co";
 
-
 const SUPABASE_KEY =
   "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -367,59 +262,49 @@ const supabaseClient =
   );
 
 
-
 /* ==================================================
    VARIABLES
 ================================================== */
 
-
 let currentGame = null;
-
 let currentPlayer = null;
-
 let realtimeChannel = null;
-
 
 
 /* ==================================================
    ÉLÉMENTS
 ================================================== */
 
-
 const statusElement =
   document.getElementById("status");
-
 
 const homeElement =
   document.getElementById("home");
 
-
 const lobbyElement =
   document.getElementById("lobby");
-
 
 const gameCodeElement =
   document.getElementById("gameCode");
 
-
 const playerListElement =
   document.getElementById("playerList");
-
 
 const configButton =
   document.getElementById("configButton");
 
+const startButton =
+  document.getElementById("startButton");
+
+const leaveButton =
+  document.getElementById("leaveButton");
 
 
 /* ==================================================
    STATUS
 ================================================== */
 
-
-function setStatus(
-  message,
-  type = ""
-) {
+function setStatus(message, type = "") {
 
   statusElement.textContent =
     message;
@@ -430,20 +315,16 @@ function setStatus(
 }
 
 
-
 /* ==================================================
    CODE DE PARTIE
 ================================================== */
-
 
 function generateGameCode() {
 
   const characters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-
   let code = "";
-
 
   for (
     let i = 0;
@@ -461,17 +342,14 @@ function generateGameCode() {
 
   }
 
-
   return code;
 
 }
 
 
-
 /* ==================================================
    CRÉER UNE PARTIE
 ================================================== */
-
 
 document
   .getElementById("createButton")
@@ -522,11 +400,10 @@ async function createGame() {
         .insert({
 
           code: code,
-
           max_players: 10,
-
           undercover_count: 1,
-
+          player_count: 3,
+          topic: null,
           status: "waiting"
 
         })
@@ -550,11 +427,8 @@ async function createGame() {
         .insert({
 
           game_id: game.id,
-
           name: name,
-
           is_host: true,
-
           connected: true
 
         })
@@ -572,7 +446,6 @@ async function createGame() {
     currentGame =
       game;
 
-
     currentPlayer =
       player;
 
@@ -583,7 +456,6 @@ async function createGame() {
   } catch (error) {
 
     console.error(error);
-
 
     setStatus(
       "❌ Erreur : " +
@@ -596,11 +468,9 @@ async function createGame() {
 }
 
 
-
 /* ==================================================
-   REJOINDRE UNE PARTIE
+   REJOINDRE
 ================================================== */
-
 
 document
   .getElementById("joinButton")
@@ -703,11 +573,8 @@ async function joinGame() {
         .insert({
 
           game_id: game.id,
-
           name: name,
-
           is_host: false,
-
           connected: true
 
         })
@@ -725,7 +592,6 @@ async function joinGame() {
     currentGame =
       game;
 
-
     currentPlayer =
       player;
 
@@ -736,7 +602,6 @@ async function joinGame() {
   } catch (error) {
 
     console.error(error);
-
 
     setStatus(
       "❌ Erreur : " +
@@ -749,18 +614,15 @@ async function joinGame() {
 }
 
 
-
 /* ==================================================
    AFFICHER LE LOBBY
 ================================================== */
-
 
 function showLobby() {
 
   homeElement
     .classList
     .add("hidden");
-
 
   lobbyElement
     .classList
@@ -771,11 +633,6 @@ function showLobby() {
     currentGame.code;
 
 
-  /*
-    Seul l'hôte voit le bouton
-    de configuration.
-  */
-
   if (
     currentPlayer &&
     currentPlayer.is_host
@@ -785,9 +642,17 @@ function showLobby() {
       .classList
       .remove("hidden");
 
+    startButton
+      .classList
+      .remove("hidden");
+
   } else {
 
     configButton
+      .classList
+      .add("hidden");
+
+    startButton
       .classList
       .add("hidden");
 
@@ -802,17 +667,14 @@ function showLobby() {
 
   loadPlayers();
 
-
   subscribeToGame();
 
 }
 
 
-
 /* ==================================================
    CHARGER LES JOUEURS
 ================================================== */
-
 
 async function loadPlayers() {
 
@@ -854,23 +716,21 @@ async function loadPlayers() {
 }
 
 
-
 /* ==================================================
    AFFICHER LES JOUEURS
 ================================================== */
 
-
 function renderPlayers(players) {
 
   if (
-  !players ||
-  players.length === 0
-) {
+    !players ||
+    players.length === 0
+  ) {
 
-  playerListElement.textContent =
-    "Aucun joueur.";
+    playerListElement.textContent =
+      "Aucun joueur.";
 
-  return;
+    return;
 
   }
 
@@ -881,15 +741,12 @@ function renderPlayers(players) {
 
         return `
           <div class="player">
-
             🟢 ${escapeHTML(player.name)}
-
             ${
               player.is_host
                 ? " 👑"
                 : ""
             }
-
           </div>
         `;
 
@@ -898,10 +755,6 @@ function renderPlayers(players) {
 
 }
 
-
-/* ==================================================
-   PROTECTION HTML
-================================================== */
 
 function escapeHTML(value) {
 
@@ -927,7 +780,7 @@ function escapeHTML(value) {
 
 
 /* ==================================================
-   BOUTON CONFIGURATION
+   CONFIGURATION
 ================================================== */
 
 configButton.addEventListener(
@@ -1014,6 +867,7 @@ function subscribeToGame() {
           currentGame =
             payload.new;
 
+
           if (
             currentGame.status ===
             "playing"
@@ -1044,15 +898,147 @@ function subscribeToGame() {
 
 
 /* ==================================================
+   LANCER LA PARTIE
+================================================== */
+
+startButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+async function startGame() {
+
+  if (
+    !currentGame ||
+    !currentPlayer ||
+    !currentPlayer.is_host
+  ) {
+
+    return;
+
+  }
+
+
+  startButton.disabled = true;
+
+  startButton.textContent =
+    "🎮 Lancement...";
+
+
+  try {
+
+    /*
+      On relit la configuration
+      avant de lancer.
+    */
+
+    const {
+      data: game,
+      error: loadError
+    } =
+      await supabaseClient
+        .from("games")
+        .select("*")
+        .eq(
+          "id",
+          currentGame.id
+        )
+        .single();
+
+
+    if (loadError) {
+
+      throw loadError;
+
+    }
+
+
+    if (
+      !game.player_count ||
+      !game.undercover_count
+    ) {
+
+      throw new Error(
+        "Configure d'abord la partie."
+      );
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .update({
+
+          status: "playing",
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          currentGame.id
+        )
+        .select()
+        .single();
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    currentGame =
+      data;
+
+
+    setStatus(
+      "🎮 Partie lancée !",
+      "success"
+    );
+
+
+    startButton.textContent =
+      "🎮 Partie lancée";
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    setStatus(
+      "❌ Erreur au lancement : " +
+      error.message,
+      "error"
+    );
+
+
+    startButton.disabled =
+      false;
+
+    startButton.textContent =
+      "🎮 Lancer la partie";
+
+  }
+
+}
+
+
+/* ==================================================
    QUITTER
 ================================================== */
 
-document
-  .getElementById("leaveButton")
-  .addEventListener(
-    "click",
-    leaveGame
-  );
+leaveButton.addEventListener(
+  "click",
+  leaveGame
+);
 
 
 async function leaveGame() {
@@ -1072,8 +1058,11 @@ async function leaveGame() {
             currentPlayer.id
           );
 
+
       if (error) {
+
         console.error(error);
+
       }
 
     }
@@ -1096,9 +1085,7 @@ async function leaveGame() {
 
 
   currentGame = null;
-
   currentPlayer = null;
-
   realtimeChannel = null;
 
 
@@ -1106,10 +1093,18 @@ async function leaveGame() {
     .classList
     .add("hidden");
 
-
   homeElement
     .classList
     .remove("hidden");
+
+
+  configButton
+    .classList
+    .add("hidden");
+
+  startButton
+    .classList
+    .add("hidden");
 
 
   setStatus(
@@ -1138,10 +1133,7 @@ async function testSupabase() {
 
     if (error) {
 
-      console.error(
-        "Supabase :",
-        error
-      );
+      console.error(error);
 
       setStatus(
         "❌ Supabase : " +
@@ -1184,5 +1176,4 @@ testSupabase();
 </script>
 
 </body>
-
 </html>
