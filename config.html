@@ -295,7 +295,67 @@ console.log("URL Supabase :", SUPABASE_URL);
      TEST SUPABASE
   ============================ */
 
-  async function testSupabase() {
+ async function testSupabase() {
+
+  if (!window.supabase) {
+    setStatus(
+      "❌ La bibliothèque Supabase ne se charge pas.",
+      "error"
+    );
+    return;
+  }
+
+  setStatus(
+    "Supabase chargé. Test en cours..."
+  );
+
+  try {
+
+    const testClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+    const {
+      data,
+      error
+    } =
+      await testClient
+        .from("games")
+        .select("id")
+        .limit(1);
+
+    if (error) {
+
+      setStatus(
+        "❌ Supabase : " +
+        error.message,
+        "error"
+      );
+
+      console.error(error);
+      return;
+    }
+
+    setStatus(
+      "✅ SUPABASE FONCTIONNE",
+      "success"
+    );
+
+  } catch (error) {
+
+    setStatus(
+      "❌ Erreur JavaScript : " +
+      error.message,
+      "error"
+    );
+
+    console.error(error);
+
+  }
+
+ }  {
 
     try {
 
