@@ -223,12 +223,15 @@ const SUPABASE_KEY =
   "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
 
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+const params =
+  new URLSearchParams(
+    window.location.search
   );
 
+const gameId =
+  params.get("game");
+
+let currentGame = null;
 
 let currentGame = null;
 let currentPlayer = null;
