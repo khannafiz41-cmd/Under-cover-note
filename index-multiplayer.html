@@ -863,9 +863,326 @@ async function loadPlayers() {
 function renderPlayers(players) {
 
   if (
-    !players ||
-    players.length === 0
-  ) {
+  !players ||
+  players.length === 0
+) {
 
-    playerListElement.textContent =
-      "Aucun
+  playerListElement.textContent =
+    "Aucun joueur.";
+
+  return;
+
+  }
+
+
+  playerListElement.innerHTML =
+    players
+      .map(function(player) {
+
+        return `
+          <div class="player">
+
+            🟢 ${escapeHTML(player.name)}
+
+            ${
+              player.is_host
+                ? " 👑"
+                : ""
+            }
+
+          </div>
+        `;
+
+      })
+      .join("");
+
+}
+
+
+/* ==================================================
+   PROTECTION HTML
+================================================== */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      function(char) {
+
+        return {
+
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+
+        }[char];
+
+      }
+    );
+
+}
+
+
+/* ==================================================
+   BOUTON CONFIGURATION
+================================================== */
+
+configButton.addEventListener(
+  "click",
+  function() {
+
+    if (
+      !currentGame ||
+      !currentPlayer ||
+      !currentPlayer.is_host
+    ) {
+
+      return;
+
+    }
+
+
+    window.location.href =
+      "config.html?game=" +
+      encodeURIComponent(
+        currentGame.id
+      );
+
+  }
+);
+
+
+/* ==================================================
+   TEMPS RÉEL
+================================================== */
+
+function subscribeToGame() {
+
+  if (!currentGame) {
+    return;
+  }
+
+
+  if (realtimeChannel) {
+
+    supabaseClient.removeChannel(
+      realtimeChannel
+    );
+
+  }
+
+
+  realtimeChannel =
+    supabaseClient
+      .channel(
+        "game-" +
+        currentGame.id
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "players",
+          filter:
+            "game_id=eq." +
+            currentGame.id
+        },
+        function() {
+
+          loadPlayers();
+
+        }
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "games",
+          filter:
+            "id=eq." +
+            currentGame.id
+        },
+        function(payload) {
+
+          currentGame =
+            payload.new;
+
+          if (
+            currentGame.status ===
+            "playing"
+          ) {
+
+            setStatus(
+              "🎮 La partie commence !",
+              "success"
+            );
+
+          }
+
+        }
+      )
+
+      .subscribe(
+        function(channelStatus) {
+
+          console.log(
+            "Realtime :",
+            channelStatus
+          );
+
+        }
+      );
+
+}
+
+
+/* ==================================================
+   QUITTER
+================================================== */
+
+document
+  .getElementById("leaveButton")
+  .addEventListener(
+    "click",
+    leaveGame
+  );
+
+
+async function leaveGame() {
+
+  try {
+
+    if (currentPlayer) {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("players")
+          .delete()
+          .eq(
+            "id",
+            currentPlayer.id
+          );
+
+      if (error) {
+        console.error(error);
+      }
+
+    }
+
+
+    if (realtimeChannel) {
+
+      await supabaseClient
+        .removeChannel(
+          realtimeChannel
+        );
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+
+  currentGame = null;
+
+  currentPlayer = null;
+
+  realtimeChannel = null;
+
+
+  lobbyElement
+    .classList
+    .add("hidden");
+
+
+  homeElement
+    .classList
+    .remove("hidden");
+
+
+  setStatus(
+    "Prêt à jouer."
+  );
+
+}
+
+
+/* ==================================================
+   TEST SUPABASE
+================================================== */
+
+async function testSupabase() {
+
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .select("id")
+        .limit(1);
+
+
+    if (error) {
+
+      console.error(
+        "Supabase :",
+        error
+      );
+
+      setStatus(
+        "❌ Supabase : " +
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    setStatus(
+      "✅ Supabase connecté",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    setStatus(
+      "❌ Erreur Supabase : " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+   DÉMARRAGE
+================================================== */
+
+testSupabase();
+
+</script>
+
+</body>
+
+</html>
