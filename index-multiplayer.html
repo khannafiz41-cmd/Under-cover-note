@@ -703,7 +703,22 @@ function escapeHTML(value) {
 
 }
 
+configButton.addEventListener(
+  "click",
+  function() {
 
+    if (
+      !currentPlayer ||
+      !currentPlayer.is_host
+    ) {
+      return;
+    }
+
+    window.location.href =
+      "config.html";
+
+  }
+);
 /* =========================
    TEMPS RÉEL
 ========================= */
