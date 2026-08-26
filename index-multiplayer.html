@@ -250,8 +250,8 @@ const gameCodeElement =
 const playerListElement =
   document.getElementById("playerList");
 
-const startButton =
-  document.getElementById("startButton");
+const configButton =
+  document.getElementById("configButton");
 
 
 function setStatus(message, type = "") {
@@ -576,12 +576,12 @@ function showLobby() {
 
 
   if (
-    currentPlayer.is_host
-  ) {
+  currentPlayer.is_host
+) {
 
-    startButton
-      .classList
-      .remove("hidden");
+  configButton
+    .classList
+    .remove("hidden");
 
   }
 
