@@ -1,813 +1,1666 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080c18">
-  <title>Undercover Notes</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
 
-    body {
-      margin: 0;
-      background: #080c18;
-      color: #f8fafc;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+<meta
+  name="theme-color"
+  content="#080c18"
+>
 
-    button {
-      cursor: pointer;
-    }
+<title>Undercover Notes</title>
 
-    header {
-      height: 64px;
-      background: #10182b;
-      border-bottom: 1px solid #293653;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 15px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+<style>
 
-    .brand {
-      font-weight: 900;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .brand span {
-      color: #c4b5fd;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #080c18;
+  color: white;
+  font-family: Arial, sans-serif;
+}
 
-    .icon-button {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      border: 1px solid #293653;
-      background: #18233a;
-      color: white;
-    }
+header {
+  height: 64px;
+  background: #10182b;
+  border-bottom: 1px solid #293653;
 
-    main {
-      max-width: 720px;
-      margin: auto;
-      padding: 25px 16px 60px;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    .center {
-      text-align: center;
-    }
+  font-size: 20px;
+  font-weight: bold;
+}
 
-    .hero {
-      padding: 45px 5px;
-    }
+main {
+  width: 100%;
+  max-width: 700px;
 
-    .logo {
-      font-size: 70px;
-    }
+  margin: auto;
 
-    h1 {
-      font-size: clamp(42px, 12vw, 70px);
-      line-height: 0.9;
-      margin: 15px 0;
-    }
+  padding: 30px 18px 60px;
+}
 
-    h2 {
-      font-size: 28px;
-    }
+.home {
+  text-align: center;
+  padding-top: 40px;
+}
 
-    h3 {
-      margin-top: 0;
-    }
+.logo {
+  font-size: 80px;
+}
 
-    .hero p,
-    .muted {
-      color: #aab5ca;
-      line-height: 1.5;
-    }
+h1 {
+  font-size: 50px;
+  margin: 15px 0;
+}
 
-    .card {
-      background: #111a2e;
-      border: 1px solid #293653;
-      border-radius: 20px;
-      padding: 18px;
-      margin: 14px 0;
-    }
+.subtitle {
+  color: #aab5ca;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
 
-    .button {
-      width: 100%;
-      border: 0;
-      border-radius: 14px;
-      padding: 14px 16px;
-      margin-top: 10px;
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      color: white;
-      font-weight: 900;
-    }
+button {
+  width: 100%;
 
-    .button.secondary {
-      background: #18233a;
-      border: 1px solid #293653;
-    }
+  padding: 16px;
 
-    label {
-      display: block;
-      font-weight: 700;
-      margin: 14px 0 7px;
-    }
+  margin-top: 12px;
 
-    input,
-    select {
-      width: 100%;
-      padding: 13px;
-      border-radius: 12px;
-      border: 1px solid #293653;
-      background: #090f20;
-      color: white;
-      outline: none;
-    }
+  border: none;
+  border-radius: 14px;
 
-    input:focus,
-    select:focus {
-      border-color: #8b5cf6;
-    }
+  background: #7c3aed;
 
-    .range {
-      width: 100%;
-      accent-color: #8b5cf6;
-    }
+  color: white;
 
-    .range-number {
-      text-align: center;
-      font-size: 25px;
-      font-weight: 900;
-      margin: 5px;
-    }
+  font-size: 17px;
+  font-weight: bold;
 
-    .players {
-      display: grid;
-      gap: 9px;
-    }
+  cursor: pointer;
+}
 
-    .player-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+button:hover {
+  background: #8b5cf6;
+}
 
-    .player-number {
-      width: 43px;
-      padding: 13px 0;
-      text-align: center;
-      border-radius: 12px;
-      background: #18233a;
-      border: 1px solid #293653;
-      font-weight: 900;
-    }
+.secondary {
+  background: #18233a;
+  border: 1px solid #293653;
+}
 
-    .player-row input {
-      flex: 1;
-    }
+.card {
+  background: #111a2e;
 
-    .pill {
-      display: inline-block;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: #18233a;
-      border: 1px solid #293653;
-      font-size: 13px;
-    }
+  border: 1px solid #293653;
 
-    .lock {
-      font-size: 65px;
-      margin: 15px;
-    }
+  border-radius: 20px;
 
-    .note {
-      font-size: 100px;
-      font-weight: 950;
-      line-height: 1;
-      margin: 20px 0;
-    }
+  padding: 20px;
 
-    .note small {
-      font-size: 25px;
-      color: #aab5ca;
-    }
+  margin-top: 20px;
+}
 
-    .topic {
-      font-size: 45px;
-      font-weight: 950;
-      margin: 22px 0;
-    }
+.hidden {
+  display: none;
+}
 
-    .timer {
-      font-size: 68px;
-      font-weight: 950;
-      font-variant-numeric: tabular-nums;
-    }
+label {
+  display: block;
 
-    .choice {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px;
-      border: 1px solid #293653;
-      background: #0f172a;
-      border-radius: 14px;
-      margin: 8px 0;
-      cursor: pointer;
-    }
+  margin-top: 15px;
+  margin-bottom: 7px;
 
-    .choice input {
-      width: 20px;
-      height: 20px;
-      accent-color: #8b5cf6;
-    }
+  font-weight: bold;
+}
 
-    .result {
-      font-size: 65px;
-      margin: 15px;
-    }
+input,
+select {
+  width: 100%;
 
-    .hidden {
-      display: none !important;
-    }
+  padding: 14px;
 
-    #toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translate(-50%, 20px);
-      opacity: 0;
-      background: white;
-      color: black;
-      padding: 12px 17px;
-      border-radius: 12px;
-      font-weight: 800;
-      transition: 0.2s;
-      z-index: 50;
-      max-width: 90%;
-      text-align: center;
-    }
+  border-radius: 12px;
 
-    #toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-  </style>
+  border: 1px solid #293653;
+
+  background: #090f20;
+
+  color: white;
+
+  font-size: 16px;
+}
+
+.players {
+  display: grid;
+  gap: 10px;
+}
+
+.player {
+  display: flex;
+  gap: 8px;
+}
+
+.number {
+  width: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #18233a;
+
+  border-radius: 12px;
+
+  font-weight: bold;
+}
+
+.note {
+  font-size: 100px;
+
+  font-weight: bold;
+
+  text-align: center;
+
+  margin: 30px 0;
+}
+
+.topic {
+  text-align: center;
+
+  font-size: 45px;
+
+  font-weight: bold;
+
+  margin: 30px 0;
+}
+
+.timer {
+  text-align: center;
+
+  font-size: 65px;
+
+  font-weight: bold;
+
+  margin: 25px 0;
+}
+
+.vote {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 15px;
+
+  margin: 8px 0;
+
+  border-radius: 12px;
+
+  background: #18233a;
+
+  border: 1px solid #293653;
+}
+
+.vote input {
+  width: 20px;
+}
+
+.result {
+  text-align: center;
+
+  font-size: 70px;
+}
+
+.center {
+  text-align: center;
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header>
-  <button class="icon-button" id="homeButton">⌂</button>
 
-  <div class="brand">
-    🕵️ Undercover <span>Notes</span>
-  </div>
+🕵️ Undercover Notes
 
-  <button class="icon-button" id="rulesButton">?</button>
 </header>
 
-<main id="app"></main>
 
-<div id="toast"></div>
+<main>
+
+
+<!-- =========================
+     ACCUEIL
+========================= -->
+
+<section
+  id="home"
+  class="home"
+>
+
+<div class="logo">
+🕵️
+</div>
+
+<h1>
+Undercover
+<br>
+<span style="color:#c4b5fd;">
+Notes
+</span>
+</h1>
+
+<p class="subtitle">
+
+Le jeu de bluff basé sur les notes.
+
+<br><br>
+
+Découvre ta note secrètement,
+discute avec les autres joueurs
+et essaye de trouver les Undercover.
+
+</p>
+
+
+<button
+  onclick="showSetup()"
+>
+🎮 Nouvelle partie
+</button>
+
+
+<button
+  class="secondary"
+  onclick="showRules()"
+>
+📖 Comment jouer
+</button>
+
+
+</section>
+
+
+
+<!-- =========================
+     CONFIGURATION
+========================= -->
+
+<section
+  id="setup"
+  class="hidden"
+>
+
+<h2>
+🎮 Préparer la partie
+</h2>
+
+
+<div class="card">
+
+<label>
+Nombre de joueurs
+</label>
+
+
+<select id="playerCount">
+
+<option value="3">
+3 joueurs
+</option>
+
+<option value="4" selected>
+4 joueurs
+</option>
+
+<option value="5">
+5 joueurs
+</option>
+
+<option value="6">
+6 joueurs
+</option>
+
+<option value="7">
+7 joueurs
+</option>
+
+<option value="8">
+8 joueurs
+</option>
+
+<option value="9">
+9 joueurs
+</option>
+
+<option value="10">
+10 joueurs
+</option>
+
+</select>
+
+
+<label>
+Nombre d'Undercover
+</label>
+
+
+<select id="undercoverCount">
+
+<option value="1">
+1 Undercover
+</option>
+
+<option value="2">
+2 Undercover
+</option>
+
+<option value="3">
+3 Undercover
+</option>
+
+<option value="4">
+4 Undercover
+</option>
+
+</select>
+
+
+<label>
+Temps de discussion
+</label>
+
+
+<select id="discussionTime">
+
+<option value="60">
+1 minute
+</option>
+
+<option value="120">
+2 minutes
+</option>
+
+<option value="180" selected>
+3 minutes
+</option>
+
+<option value="300">
+5 minutes
+</option>
+
+</select>
+
+</div>
+
+
+<div class="card">
+
+<h3>
+👥 Noms des joueurs
+</h3>
+
+<div
+  id="players"
+  class="players"
+></div>
+
+</div>
+
+
+<button
+  onclick="startGame()"
+>
+🚀 Commencer
+</button>
+
+
+<button
+  class="secondary"
+  onclick="goHome()"
+>
+Retour
+</button>
+
+
+</section>
+
+
+
+<!-- =========================
+     REGLES
+========================= -->
+
+<section
+  id="rules"
+  class="hidden"
+>
+
+<h2>
+📖 Comment jouer
+</h2>
+
+
+<div class="card">
+
+<p>
+<b>1.</b>
+Chaque joueur reçoit une note secrète de 1 à 10.
+</p>
+
+<p>
+<b>2.</b>
+Les Villageois ont la même note.
+</p>
+
+<p>
+<b>3.</b>
+Les Undercover ont une note proche,
+mais différente.
+</p>
+
+<p>
+<b>4.</b>
+Chaque joueur regarde sa note
+sans la montrer.
+</p>
+
+<p>
+<b>5.</b>
+Un thème apparaît.
+Discutez normalement du thème.
+</p>
+
+<p>
+<b>6.</b>
+Après la discussion,
+vous votez.
+</p>
+
+<p>
+<b>7.</b>
+Si tous les Undercover sont éliminés,
+les Villageois gagnent.
+</p>
+
+<p>
+<b>8.</b>
+Si les Undercover deviennent
+aussi nombreux ou plus nombreux
+que les Villageois,
+ils gagnent.
+</p>
+
+</div>
+
+
+<button
+  class="secondary"
+  onclick="goHome()"
+>
+Retour
+</button>
+
+</section>
+
+
+
+<!-- =========================
+     JEU
+========================= -->
+
+<section
+  id="game"
+  class="hidden"
+>
+
+<div id="gameContent"></div>
+
+</section>
+
+
+</main>
+
+
 
 <script>
-"use strict";
+
 
 /* =========================
-   DONNÉES DU JEU
+   VARIABLES
 ========================= */
 
-const THEMES = [
-  ["🌮", "Tacos"],
-  ["🍕", "Pizza"],
-  ["✈️", "Voyages"],
-  ["🎬", "Films"],
-  ["⚽", "Sport"],
-  ["🎮", "Jeux vidéo"],
-  ["🎵", "Musique"],
-  ["🏫", "École"],
-  ["☀️", "Vacances"],
-  ["🐶", "Animaux"],
-  ["📱", "Téléphones"],
-  ["🚗", "Voitures"],
-  ["🏠", "Maison"],
-  ["☕", "Café"],
-  ["👟", "Mode"],
-  ["🍔", "Fast-food"],
-  ["🎂", "Anniversaire"],
-  ["🍦", "Glaces"],
-  ["🏖️", "Plage"],
-  ["🎁", "Cadeaux"],
-  ["🍿", "Cinéma"],
-  ["🎤", "Chansons"],
-  ["🚌", "Transports"],
-  ["🌧️", "Météo"]
+
+let players = [];
+
+let undercoverCount = 1;
+
+let villageNote = 7;
+
+let undercoverNotes = [];
+
+let currentPlayer = 0;
+
+let currentRound = 1;
+
+let discussionSeconds = 180;
+
+let timer = null;
+
+let votes = {};
+
+let theme = "";
+
+
+const themes = [
+
+"🌮 Tacos",
+
+"🍕 Pizza",
+
+"✈️ Voyages",
+
+"🎬 Films",
+
+"⚽ Sport",
+
+"🎮 Jeux vidéo",
+
+"🎵 Musique",
+
+"🏫 École",
+
+"☀️ Vacances",
+
+"🐶 Animaux",
+
+"📱 Téléphones",
+
+"🚗 Voitures",
+
+"🏠 Maison",
+
+"☕ Café",
+
+"👟 Mode",
+
+"🍔 Fast-food",
+
+"🎂 Anniversaire",
+
+"🍦 Glaces",
+
+"🏖️ Plage",
+
+"🎁 Cadeaux"
+
 ];
 
-const game = {
-  players: [],
-  undercoverCount: 1,
-  villageNote: 7,
-  undercoverNotes: [],
-  theme: null,
-  round: 1,
-  discussionSeconds: 180,
-  votes: {},
-  timer: null
-};
 
-const app = document.getElementById("app");
 
 /* =========================
-   OUTILS
+   AFFICHAGE
 ========================= */
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, function(char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;"
-    }[char];
-  });
+
+function hideAll() {
+
+document
+.getElementById("home")
+.classList.add("hidden");
+
+document
+.getElementById("setup")
+.classList.add("hidden");
+
+document
+.getElementById("rules")
+.classList.add("hidden");
+
+document
+.getElementById("game")
+.classList.add("hidden");
+
 }
 
-function showToast(message) {
-  const toast = document.getElementById("toast");
 
-  toast.textContent = message;
-  toast.classList.add("show");
+function goHome() {
 
-  setTimeout(function() {
-    toast.classList.remove("show");
-  }, 1800);
+if (timer) {
+
+clearInterval(timer);
+
+timer = null;
+
 }
 
-function stopTimer() {
-  if (game.timer !== null) {
-    clearInterval(game.timer);
-    game.timer = null;
-  }
+hideAll();
+
+document
+.getElementById("home")
+.classList.remove("hidden");
+
 }
 
-function shuffle(array) {
-  const result = [...array];
-
-  for (let i = result.length - 1; i > 0; i--) {
-    const randomIndex = Math.floor(Math.random() * (i + 1));
-
-    [result[i], result[randomIndex]] =
-    [result[randomIndex], result[i]];
-  }
-
-  return result;
-}
-
-/* =========================
-   ACCUEIL
-========================= */
-
-function showHome() {
-  stopTimer();
-
-  app.innerHTML = `
-    <section class="hero center">
-
-      <div class="logo">🕵️</div>
-
-      <h1>
-        Undercover<br>
-        <span style="color:#c4b5fd;">
-          Notes
-        </span>
-      </h1>
-
-      <p>
-        Le jeu de bluff où les notes sont secrètes.
-        <br>
-        Découvre ta note, discute puis trouve les Undercover.
-      </p>
-
-      <button class="button" id="newGameButton">
-        🎮 Nouvelle partie
-      </button>
-
-      <button class="button secondary" id="rulesHomeButton">
-        📖 Comment jouer
-      </button>
-
-    </section>
-  `;
-
-  document.getElementById("newGameButton").onclick = showSetup;
-  document.getElementById("rulesHomeButton").onclick = showRules;
-}
-
-/* =========================
-   RÈGLES
-========================= */
 
 function showRules() {
-  stopTimer();
 
-  app.innerHTML = `
-    <h2>📖 Comment jouer</h2>
+hideAll();
 
-    <div class="card">
+document
+.getElementById("rules")
+.classList.remove("hidden");
 
-      <p>
-        <b>1.</b>
-        Chaque joueur reçoit secrètement une note entre 1 et 10.
-      </p>
-
-      <p>
-        <b>2.</b>
-        Tous les Villageois ont exactement la même note.
-      </p>
-
-      <p>
-        <b>3.</b>
-        Les Undercover ont une note proche,
-        mais différente.
-      </p>
-
-      <p>
-        <b>4.</b>
-        Chaque joueur découvre sa note seul.
-      </p>
-
-      <p>
-        <b>5.</b>
-        Un thème apparaît.
-        Discutez de vos goûts et expériences
-        sans annoncer votre note.
-      </p>
-
-      <p>
-        <b>6.</b>
-        Après la discussion,
-        chacun vote pour le joueur qu'il soupçonne.
-      </p>
-
-      <p>
-        <b>7.</b>
-        Les Villageois gagnent lorsqu'ils éliminent
-        tous les Undercover.
-      </p>
-
-      <p>
-        <b>8.</b>
-        Les Undercover gagnent lorsqu'ils sont
-        au moins aussi nombreux que les Villageois.
-      </p>
-
-    </div>
-
-    <button class="button secondary" id="rulesBackButton">
-      Retour
-    </button>
-  `;
-
-  document.getElementById("rulesBackButton").onclick = showHome;
 }
 
-/* =========================
-   CONFIGURATION
-========================= */
 
 function showSetup() {
-  stopTimer();
 
-  game.players = [];
-  game.round = 1;
+hideAll();
 
-  app.innerHTML = `
-    <h2>🎮 Préparer la partie</h2>
+document
+.getElementById("setup")
+.classList.remove("hidden");
 
-    <div class="card">
+generatePlayerInputs();
 
-      <label>
-        Nombre de joueurs
-      </label>
-
-      <div class="range-number" id="playerCountValue">
-        4
-      </div>
-
-      <input
-        class="range"
-        id="playerCount"
-        type="range"
-        min="3"
-        max="10"
-        value="4"
-      >
-
-      <label>
-        Nombre d'Undercover
-      </label>
-
-      <select id="undercoverCount" class="select">
-
-        <option value="1">
-          1 Undercover
-        </option>
-
-        <option value="2">
-          2 Undercover
-        </option>
-
-        <option value="3">
-          3 Undercover
-        </option>
-
-        <option value="4">
-          4 Undercover
-        </option>
-
-      </select>
-
-      <label>
-        Temps de discussion
-      </label>
-
-      <select id="discussionTime" class="select">
-
-        <option value="60">
-          1 minute
-        </option>
-
-        <option value="120">
-          2 minutes
-        </option>
-
-        <option value="180" selected>
-          3 minutes
-        </option>
-
-        <option value="300">
-          5 minutes
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="card">
-
-      <h3>
-        👥 Noms des joueurs
-      </h3>
-
-      <div
-        class="players"
-        id="playerNames"
-      ></div>
-
-    </div>
-
-    <button class="button" id="startGameButton">
-      🚀 Commencer
-    </button>
-
-    <button class="button secondary" id="setupBackButton">
-      Retour
-    </button>
-  `;
-
-  const playerCount =
-    document.getElementById("playerCount");
-
-  const playerCountValue =
-    document.getElementById("playerCountValue");
-
-  const playerNames =
-    document.getElementById("playerNames");
-
-  function drawPlayerInputs() {
-
-    const count = Number(playerCount.value);
-
-    playerCountValue.textContent = count;
-
-    playerNames.innerHTML = "";
-
-    for (let i = 0; i < count; i++) {
-
-      const row = document.createElement("div");
-
-      row.className = "player-row";
-
-      row.innerHTML = `
-        <div class="player-number">
-          ${i + 1}
-        </div>
-
-        <input
-          class="player-name"
-          maxlength="20"
-          placeholder="Joueur ${i + 1}"
-        >
-      `;
-
-      playerNames.appendChild(row);
-    }
-  }
-
-  playerCount.oninput = drawPlayerInputs;
-
-  drawPlayerInputs();
-
-  document.getElementById("setupBackButton").onclick =
-    showHome;
-
-  document.getElementById("startGameButton").onclick =
-    startGameFromSetup;
 }
 
+
+
 /* =========================
-   DÉMARRAGE DE LA PARTIE
+   JOUEURS
 ========================= */
 
-function startGameFromSetup() {
 
-  const inputs =
-    [...document.querySelectorAll(".player-name")];
+document
+.getElementById("playerCount")
+.addEventListener(
+"change",
+generatePlayerInputs
+);
 
-  const names = inputs.map(function(input, index) {
 
-    const value = input.value.trim();
+function generatePlayerInputs() {
 
-    return value || `Joueur ${index + 1}`;
+const count =
+Number(
+document.getElementById(
+"playerCount"
+).value
+);
 
-  });
+const container =
+document.getElementById(
+"players"
+);
 
-  const uniqueNames =
-    new Set(names.map(name => name.toLowerCase()));
+container.innerHTML = "";
 
-  if (uniqueNames.size !== names.length) {
 
-    showToast(
-      "Chaque joueur doit avoir un nom différent."
-    );
+for (
+let i = 0;
+i < count;
+i++
+) {
 
-    return;
-  }
+container.innerHTML += `
 
-  const undercoverCount =
-    Number(
-      document.getElementById("undercoverCount").value
-    );
+<div class="player">
 
-  if (undercoverCount >= names.length - 1) {
+<div class="number">
+${i + 1}
+</div>
 
-    showToast(
-      "Il faut au moins 2 Villageois."
-    );
+<input
+class="playerName"
+placeholder="Joueur ${i + 1}"
+maxlength="20"
+>
 
-    return;
-  }
+</div>
 
-  game.players = names.map(function(name, index) {
+`;
 
-    return {
-      id: index,
-      name: name,
-      alive: true,
-      role: null
-    };
-
-  });
-
-  game.undercoverCount = undercoverCount;
-
-  game.discussionSeconds =
-    Number(
-      document.getElementById("discussionTime").value
-    );
-
-  game.round = 1;
-
-  startRound();
 }
 
-/* =========================
-   GÉNÉRATION DES NOTES
-========================= */
-
-function generateRound() {
-
-  const alivePlayers =
-    game.players.filter(player => player.alive);
-
-  /*
-   * Note des Villageois :
-   * entre 1 et 10.
-   */
-
-  game.villageNote =
-    Math.floor(Math.random() * 10) + 1;
-
-  /*
-   * Notes possibles des Undercover.
-   * Elles sont toujours proches de la note principale.
-   */
-
-  const possibleNotes = [];
-
-  if (game.villageNote > 1) {
-    possibleNotes.push(
-      game.villageNote - 1
-    );
-  }
-
-  if (game.villageNote < 10) {
-    possibleNotes.push(
-      game.villageNote + 1
-    );
-  }
-
-  /*
-   * Attribution des notes Undercover.
-   */
-
-  game.undercoverNotes =
-    [];
-
-  for (
-    let i = 0;
-    i < game.undercoverCount;
-    i++
-  ) {
-
-    game.undercoverNotes.push(
-      possibleNotes[
-        i % possibleNotes.length
-      ]
-    );
-  }
-
-  /*
-   * Choix aléatoire des Undercover.
-   */
-
-  const shuffledIds =
-    shuffle(
-      alivePlayers.map(player => player.id)
-    );
-
-  const undercoverIds =
-    new Set(
-      shuffledIds.slice(
-        0,
-        game.undercoverCount
-      )
-    );
-
-  alivePlayers.forEach(function(player) {
-
-    if (undercoverIds.has(player.id)) {
-
-      player.role = "undercover";
-
-    } else {
-
-      player.role = "village";
-
-    }
-
-  });
-
-  /*
-   * Choix du thème.
-   */
-
-  game.theme =
-    THEMES[
-      Math.floor(
-        Math.random() * THEMES.length
-      )
-    ];
-
-  game.votes = {};
 }
 
+
+
 /* =========================
-   DÉBUT D'UNE MANCHE
+   DÉMARRER
 ========================= */
+
+
+function startGame() {
+
+const inputs =
+document.querySelectorAll(
+".playerName"
+);
+
+
+players = [];
+
+
+for (
+let i = 0;
+i < inputs.length;
+i++
+) {
+
+let name =
+inputs[i].value.trim();
+
+
+if (name === "") {
+
+name =
+"Joueur " + (i + 1);
+
+}
+
+
+players.push({
+
+name: name,
+
+alive: true,
+
+role: null,
+
+note: null
+
+});
+
+}
+
+
+undercoverCount =
+Number(
+document.getElementById(
+"undercoverCount"
+).value
+);
+
+
+if (
+undercoverCount >=
+players.length
+) {
+
+alert(
+"Il faut garder au moins un Villageois."
+);
+
+return;
+
+}
+
+
+discussionSeconds =
+Number(
+document.getElementById(
+"discussionTime"
+).value
+);
+
+
+currentRound = 1;
+
+generateRoles();
+
+showPrivateNote();
+
+}
+
+
+
+/* =========================
+   NOTES
+========================= */
+
+
+function generateRoles() {
+
+
+villageNote =
+Math.floor(
+Math.random() * 10
+) + 1;
+
+
+let undercoverNote;
+
+
+if (villageNote === 1) {
+
+undercoverNote = 2;
+
+}
+
+else if (villageNote === 10) {
+
+undercoverNote = 9;
+
+}
+
+else {
+
+undercoverNote =
+Math.random() < 0.5
+? villageNote - 1
+: villageNote + 1;
+
+}
+
+
+undercoverNotes = [];
+
+
+for (
+let i = 0;
+i < undercoverCount;
+i++
+) {
+
+undercoverNotes.push(
+undercoverNote
+);
+
+}
+
+
+/* Mélange des joueurs */
+
+const indexes =
+players.map(
+(_, index) => index
+);
+
+
+for (
+let i = indexes.length - 1;
+i > 0;
+i--
+) {
+
+const j =
+Math.floor(
+Math.random() * (i + 1)
+);
+
+[
+indexes[i],
+indexes[j]
+] =
+[
+indexes[j],
+indexes[i]
+];
+
+}
+
+
+players.forEach(
+player => {
+
+player.role = "village";
+
+}
+);
+
+
+for (
+let i = 0;
+i < undercoverCount;
+i++
+) {
+
+players[
+indexes[i]
+].role =
+"undercover";
+
+}
+
+
+players.forEach(
+player => {
+
+if (
+player.role ===
+"village"
+) {
+
+player.note =
+villageNote;
+
+}
+
+}
+);
+
+
+players
+.filter(
+player =>
+player.role ===
+"undercover"
+)
+.forEach(
+(player, index) => {
+
+player.note =
+undercoverNotes[
+index
+];
+
+}
+);
+
+
+theme =
+themes[
+Math.floor(
+Math.random() *
+themes.length
+)
+];
+
+
+currentPlayer = 0;
+
+}
+
+
+
+/* =========================
+   NOTE SECRÈTE
+========================= */
+
+
+function showPrivateNote() {
+
+hideAll();
+
+document
+.getElementById("game")
+.classList.remove("hidden");
+
+
+const player =
+players[currentPlayer];
+
+
+document
+.getElementById("gameContent")
+.innerHTML = `
+
+<div class="center">
+
+<p>
+Manche ${currentRound}
+</p>
+
+<h2>
+🔐 Tour de ${player.name}
+</h2>
+
+<p>
+Passe le téléphone à
+<b>${player.name}</b>.
+</p>
+
+
+<div class="card">
+
+<div id="hiddenNote">
+
+<div style="font-size:65px;">
+🔒
+</div>
+
+<p>
+Ta note est secrète.
+</p>
+
+<button
+onclick="revealNote()"
+>
+🔓 Révéler ma note
+</button>
+
+</div>
+
+
+<div
+id="revealedNote"
+class="hidden"
+>
+
+<div class="note">
+${player.note}
+<span style="font-size:25px;">
+/10
+</span>
+</div>
+
+<p>
+Mémorise ta note.
+Ne la montre pas.
+</p>
+
+<button
+class="secondary"
+onclick="hideNote()"
+>
+🔒 Cacher
+</button>
+
+</div>
+
+</div>
+
+
+<button
+onclick="nextPrivatePlayer()"
+>
+J'ai vu ma note
+</button>
+
+</div>
+
+`;
+
+}
+
+
+
+function revealNote() {
+
+document
+.getElementById(
+"hiddenNote"
+)
+.classList.add("hidden");
+
+
+document
+.getElementById(
+"revealedNote"
+)
+.classList.remove("hidden");
+
+}
+
+
+function hideNote() {
+
+document
+.getElementById(
+"revealedNote"
+)
+.classList.add("hidden");
+
+
+document
+.getElementById(
+"hiddenNote"
+)
+.classList.remove("hidden");
+
+}
+
+
+function nextPrivatePlayer() {
+
+currentPlayer++;
+
+
+if (
+currentPlayer >=
+players.length
+) {
+
+startDiscussion();
+
+return;
+
+}
+
+
+showPrivateNote();
+
+}
+
+
+
+/* =========================
+   DISCUSSION
+========================= */
+
+
+function startDiscussion() {
+
+hideAll();
+
+document
+.getElementById("game")
+.classList.remove("hidden");
+
+
+let seconds =
+discussionSeconds;
+
+
+document
+.getElementById("gameContent")
+.innerHTML = `
+
+<div class="center">
+
+<p>
+Manche ${currentRound}
+</p>
+
+<div class="topic">
+${theme}
+</div>
+
+<p>
+Discutez du thème.
+<br>
+Ne dites pas directement votre note.
+</p>
+
+
+<div class="card">
+
+<div
+id="timer"
+class="timer"
+>
+00:00
+</div>
+
+</div>
+
+
+<button
+onclick="startVoting()"
+>
+🗳️ Passer au vote
+</button>
+
+</div>
+
+`;
+
+
+updateTimer();
+
+
+timer =
+setInterval(
+function() {
+
+seconds--;
+
+updateTimer();
+
+
+if (seconds <= 0) {
+
+clearInterval(timer);
+
+timer = null;
+
+startVoting();
+
+}
+
+},
+1000
+);
+
+
+function updateTimer() {
+
+const minutes =
+Math.floor(
+seconds / 60
+);
+
+const secs =
+seconds % 60;
+
+
+document
+.getElementById(
+"timer"
+)
+.textContent =
+
+String(minutes)
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(secs)
+.padStart(2,"0");
+
+}
+
+}
+
+
+
+/* =========================
+   VOTE
+========================= */
+
+
+function startVoting() {
+
+if (timer) {
+
+clearInterval(timer);
+
+timer = null;
+
+}
+
+
+votes = {};
+
+
+const alive =
+players.filter(
+player =>
+player.alive
+);
+
+
+let voterIndex = 0;
+
+
+showVote();
+
+
+function showVote() {
+
+if (
+voterIndex >=
+alive.length
+) {
+
+showResults();
+
+return;
+
+}
+
+
+const voter =
+alive[voterIndex];
+
+
+const targets =
+alive.filter(
+player =>
+player !== voter
+);
+
+
+let html = `
+
+<h2>
+🗳️ Vote
+</h2>
+
+<p>
+C'est au tour de
+<b>${voter.name}</b>.
+</p>
+
+<div class="card">
+
+`;
+
+
+targets.forEach(
+function(target) {
+
+html += `
+
+<label class="vote">
+
+<input
+type="radio"
+name="target"
+value="${players.indexOf(target)}"
+>
+
+${target.name}
+
+</label>
+
+`;
+
+});
+
+
+html += `
+
+<button
+onclick="confirmVote()"
+>
+Confirmer mon vote
+</button>
+
+</div>
+
+`;
+
+
+document
+.getElementById(
+"gameContent"
+)
+.innerHTML = html;
+
+}
+
+
+window.confirmVote =
+function() {
+
+const selected =
+document.querySelector(
+'input[name="target"]:checked'
+);
+
+
+if (!selected) {
+
+alert(
+"Choisis un joueur."
+);
+
+return;
+
+}
+
+
+const targetIndex =
+Number(
+selected.value
+);
+
+
+votes[targetIndex] =
+(votes[targetIndex] || 0) + 1;
+
+
+voterIndex++;
+
+showVote();
+
+};
+
+}
+
+
+
+/* =========================
+   RÉSULTATS
+========================= */
+
+
+function showResults() {
+
+let highest = 0;
+
+let eliminatedIndex = -1;
+
+
+Object.keys(votes).forEach(
+function(index) {
+
+if (
+votes[index] >
+highest
+) {
+
+highest =
+votes[index];
+
+eliminatedIndex =
+Number(index);
+
+}
+
+});
+
+
+let eliminated = null;
+
+
+if (
+eliminatedIndex !== -1
+) {
+
+eliminated =
+players[
+eliminatedIndex
+];
+
+eliminated.alive =
+false;
+
+}
+
+
+const undercoverAlive =
+players.filter(
+player =>
+player.alive &&
+player.role ===
+"undercover"
+).length;
+
+
+const villageAlive =
+players.filter(
+player =>
+player.alive &&
+player.role ===
+"village"
+).length;
+
+
+let winner = null;
+
+
+if (
+undercoverAlive === 0
+) {
+
+winner = "village";
+
+}
+
+
+else if (
+undercoverAlive >=
+villageAlive
+) {
+
+winner = "undercover";
+
+}
+
+
+let message = "";
+
+
+if (eliminated) {
+
+message = `
+
+<div class="card">
+
+<div class="result">
+💥
+</div>
+
+<h2>
+${eliminated.name}
+est éliminé
+</h2>
+
+<p>
+Son rôle était :
+</p>
+
+<h2>
+
+${
+eliminated.role ===
+"undercover"
+
+? "🕵️ UNDERCOVER"
+
+: "👥 VILLAGEOIS"
+
+}
+
+</h2>
+
+</div>
+
+`;
+
+}
+
+
+if (winner) {
+
+message += `
+
+<div class="card">
+
+<div class="result">
+🏆
+</div>
+
+<h2>
+
+${
+winner === "village"
+
+? "Les Villageois gagnent !"
+
+: "Les Undercover gagnent !"
+
+}
+
+</h2>
+
+</div>
+
+`;
+
+}
+
+
+document
+.getElementById(
+"gameContent"
+)
+.innerHTML = `
+
+<div class="center">
+
+${message}
+
+
+<button
+onclick="${
+winner
+? "goHome()"
+: "nextRound()"
+}"
+>
+
+${
+winner
+? "🔄 Nouvelle partie"
+: "➡️ Manche suivante"
+}
+
+</button>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================
+   MANCHE SUIVANTE
+========================= */
+
+
+function nextRound() {
+
+currentRound++;
+
+generateRoles();
+
+showPrivateNote();
+
+}
+
+
+
+/* =========================
+   DÉMARRAGE
+========================= */
+
+
+goHome();
+
+</script>
+
+
+</body>
+
+</html>
