@@ -953,7 +953,109 @@ document
 ========================= */
 
 async function testSupabase() {
+loadGame();async function loadGame() {
 
+  if (!gameId) {
+
+    setStatus(
+      "Aucune partie sélectionnée.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .select("*")
+        .eq("id", gameId)
+        .maybeSingle();
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+
+    if (!data) {
+
+      setStatus(
+        "Partie introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    currentGame = data;
+
+
+    setStatus(
+      "Partie trouvée ✅",
+      "success"
+    );
+
+
+    /*
+      Si une configuration existait déjà,
+      on la remet dans les menus.
+    */
+
+    if (data.player_count) {
+
+      playerCountElement.value =
+        data.player_count;
+
+    }
+
+
+    if (data.undercover_count) {
+
+      undercoverCountElement.value =
+        data.undercover_count;
+
+    }
+
+
+    if (data.topic) {
+
+      topicElement.value =
+        data.topic;
+
+    }
+
+
+    updatePreview();
+
+
+  } catch (error) {
+
+    console.error(
+      "Erreur chargement partie :",
+      error
+    );
+
+    setStatus(
+      "Erreur : " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
   try {
 
     const {
