@@ -1650,7 +1650,21 @@ showPrivateNote();
 }
 
 
+async function testSupabase() {
+  const { data, error } = await supabaseClient
+    .from("games")
+    .select("id")
+    .limit(1);
 
+  if (error) {
+    console.error("Supabase :", error);
+    return;
+  }
+
+  console.log("Supabase fonctionne !");
+}
+
+testSupabase();
 /* =========================
    DÉMARRAGE
 ========================= */
