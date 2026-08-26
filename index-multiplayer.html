@@ -1,132 +1,234 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>Undercover Notes - Multijoueur</title>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
 
+
     body {
+
       margin: 0;
+
       min-height: 100vh;
+
       background: #080c18;
+
       color: white;
+
       font-family: Arial, sans-serif;
+
     }
+
 
     main {
+
       width: 100%;
+
       max-width: 600px;
+
       margin: auto;
-      padding: 30px 18px;
+
+      padding: 30px 18px 50px;
+
     }
+
 
     h1 {
+
       text-align: center;
+
+      margin-bottom: 25px;
+
     }
+
 
     .card {
+
       background: #111a2e;
+
       border: 1px solid #293653;
+
       border-radius: 18px;
+
       padding: 20px;
+
       margin: 15px 0;
+
     }
+
 
     input {
+
       width: 100%;
+
       padding: 14px;
+
       margin: 7px 0;
+
       border-radius: 12px;
+
       border: 1px solid #293653;
+
       background: #090f20;
+
       color: white;
+
       font-size: 16px;
+
     }
+
 
     button {
+
       width: 100%;
+
       padding: 15px;
+
       margin-top: 10px;
+
       border: 0;
+
       border-radius: 12px;
+
       background: #7c3aed;
+
       color: white;
+
       font-size: 16px;
+
       font-weight: bold;
+
       cursor: pointer;
+
     }
+
 
     button.secondary {
+
       background: #18233a;
+
       border: 1px solid #293653;
+
     }
+
 
     #status {
+
       text-align: center;
+
       padding: 12px;
+
       border-radius: 12px;
+
       background: #18233a;
+
       margin-bottom: 15px;
+
+      line-height: 1.5;
+
     }
+
 
     .success {
+
       color: #86efac;
+
     }
+
 
     .error {
+
       color: #fca5a5;
+
     }
+
 
     .hidden {
+
       display: none;
+
     }
+
 
     .game-code {
+
       font-size: 42px;
+
       font-weight: bold;
+
       text-align: center;
+
       letter-spacing: 8px;
+
       margin: 20px 0;
+
     }
 
+
     .player {
+
       padding: 12px;
+
       margin: 7px 0;
+
       background: #18233a;
+
       border-radius: 10px;
+
     }
+
   </style>
+
 </head>
+
 
 <body>
 
+
 <main>
 
+
   <h1>🕵️ Undercover Notes</h1>
+
 
   <div id="status">
     Connexion à Supabase...
   </div>
 
 
-  <!-- ACCUEIL -->
+  <!-- =========================
+       ACCUEIL
+  ========================== -->
 
   <section id="home">
+
 
     <div class="card">
 
       <h2>🎮 Créer une partie</h2>
+
 
       <input
         id="createName"
         placeholder="Ton prénom"
         maxlength="20"
       >
+
 
       <button id="createButton">
         Créer une partie
@@ -135,9 +237,11 @@
     </div>
 
 
+
     <div class="card">
 
       <h2>👥 Rejoindre une partie</h2>
+
 
       <input
         id="joinCode"
@@ -145,11 +249,13 @@
         maxlength="6"
       >
 
+
       <input
         id="joinName"
         placeholder="Ton prénom"
         maxlength="20"
       >
+
 
       <button id="joinButton">
         Rejoindre
@@ -157,20 +263,33 @@
 
     </div>
 
+
   </section>
 
 
-  <!-- LOBBY -->
 
-  <section id="lobby" class="hidden">
+  <!-- =========================
+       LOBBY
+  ========================== -->
+
+  <section
+    id="lobby"
+    class="hidden"
+  >
+
 
     <div class="card">
 
       <h2>🎮 Partie</h2>
 
-      <div id="gameCode" class="game-code">
+
+      <div
+        id="gameCode"
+        class="game-code"
+      >
         ----
       </div>
+
 
       <p style="text-align:center;">
         Envoie ce code à tes amis.
@@ -179,9 +298,11 @@
     </div>
 
 
+
     <div class="card">
 
       <h2>👥 Joueurs</h2>
+
 
       <div id="playerList">
         Aucun joueur.
@@ -190,74 +311,115 @@
     </div>
 
 
+
     <button
-  id="configButton"
-  class="hidden"
->
-  ⚙️ Configurer la partie
+      id="configButton"
+      class="hidden"
+    >
+      ⚙️ Configurer la partie
     </button>
+
 
 
     <button
       id="leaveButton"
       class="secondary"
     >
-      Quitter
+      ← Quitter le lobby
     </button>
 
+
   </section>
+
 
 </main>
 
 
-<!-- SUPABASE -->
+
+<!-- =========================
+     SUPABASE
+========================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
+
 <script>
+
+
+/* ==================================================
+   SUPABASE
+================================================== */
+
 
 const SUPABASE_URL =
   "https://sarszeuyxrozsljhgyos.supabase.co";
+
 
 const SUPABASE_KEY =
   "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
 
 
-const params =
-  new URLSearchParams(
-    window.location.search
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
   );
 
-const gameId =
-  params.get("game");
+
+
+/* ==================================================
+   VARIABLES
+================================================== */
+
 
 let currentGame = null;
 
-let currentGame = null;
 let currentPlayer = null;
+
 let realtimeChannel = null;
+
+
+
+/* ==================================================
+   ÉLÉMENTS
+================================================== */
 
 
 const statusElement =
   document.getElementById("status");
 
+
 const homeElement =
   document.getElementById("home");
+
 
 const lobbyElement =
   document.getElementById("lobby");
 
+
 const gameCodeElement =
   document.getElementById("gameCode");
 
+
 const playerListElement =
   document.getElementById("playerList");
+
 
 const configButton =
   document.getElementById("configButton");
 
 
-function setStatus(message, type = "") {
+
+/* ==================================================
+   STATUS
+================================================== */
+
+
+function setStatus(
+  message,
+  type = ""
+) {
 
   statusElement.textContent =
     message;
@@ -268,12 +430,20 @@ function setStatus(message, type = "") {
 }
 
 
+
+/* ==================================================
+   CODE DE PARTIE
+================================================== */
+
+
 function generateGameCode() {
 
   const characters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+
   let code = "";
+
 
   for (
     let i = 0;
@@ -291,14 +461,17 @@ function generateGameCode() {
 
   }
 
+
   return code;
 
 }
 
 
-/* =========================
-   CRÉER
-========================= */
+
+/* ==================================================
+   CRÉER UNE PARTIE
+================================================== */
+
 
 document
   .getElementById("createButton")
@@ -319,8 +492,9 @@ async function createGame() {
 
   if (!name) {
 
-    alert(
-      "Entre ton prénom."
+    setStatus(
+      "❌ Entre ton prénom.",
+      "error"
     );
 
     return;
@@ -395,8 +569,12 @@ async function createGame() {
     }
 
 
-    currentGame = game;
-    currentPlayer = player;
+    currentGame =
+      game;
+
+
+    currentPlayer =
+      player;
 
 
     showLobby();
@@ -406,8 +584,9 @@ async function createGame() {
 
     console.error(error);
 
+
     setStatus(
-      "Erreur : " +
+      "❌ Erreur : " +
       error.message,
       "error"
     );
@@ -417,9 +596,11 @@ async function createGame() {
 }
 
 
-/* =========================
-   REJOINDRE
-========================= */
+
+/* ==================================================
+   REJOINDRE UNE PARTIE
+================================================== */
+
 
 document
   .getElementById("joinButton")
@@ -448,8 +629,9 @@ async function joinGame() {
 
   if (!code || !name) {
 
-    alert(
-      "Entre le code et ton prénom."
+    setStatus(
+      "❌ Entre le code et ton prénom.",
+      "error"
     );
 
     return;
@@ -471,7 +653,10 @@ async function joinGame() {
       await supabaseClient
         .from("games")
         .select("*")
-        .eq("code", code)
+        .eq(
+          "code",
+          code
+        )
         .maybeSingle();
 
 
@@ -485,7 +670,7 @@ async function joinGame() {
     if (!game) {
 
       setStatus(
-        "Partie introuvable.",
+        "❌ Partie introuvable.",
         "error"
       );
 
@@ -500,7 +685,7 @@ async function joinGame() {
     ) {
 
       setStatus(
-        "Cette partie a déjà commencé.",
+        "❌ Cette partie a déjà commencé.",
         "error"
       );
 
@@ -537,8 +722,12 @@ async function joinGame() {
     }
 
 
-    currentGame = game;
-    currentPlayer = player;
+    currentGame =
+      game;
+
+
+    currentPlayer =
+      player;
 
 
     showLobby();
@@ -548,8 +737,9 @@ async function joinGame() {
 
     console.error(error);
 
+
     setStatus(
-      "Erreur : " +
+      "❌ Erreur : " +
       error.message,
       "error"
     );
@@ -559,15 +749,18 @@ async function joinGame() {
 }
 
 
-/* =========================
-   LOBBY
-========================= */
+
+/* ==================================================
+   AFFICHER LE LOBBY
+================================================== */
+
 
 function showLobby() {
 
   homeElement
     .classList
     .add("hidden");
+
 
   lobbyElement
     .classList
@@ -578,35 +771,55 @@ function showLobby() {
     currentGame.code;
 
 
-  if (
-  currentPlayer.is_host
-) {
+  /*
+    Seul l'hôte voit le bouton
+    de configuration.
+  */
 
-  configButton
-    .classList
-    .remove("hidden");
+  if (
+    currentPlayer &&
+    currentPlayer.is_host
+  ) {
+
+    configButton
+      .classList
+      .remove("hidden");
+
+  } else {
+
+    configButton
+      .classList
+      .add("hidden");
 
   }
 
 
   setStatus(
-    "Supabase connecté ✅",
+    "✅ Supabase connecté",
     "success"
   );
 
 
   loadPlayers();
 
+
   subscribeToGame();
 
 }
 
 
-/* =========================
-   JOUEURS
-========================= */
+
+/* ==================================================
+   CHARGER LES JOUEURS
+================================================== */
+
 
 async function loadPlayers() {
+
+  if (!currentGame) {
+    return;
+  }
+
 
   const {
     data,
@@ -641,473 +854,18 @@ async function loadPlayers() {
 }
 
 
+
+/* ==================================================
+   AFFICHER LES JOUEURS
+================================================== */
+
+
 function renderPlayers(players) {
 
-  if (!players.length) {
-
-    playerListElement.textContent =
-      "Aucun joueur.";
-
-    return;
-
-  }
-
-
-  playerListElement.innerHTML =
-    players
-      .map(
-        function(player) {
-
-          return `
-
-            <div class="player">
-
-              🟢
-              ${escapeHTML(
-                player.name
-              )}
-
-              ${
-                player.is_host
-                  ? " 👑"
-                  : ""
-              }
-
-            </div>
-
-          `;
-
-        }
-      )
-      .join("");
-
-}
-
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replace(
-      /[&<>"']/g,
-      function(char) {
-
-        return {
-
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-
-        }[char];
-
-      }
-    );
-
-}
-
-configButton.addEventListener(
-  "click",
-  function() {
-
-    if (
-      !currentPlayer ||
-      !currentPlayer.is_host ||
-      !currentGame
-    ) {
-      return;
-    }
-
-    window.location.href =
-      "config.html?game=" +
-      encodeURIComponent(currentGame.id);
-
-  }
-);
-
-    window.location.href =
-      "config.html";
-
-  }
-);
-/* =========================
-   TEMPS RÉEL
-========================= */
-
-function subscribeToGame() {
-
-  if (realtimeChannel) {
-
-    supabaseClient
-      .removeChannel(
-        realtimeChannel
-      );
-
-  }
-
-
-  realtimeChannel =
-    supabaseClient
-      .channel(
-        "game-" +
-        currentGame.id
-      )
-
-      .on(
-
-        "postgres_changes",
-
-        {
-          event: "*",
-          schema: "public",
-          table: "players",
-          filter:
-            "game_id=eq." +
-            currentGame.id
-        },
-
-        function() {
-
-          loadPlayers();
-
-        }
-
-      )
-
-      .on(
-
-        "postgres_changes",
-
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
-          filter:
-            "id=eq." +
-            currentGame.id
-        },
-
-        function(payload) {
-
-          currentGame =
-            payload.new;
-
-          if (
-            currentGame.status ===
-            "playing"
-          ) {
-
-            setStatus(
-              "La partie commence !",
-              "success"
-            );
-
-          }
-
-        }
-
-      )
-
-      .subscribe(
-
-        function(status) {
-
-          console.log(
-            "Realtime:",
-            status
-          );
-
-        }
-
-      );
-
-}
-
-
-/* =========================
-   LANCER
-========================= */
-
-startButton
-  .addEventListener(
-    "click",
-    startOnlineGame
-  );
-
-
-async function startOnlineGame() {
-
   if (
-    !currentPlayer ||
-    !currentPlayer.is_host
+    !players ||
+    players.length === 0
   ) {
 
-    return;
-
-  }
-
-
-  const {
-    error
-  } =
-    await supabaseClient
-      .from("games")
-      .update({
-
-        status: "playing",
-
-        updated_at:
-          new Date().toISOString()
-
-      })
-      .eq(
-        "id",
-        currentGame.id
-      );
-
-
-  if (error) {
-
-    console.error(error);
-
-    setStatus(
-      "Erreur au lancement : " +
-      error.message,
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  setStatus(
-    "Partie lancée !",
-    "success"
-  );
-
-}
-
-
-/* =========================
-   QUITTER
-========================= */
-
-document
-  .getElementById("leaveButton")
-  .addEventListener(
-    "click",
-    async function() {
-
-      if (
-        currentPlayer
-      ) {
-
-        await supabaseClient
-          .from("players")
-          .delete()
-          .eq(
-            "id",
-            currentPlayer.id
-          );
-
-      }
-
-
-      if (
-        realtimeChannel
-      ) {
-
-        await supabaseClient
-          .removeChannel(
-            realtimeChannel
-          );
-
-      }
-
-
-      currentGame = null;
-      currentPlayer = null;
-      realtimeChannel = null;
-
-
-      lobbyElement
-        .classList
-        .add("hidden");
-
-      homeElement
-        .classList
-        .remove("hidden");
-
-
-      setStatus(
-        "Prêt à jouer."
-      );
-
-    }
-  );
-
-
-/* =========================
-   TEST SUPABASE
-========================= */
-
-async function testSupabase() {
-loadGame();async function loadGame() {
-
-  if (!gameId) {
-
-    setStatus(
-      "Aucune partie sélectionnée.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("games")
-        .select("*")
-        .eq("id", gameId)
-        .maybeSingle();
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    if (!data) {
-
-      setStatus(
-        "Partie introuvable.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    currentGame = data;
-
-
-    setStatus(
-      "Partie trouvée ✅",
-      "success"
-    );
-
-
-    /*
-      Si une configuration existait déjà,
-      on la remet dans les menus.
-    */
-
-    if (data.player_count) {
-
-      playerCountElement.value =
-        data.player_count;
-
-    }
-
-
-    if (data.undercover_count) {
-
-      undercoverCountElement.value =
-        data.undercover_count;
-
-    }
-
-
-    if (data.topic) {
-
-      topicElement.value =
-        data.topic;
-
-    }
-
-
-    updatePreview();
-
-
-  } catch (error) {
-
-    console.error(
-      "Erreur chargement partie :",
-      error
-    );
-
-    setStatus(
-      "Erreur : " +
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-  try {
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("games")
-        .select("id")
-        .limit(1);
-
-
-    if (error) {
-
-      console.error(
-        "Supabase :",
-        error
-      );
-
-      setStatus(
-        "Erreur Supabase : " +
-        error.message,
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    setStatus(
-      "Supabase connecté ✅",
-      "success"
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    setStatus(
-      "Erreur de connexion.",
-      "error"
-    );
-
-  }
-
-}
-
-
-testSupabase();
-
-</script>
-
-</body>
-</html>
+    playerListElement.textContent =
+      "Aucun
