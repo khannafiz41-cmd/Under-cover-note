@@ -869,14 +869,20 @@ function subscribeToGame() {
 
 
           if (
-            currentGame.status ===
-            "playing"
-          ) {
+  currentGame.status ===
+  "playing"
+) {
 
-            setStatus(
-              "🎮 La partie commence !",
-              "success"
-            );
+  setStatus(
+    "🎮 La partie commence !",
+    "success"
+  );
+
+  window.location.href =
+    "game.html?game=" +
+    encodeURIComponent(currentGame.id) +
+    "&player=" +
+    encodeURIComponent(currentPlayer.id);
 
           }
 
