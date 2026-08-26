@@ -1,5 +1,5 @@
 const SUPABASE_URL =
-  "https://ceurtrmezgmzfmjlxayb.supabase.co";
+  "https://sarszeuyxrozsljhgyos.supabase.co;
 
 const SUPABASE_KEY =
-  "sb_publishable_5YJx0KB0O41kjruw5VtlOA_HnP8zQ67";
+  "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
