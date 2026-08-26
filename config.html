@@ -28,7 +28,6 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 25px;
     }
 
     .card {
@@ -36,14 +35,14 @@
       border: 1px solid #293653;
       border-radius: 18px;
       padding: 20px;
-      margin: 15px 0;
+      margin-top: 18px;
     }
 
     label {
       display: block;
-      font-weight: bold;
-      margin-top: 15px;
+      margin-top: 18px;
       margin-bottom: 7px;
+      font-weight: bold;
     }
 
     select,
@@ -55,7 +54,6 @@
       background: #090f20;
       color: white;
       font-size: 16px;
-      outline: none;
     }
 
     button {
@@ -71,16 +69,16 @@
       cursor: pointer;
     }
 
-    button.secondary {
+    .back {
       background: #18233a;
     }
 
-    .status {
+    #status {
       text-align: center;
       padding: 12px;
       border-radius: 12px;
       background: #18233a;
-      margin-bottom: 15px;
+      margin-top: 15px;
     }
 
     .success {
@@ -91,18 +89,12 @@
       color: #fca5a5;
     }
 
-    .preview {
+    #preview {
       margin-top: 20px;
       padding: 15px;
       background: #18233a;
       border-radius: 12px;
       line-height: 1.7;
-    }
-
-    .note {
-      font-size: 13px;
-      opacity: 0.75;
-      margin-top: 8px;
     }
   </style>
 </head>
@@ -113,14 +105,13 @@
 
   <h1>🕵️ Undercover Notes</h1>
 
-  <div id="status" class="status">
+  <div id="status">
     Connexion à Supabase...
   </div>
 
-
   <div class="card">
 
-    <h2>⚙️ Configuration</h2>
+    <h2>⚙️ Configuration de la partie</h2>
 
     <label for="playerCount">
       👥 Nombre de joueurs
@@ -128,37 +119,14 @@
 
     <select id="playerCount">
 
-      <option value="3">
-        3 joueurs
-      </option>
-
-      <option value="4">
-        4 joueurs
-      </option>
-
-      <option value="5">
-        5 joueurs
-      </option>
-
-      <option value="6">
-        6 joueurs
-      </option>
-
-      <option value="7">
-        7 joueurs
-      </option>
-
-      <option value="8">
-        8 joueurs
-      </option>
-
-      <option value="9">
-        9 joueurs
-      </option>
-
-      <option value="10">
-        10 joueurs
-      </option>
+      <option value="3">3 joueurs</option>
+      <option value="4">4 joueurs</option>
+      <option value="5">5 joueurs</option>
+      <option value="6">6 joueurs</option>
+      <option value="7">7 joueurs</option>
+      <option value="8">8 joueurs</option>
+      <option value="9">9 joueurs</option>
+      <option value="10">10 joueurs</option>
 
     </select>
 
@@ -169,23 +137,15 @@
 
     <select id="undercoverCount">
 
-      <option value="1">
-        1 Undercover
-      </option>
-
-      <option value="2">
-        2 Undercover
-      </option>
-
-      <option value="3">
-        3 Undercover
-      </option>
+      <option value="1">1 Undercover</option>
+      <option value="2">2 Undercover</option>
+      <option value="3">3 Undercover</option>
 
     </select>
 
 
     <label for="topic">
-      📝 Thème de la partie
+      📝 Thème
     </label>
 
     <input
@@ -195,7 +155,8 @@
       placeholder="Exemple : nourriture"
     >
 
-    <div id="preview" class="preview">
+
+    <div id="preview">
       👥 3 joueurs<br>
       🕵️ 1 Undercover<br>
       🧑‍🌾 2 joueurs classiques
@@ -203,13 +164,13 @@
 
 
     <button id="saveButton">
-      💾 Enregistrer la configuration
+      💾 Enregistrer
     </button>
 
 
     <button
       id="backButton"
-      class="secondary"
+      class="back"
     >
       ← Retour au lobby
     </button>
@@ -223,15 +184,15 @@
 
 <script>
 
-  /* ==========================================
+  /* ============================
      SUPABASE
-  ========================================== */
+  ============================ */
 
   const SUPABASE_URL =
-    "TON_PROJECT_URL";
+    "https://sarszeuyxrozsljhgyos.supabase.co";
 
   const SUPABASE_KEY =
-    "TA_NOUVELLE_CLE_PUBLISHABLE";
+    "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
 
 
   const supabaseClient =
@@ -241,65 +202,69 @@
     );
 
 
-  /* ==========================================
+  /* ============================
      ÉLÉMENTS
-  ========================================== */
+  ============================ */
 
-  const statusElement =
+  const status =
     document.getElementById("status");
 
-  const playerCountElement =
+  const playerCount =
     document.getElementById("playerCount");
 
-  const undercoverCountElement =
+  const undercoverCount =
     document.getElementById("undercoverCount");
 
-  const topicElement =
+  const topic =
     document.getElementById("topic");
 
-  const previewElement =
+  const preview =
     document.getElementById("preview");
 
 
-  /* ==========================================
+  /* ============================
+     PARTIE
+  ============================ */
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const gameId =
+    params.get("game");
+
+
+  /* ============================
      STATUT
-  ========================================== */
+  ============================ */
 
   function setStatus(
-    message,
+    text,
     type = ""
   ) {
 
-    statusElement.textContent =
-      message;
+    status.textContent =
+      text;
 
-    statusElement.className =
-      "status " + type;
+    status.className =
+      type;
 
   }
 
 
-  /* ==========================================
+  /* ============================
      APERÇU
-  ========================================== */
+  ============================ */
 
   function updatePreview() {
 
     const players =
-      Number(
-        playerCountElement.value
-      );
+      Number(playerCount.value);
 
     let undercover =
-      Number(
-        undercoverCountElement.value
-      );
+      Number(undercoverCount.value);
 
-
-    /*
-      On empêche d'avoir autant
-      d'Undercover que de joueurs.
-    */
 
     if (
       undercover >= players
@@ -308,7 +273,7 @@
       undercover =
         players - 1;
 
-      undercoverCountElement.value =
+      undercoverCount.value =
         undercover;
 
     }
@@ -318,20 +283,14 @@
       players - undercover;
 
 
-    previewElement.innerHTML =
-
+    preview.innerHTML =
       "👥 " +
       players +
       " joueurs<br>" +
 
       "🕵️ " +
       undercover +
-      (
-        undercover > 1
-          ? " Undercover"
-          : " Undercover"
-      ) +
-      "<br>" +
+      " Undercover<br>" +
 
       "🧑‍🌾 " +
       villagers +
@@ -346,23 +305,21 @@
   }
 
 
-  playerCountElement
-    .addEventListener(
-      "change",
-      updatePreview
-    );
+  playerCount.addEventListener(
+    "change",
+    updatePreview
+  );
 
 
-  undercoverCountElement
-    .addEventListener(
-      "change",
-      updatePreview
-    );
+  undercoverCount.addEventListener(
+    "change",
+    updatePreview
+  );
 
 
-  /* ==========================================
+  /* ============================
      TEST SUPABASE
-  ========================================== */
+  ============================ */
 
   async function testSupabase() {
 
@@ -387,7 +344,7 @@
           "error"
         );
 
-        return false;
+        return;
 
       }
 
@@ -397,132 +354,223 @@
         "success"
       );
 
-      return true;
 
     } catch (error) {
 
       console.error(error);
 
       setStatus(
-        "Impossible de contacter Supabase.",
+        "Erreur de connexion.",
         "error"
       );
-
-      return false;
 
     }
 
   }
 
 
-  /* ==========================================
+  /* ============================
+     CHARGER LA PARTIE
+  ============================ */
+
+  async function loadGame() {
+
+    if (!gameId) {
+
+      setStatus(
+        "Configuration générale",
+        ""
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("games")
+          .select("*")
+          .eq("id", gameId)
+          .maybeSingle();
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      if (!data) {
+
+        setStatus(
+          "Partie introuvable.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if (data.player_count) {
+
+        playerCount.value =
+          data.player_count;
+
+      }
+
+
+      if (data.undercover_count) {
+
+        undercoverCount.value =
+          data.undercover_count;
+
+      }
+
+
+      if (data.topic) {
+
+        topic.value =
+          data.topic;
+
+      }
+
+
+      updatePreview();
+
+
+      setStatus(
+        "Partie chargée ✅",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      setStatus(
+        "Erreur : " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* ============================
      ENREGISTRER
-  ========================================== */
+  ============================ */
 
   document
     .getElementById("saveButton")
     .addEventListener(
       "click",
-      saveConfiguration
+      async function() {
+
+        const players =
+          Number(playerCount.value);
+
+        const undercover =
+          Number(undercoverCount.value);
+
+        const theme =
+          topic.value.trim();
+
+
+        if (!theme) {
+
+          setStatus(
+            "Écris un thème.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (!gameId) {
+
+          setStatus(
+            "Aucune partie sélectionnée.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        try {
+
+          const {
+            error
+          } =
+            await supabaseClient
+              .from("games")
+              .update({
+
+                player_count:
+                  players,
+
+                undercover_count:
+                  undercover,
+
+                topic:
+                  theme,
+
+                phase:
+                  "configuration"
+
+              })
+              .eq(
+                "id",
+                gameId
+              );
+
+
+          if (error) {
+
+            throw error;
+
+          }
+
+
+          setStatus(
+            "Configuration enregistrée ✅",
+            "success"
+          );
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          setStatus(
+            "Erreur : " +
+            error.message,
+            "error"
+          );
+
+        }
+
+      }
     );
 
 
-  async function saveConfiguration() {
-
-    const players =
-      Number(
-        playerCountElement.value
-      );
-
-    const undercover =
-      Number(
-        undercoverCountElement.value
-      );
-
-    const topic =
-      topicElement
-        .value
-        .trim();
-
-
-    if (!topic) {
-
-      setStatus(
-        "Écris un thème.",
-        "error"
-      );
-
-      topicElement.focus();
-
-      return;
-
-    }
-
-
-    if (
-      undercover >= players
-    ) {
-
-      setStatus(
-        "Il faut au moins un joueur classique.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    /*
-      Pour cette étape,
-      on sauvegarde simplement
-      la configuration dans le navigateur.
-    */
-
-    const configuration = {
-
-      playerCount:
-        players,
-
-      undercoverCount:
-        undercover,
-
-      topic:
-        topic
-
-    };
-
-
-    localStorage.setItem(
-      "undercover_configuration",
-      JSON.stringify(
-        configuration
-      )
-    );
-
-
-    setStatus(
-      "Configuration enregistrée ✅",
-      "success"
-    );
-
-
-    setTimeout(
-      function() {
-
-        window.location.href =
-          "multiplayer-test.html";
-
-      },
-      700
-    );
-
-  }
-
-
-  /* ==========================================
-     RETOUR
-  ========================================== */
+  /* ============================
+     RETOUR AU LOBBY
+  ============================ */
 
   document
     .getElementById("backButton")
@@ -530,20 +578,32 @@
       "click",
       function() {
 
-        window.location.href =
-          "multiplayer-test.html";
+        if (gameId) {
+
+          window.location.href =
+            "multiplayer-test.html?game=" +
+            encodeURIComponent(gameId);
+
+        } else {
+
+          window.location.href =
+            "multiplayer-test.html";
+
+        }
 
       }
     );
 
 
-  /* ==========================================
-     INITIALISATION
-  ========================================== */
+  /* ============================
+     DÉMARRAGE
+  ============================ */
 
   updatePreview();
 
   testSupabase();
+
+  loadGame();
 
 </script>
 
