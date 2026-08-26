@@ -153,7 +153,22 @@
     .big {
       font-size: 20px;
       font-weight: bold;
-    }
+    }select {
+  width: 100%;
+  padding: 14px;
+  margin: 7px 0 15px;
+  border: 1px solid #34415f;
+  border-radius: 12px;
+  background: #080e1d;
+  color: white;
+  font-size: 16px;
+}
+
+label {
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+}
   </style>
 </head>
 
@@ -261,13 +276,48 @@
     </div>
 
 
-    <div id="hostControls" class="card hidden">
+    <<div id="hostControls" class="card hidden">
 
-      <h2>👑 Contrôle de la partie</h2>
+  <h2>👑 Configuration</h2>
 
-      <button id="startButton">
-        🚀 Lancer la partie
-      </button>
+  <label>👥 Nombre de joueurs</label>
+
+  <select id="playerCountSelect">
+    <option value="3">3 joueurs</option>
+    <option value="4">4 joueurs</option>
+    <option value="5">5 joueurs</option>
+    <option value="6">6 joueurs</option>
+    <option value="7">7 joueurs</option>
+    <option value="8">8 joueurs</option>
+    <option value="9">9 joueurs</option>
+    <option value="10">10 joueurs</option>
+  </select>
+
+
+  <label>🕵️ Nombre d'Undercover</label>
+
+  <select id="undercoverCountSelect">
+    <option value="1">1 Undercover</option>
+    <option value="2">2 Undercover</option>
+    <option value="3">3 Undercover</option>
+  </select>
+
+
+  <label>📝 Thème</label>
+
+  <input
+    id="topicInput"
+    type="text"
+    maxlength="50"
+    placeholder="Exemple : nourriture"
+  >
+
+
+  <button id="startButton">
+    🚀 Lancer la partie
+  </button>
+
+    </div>
 
     </div>
 
@@ -1092,14 +1142,309 @@
 
   async function startGame() {
 
-    if (
-      !currentPlayer ||
-      !currentPlayer.is_host
-    ) {
+  if (
+    !currentPlayer ||
+    !currentPlayer.is_host
+  ) {
+    return;
+  }
+
+
+  const playerCount =
+    Number(
+      document
+        .getElementById("playerCountSelect")
+        .value
+    );
+
+
+  const undercoverCount =
+    Number(
+      document
+        .getElementById("undercoverCountSelect")
+        .value
+    );
+
+
+  const topic =
+    document
+      .getElementById("topicInput")
+      .value
+      .trim();
+
+
+  if (!topic) {
+
+    setStatus(
+      "Entre un thème.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const { count, error: countError } =
+    await supabaseClient
+      .from("players")
+      .select(
+        "id",
+        {
+          count: "exact",
+          head: true
+        }
+      )
+      .eq(
+        "game_id",
+        currentGame.id
+      );
+
+
+  if (countError) {
+
+    setStatus(
+      "Erreur : " +
+      countError.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (count !== playerCount) {
+
+    setStatus(
+      "Il faut exactement " +
+      playerCount +
+      " joueurs pour lancer.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    undercoverCount >= playerCount
+  ) {
+
+    setStatus(
+      "Il faut au moins un joueur classique.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const normalNote =
+    Math.floor(
+      Math.random() * 7
+    ) + 3;
+
+
+  let undercoverNote;
+
+
+  if (
+    normalNote <= 4
+  ) {
+
+    undercoverNote =
+      normalNote + 1;
+
+  } else if (
+    normalNote >= 8
+  ) {
+
+    undercoverNote =
+      normalNote - 1;
+
+  } else {
+
+    undercoverNote =
+      Math.random() < 0.5
+        ? normalNote - 1
+        : normalNote + 1;
+
+  }
+
+
+  const { data: players, error: playersError } =
+    await supabaseClient
+      .from("players")
+      .select("id")
+      .eq(
+        "game_id",
+        currentGame.id
+      );
+
+
+  if (playersError) {
+
+    setStatus(
+      "Erreur joueurs : " +
+      playersError.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const shuffled =
+    [...players]
+      .sort(
+        () => Math.random() - 0.5
+      );
+
+
+  const undercoverPlayers =
+    shuffled.slice(
+      0,
+      undercoverCount
+    );
+
+
+  const undercoverIds =
+    new Set(
+      undercoverPlayers.map(
+        player => player.id
+      )
+    );
+
+
+  for (
+    const player of players
+  ) {
+
+    const isUndercover =
+      undercoverIds.has(
+        player.id
+      );
+
+
+    const { error } =
+      await supabaseClient
+        .from("players")
+        .update({
+
+          role:
+            isUndercover
+              ? "undercover"
+              : "villager",
+
+          secret_note:
+            isUndercover
+              ? undercoverNote
+              : normalNote,
+
+          revealed: false
+
+        })
+        .eq(
+          "id",
+          player.id
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      setStatus(
+        "Erreur distribution : " +
+        error.message,
+        "error"
+      );
 
       return;
 
     }
+
+  }
+
+
+  const { error: gameError } =
+    await supabaseClient
+      .from("games")
+      .update({
+
+        player_count:
+          playerCount,
+
+        undercover_count:
+          undercoverCount,
+
+        topic:
+          topic,
+
+        normal_note:
+          normalNote,
+
+        undercover_note:
+          undercoverNote,
+
+        phase:
+          "notes",
+
+        status:
+          "playing",
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+
+  if (gameError) {
+
+    setStatus(
+      "Erreur partie : " +
+      gameError.message,
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  currentGame =
+    {
+      ...currentGame,
+
+      player_count:
+        playerCount,
+
+      undercover_count:
+        undercoverCount,
+
+      topic:
+        topic,
+
+      phase:
+        "notes",
+
+      status:
+        "playing"
+
+    };
+
+
+  openGameScreen();
+
+  }
 
 
     const { count, error: countError } =
