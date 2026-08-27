@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -11,6 +13,7 @@
   <title>Undercover Notes - Partie</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -72,6 +75,15 @@
       line-height: 1.6;
     }
 
+    .difficulty {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: #18233a;
+      font-weight: bold;
+    }
+
     button {
       width: 100%;
       padding: 15px;
@@ -89,7 +101,9 @@
       background: #18233a;
       border: 1px solid #293653;
     }
+
   </style>
+
 </head>
 
 <body>
@@ -106,17 +120,33 @@
 
     <h2>🎮 La partie commence !</h2>
 
-    <div id="gameCode" class="code">
+    <div
+      id="gameCode"
+      class="code"
+    >
       ----
     </div>
 
-    <p id="playerName" class="info">
+    <p
+      id="playerName"
+      class="info"
+    >
       Chargement...
     </p>
 
-    <p class="info">
-      Tous les joueurs sont prêts.
+    <p
+      id="gameInfo"
+      class="info"
+    >
+      Chargement de la configuration...
     </p>
+
+    <div
+      id="difficulty"
+      class="difficulty"
+    >
+      🎯 Difficulté : ...
+    </div>
 
   </div>
 
@@ -130,8 +160,6 @@
 </main>
 
 
-<!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -141,7 +169,6 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
   "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -155,10 +182,8 @@ const params =
     window.location.search
   );
 
-
 const gameId =
   params.get("game");
-
 
 const playerId =
   params.get("player");
@@ -167,22 +192,24 @@ const playerId =
 const statusElement =
   document.getElementById("status");
 
-
 const gameCodeElement =
   document.getElementById("gameCode");
-
 
 const playerNameElement =
   document.getElementById("playerName");
 
+const gameInfoElement =
+  document.getElementById("gameInfo");
+
+const difficultyElement =
+  document.getElementById("difficulty");
+
 
 let realtimeChannel = null;
+let pollTimer = null;
 
 
-function setStatus(
-  message,
-  type = ""
-) {
+function setStatus(message, type = "") {
 
   statusElement.textContent =
     message;
@@ -193,9 +220,24 @@ function setStatus(
 }
 
 
-/* =========================
-   CHARGER LA PARTIE
-========================= */
+function getDifficultyLabel(value) {
+
+  if (value === "medium") {
+    return "🔵 Moyen";
+  }
+
+  if (value === "hard") {
+    return "🟠 Difficile";
+  }
+
+  if (value === "subtle") {
+    return "🔴 Subtil";
+  }
+
+  return "🟢 Facile";
+
+}
+
 
 async function loadGame() {
 
@@ -222,11 +264,9 @@ async function loadGame() {
         .eq("id", gameId)
         .maybeSingle();
 
-
     if (error) {
       throw error;
     }
-
 
     if (!game) {
 
@@ -239,10 +279,8 @@ async function loadGame() {
 
     }
 
-
     gameCodeElement.textContent =
       game.code;
-
 
     if (playerId) {
 
@@ -253,8 +291,8 @@ async function loadGame() {
           .from("players")
           .select("*")
           .eq("id", playerId)
+          .eq("game_id", gameId)
           .maybeSingle();
-
 
       if (player) {
 
@@ -266,6 +304,27 @@ async function loadGame() {
 
     }
 
+    gameInfoElement.innerHTML =
+      "👥 " +
+      (game.player_count || "?") +
+      " joueurs<br>" +
+
+      "🕵️ " +
+      (game.undercover_count || "?") +
+      " Undercover<br>" +
+
+      "📝 Thème : " +
+      (
+        game.topic
+          ? escapeHTML(game.topic)
+          : "Aucun thème"
+      );
+
+    difficultyElement.textContent =
+      "🎯 Difficulté : " +
+      getDifficultyLabel(
+        game.difficulty
+      );
 
     if (game.status === "playing") {
 
@@ -282,9 +341,8 @@ async function loadGame() {
 
     }
 
-
     subscribeToGame();
-
+    startPolling();
 
   } catch (error) {
 
@@ -301,9 +359,26 @@ async function loadGame() {
 }
 
 
-/* =========================
-   TEMPS RÉEL
-========================= */
+function escapeHTML(value) {
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      function(char) {
+
+        return {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        }[char];
+
+      }
+    );
+
+}
+
 
 function subscribeToGame() {
 
@@ -315,13 +390,12 @@ function subscribeToGame() {
 
   }
 
-
   realtimeChannel =
     supabaseClient
       .channel(
-        "game-page-" + gameId
+        "game-page-" +
+        gameId
       )
-
       .on(
         "postgres_changes",
         {
@@ -329,15 +403,10 @@ function subscribeToGame() {
           schema: "public",
           table: "games",
           filter:
-            "id=eq." + gameId
+            "id=eq." +
+            gameId
         },
         function(payload) {
-
-          console.log(
-            "Modification de la partie :",
-            payload.new
-          );
-
 
           if (
             payload.new.status ===
@@ -353,24 +422,90 @@ function subscribeToGame() {
 
         }
       )
+      .subscribe(function(status) {
 
-      .subscribe(
-        function(channelStatus) {
+        console.log(
+          "Realtime game :",
+          status
+        );
 
-          console.log(
-            "Realtime game :",
-            channelStatus
-          );
-
-        }
-      );
+      });
 
 }
 
 
-/* =========================
-   RETOUR
-========================= */
+function startPolling() {
+
+  stopPolling();
+
+  pollTimer =
+    setInterval(
+      checkGame,
+      3000
+    );
+
+}
+
+
+function stopPolling() {
+
+  if (pollTimer) {
+
+    clearInterval(
+      pollTimer
+    );
+
+    pollTimer = null;
+
+  }
+
+}
+
+
+async function checkGame() {
+
+  if (!gameId) {
+    return;
+  }
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .select(
+          "status, difficulty, player_count, undercover_count, topic"
+        )
+        .eq("id", gameId)
+        .maybeSingle();
+
+    if (error || !data) {
+      return;
+    }
+
+    if (data.status === "playing") {
+
+      setStatus(
+        "✅ Partie en cours",
+        "success"
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Vérification partie :",
+      error
+    );
+
+  }
+
+}
+
 
 document
   .getElementById("backButton")
@@ -378,26 +513,59 @@ document
     "click",
     function() {
 
-      if (gameId) {
+      stopPolling();
 
-        window.location.href =
-          "index-multiplayer.html?game=" +
-          encodeURIComponent(gameId);
+      if (realtimeChannel) {
 
-      } else {
-
-        window.location.href =
-          "index-multiplayer.html";
+        supabaseClient.removeChannel(
+          realtimeChannel
+        );
 
       }
+
+      let url =
+        "index-multiplayer.html";
+
+      if (gameId) {
+
+        url +=
+          "?game=" +
+          encodeURIComponent(gameId);
+
+        if (playerId) {
+
+          url +=
+            "&player=" +
+            encodeURIComponent(playerId);
+
+        }
+
+      }
+
+      window.location.href =
+        url;
 
     }
   );
 
 
-/* =========================
-   DÉMARRAGE
-========================= */
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    stopPolling();
+
+    if (realtimeChannel) {
+
+      supabaseClient.removeChannel(
+        realtimeChannel
+      );
+
+    }
+
+  }
+);
+
 
 loadGame();
 
