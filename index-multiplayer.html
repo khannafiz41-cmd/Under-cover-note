@@ -12,6 +12,7 @@
   <title>Undercover Notes - Multijoueur</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -117,6 +118,7 @@
       background: #18233a;
       border-radius: 10px;
     }
+
   </style>
 </head>
 
@@ -131,7 +133,9 @@
   </div>
 
 
-  <!-- ACCUEIL -->
+  <!-- =========================
+       ACCUEIL
+  ========================== -->
 
   <section id="home">
 
@@ -177,7 +181,9 @@
   </section>
 
 
-  <!-- LOBBY -->
+  <!-- =========================
+       LOBBY
+  ========================== -->
 
   <section
     id="lobby"
@@ -241,6 +247,10 @@
 </main>
 
 
+<!-- =========================
+     SUPABASE
+========================== -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -267,7 +277,9 @@ const supabaseClient =
 ================================================== */
 
 let currentGame = null;
+
 let currentPlayer = null;
+
 let realtimeChannel = null;
 
 
@@ -304,7 +316,10 @@ const leaveButton =
    STATUS
 ================================================== */
 
-function setStatus(message, type = "") {
+function setStatus(
+  message,
+  type = ""
+) {
 
   statusElement.textContent =
     message;
@@ -400,10 +415,15 @@ async function createGame() {
         .insert({
 
           code: code,
+
           max_players: 10,
+
           undercover_count: 1,
+
           player_count: 3,
+
           topic: null,
+
           status: "waiting"
 
         })
@@ -427,8 +447,11 @@ async function createGame() {
         .insert({
 
           game_id: game.id,
+
           name: name,
+
           is_host: true,
+
           connected: true
 
         })
@@ -573,8 +596,11 @@ async function joinGame() {
         .insert({
 
           game_id: game.id,
+
           name: name,
+
           is_host: false,
+
           connected: true
 
         })
@@ -864,25 +890,22 @@ function subscribeToGame() {
         },
         function(payload) {
 
+          console.log(
+            "GAME UPDATE :",
+            payload.new
+          );
+
+
           currentGame =
             payload.new;
 
 
           if (
-  currentGame.status ===
-  "playing"
-) {
+            currentGame.status ===
+            "playing"
+          ) {
 
-  setStatus(
-    "🎮 La partie commence !",
-    "success"
-  );
-
-  window.location.href =
-    "game.html?game=" +
-    encodeURIComponent(currentGame.id) +
-    "&player=" +
-    encodeURIComponent(currentPlayer.id);
+            goToGame();
 
           }
 
@@ -899,6 +922,41 @@ function subscribeToGame() {
 
         }
       );
+
+}
+
+
+/* ==================================================
+   ALLER AU JEU
+================================================== */
+
+function goToGame() {
+
+  if (
+    !currentGame ||
+    !currentPlayer
+  ) {
+
+    return;
+
+  }
+
+
+  setStatus(
+    "🎮 La partie commence !",
+    "success"
+  );
+
+
+  window.location.href =
+    "game.html?game=" +
+    encodeURIComponent(
+      currentGame.id
+    ) +
+    "&player=" +
+    encodeURIComponent(
+      currentPlayer.id
+    );
 
 }
 
@@ -926,17 +984,25 @@ async function startGame() {
   }
 
 
-  startButton.disabled = true;
+  startButton.disabled =
+    true;
+
 
   startButton.textContent =
     "🎮 Lancement...";
 
 
+  setStatus(
+    "🎮 Lancement de la partie..."
+  );
+
+
   try {
 
     /*
-      On relit la configuration
-      avant de lancer.
+      On recharge la partie
+      pour récupérer la dernière
+      configuration.
     */
 
     const {
@@ -960,6 +1026,10 @@ async function startGame() {
     }
 
 
+    /*
+      Vérification de la configuration.
+    */
+
     if (
       !game.player_count ||
       !game.undercover_count
@@ -971,6 +1041,10 @@ async function startGame() {
 
     }
 
+
+    /*
+      On passe la partie à PLAYING.
+    */
 
     const {
       data,
@@ -1001,22 +1075,35 @@ async function startGame() {
     }
 
 
+    /*
+      Supabase confirme la modification.
+    */
+
     currentGame =
       data;
 
 
-    setStatus(
-      "🎮 Partie lancée !",
-      "success"
+    console.log(
+      "PARTIE LANCÉE :",
+      currentGame
     );
 
 
-    startButton.textContent =
-      "🎮 Partie lancée";
+    /*
+      IMPORTANT :
+      l'hôte va directement
+      vers game.html.
+    */
+
+    goToGame();
+
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erreur lancement :",
+      error
+    );
 
 
     setStatus(
@@ -1028,6 +1115,7 @@ async function startGame() {
 
     startButton.disabled =
       false;
+
 
     startButton.textContent =
       "🎮 Lancer la partie";
@@ -1090,14 +1178,20 @@ async function leaveGame() {
   }
 
 
-  currentGame = null;
-  currentPlayer = null;
-  realtimeChannel = null;
+  currentGame =
+    null;
+
+  currentPlayer =
+    null;
+
+  realtimeChannel =
+    null;
 
 
   lobbyElement
     .classList
     .add("hidden");
+
 
   homeElement
     .classList
@@ -1107,6 +1201,7 @@ async function leaveGame() {
   configButton
     .classList
     .add("hidden");
+
 
   startButton
     .classList
@@ -1139,13 +1234,18 @@ async function testSupabase() {
 
     if (error) {
 
-      console.error(error);
+      console.error(
+        "Supabase :",
+        error
+      );
+
 
       setStatus(
         "❌ Supabase : " +
         error.message,
         "error"
       );
+
 
       return;
 
@@ -1161,6 +1261,7 @@ async function testSupabase() {
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Erreur Supabase : " +
