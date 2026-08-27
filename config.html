@@ -128,12 +128,14 @@
   <h1>🕵️ Undercover Notes</h1>
 
   <div id="status">
-    Connexion à Supabase...
+    Chargement...
   </div>
+
 
   <div class="card">
 
     <h2>⚙️ Configuration de la partie</h2>
+
 
     <label for="playerCount">
       👥 Nombre de joueurs
@@ -189,6 +191,7 @@
       </option>
 
     </select>
+
 
     <div
       id="difficultyInfo"
@@ -257,8 +260,10 @@ const params =
     window.location.search
   );
 
+
 const gameId =
   params.get("game");
+
 
 let playerId =
   params.get("player");
@@ -292,7 +297,14 @@ const backButton =
   document.getElementById("backButton");
 
 
-function setStatus(message, type = "") {
+let gameStatus =
+  "waiting";
+
+
+function setStatus(
+  message,
+  type = ""
+) {
 
   statusElement.textContent =
     message;
@@ -303,7 +315,9 @@ function setStatus(message, type = "") {
 }
 
 
-function getDifficultyLabel(value) {
+function getDifficultyLabel(
+  value
+) {
 
   if (value === "medium") {
     return "🔵 Moyen";
@@ -326,6 +340,7 @@ function updateDifficultyInfo() {
 
   const difficulty =
     difficultyElement.value;
+
 
   if (difficulty === "medium") {
 
@@ -359,10 +374,12 @@ function updatePreview() {
       playerCountElement.value
     );
 
+
   let undercover =
     Number(
       undercoverCountElement.value
     );
+
 
   if (undercover >= players) {
 
@@ -374,10 +391,14 @@ function updatePreview() {
 
   }
 
+
   const villagers =
-    players - undercover;
+    players -
+    undercover;
+
 
   previewElement.innerHTML =
+
     "👥 " +
     players +
     " joueurs<br>" +
@@ -409,16 +430,19 @@ playerCountElement.addEventListener(
   updatePreview
 );
 
+
 undercoverCountElement.addEventListener(
   "change",
   updatePreview
 );
+
 
 difficultyElement.addEventListener(
   "change",
   function() {
 
     updateDifficultyInfo();
+
     updatePreview();
 
   }
@@ -434,11 +458,13 @@ async function loadGame() {
       "error"
     );
 
-    saveButton.disabled = true;
+    saveButton.disabled =
+      true;
 
     return;
 
   }
+
 
   try {
 
@@ -448,15 +474,18 @@ async function loadGame() {
     } =
       await supabaseClient
         .from("games")
-        .select(
-          "id, code, player_count, undercover_count, topic, difficulty"
+        .select("*")
+        .eq(
+          "id",
+          gameId
         )
-        .eq("id", gameId)
         .maybeSingle();
+
 
     if (error) {
       throw error;
     }
+
 
     if (!data) {
 
@@ -465,25 +494,55 @@ async function loadGame() {
         "error"
       );
 
-      saveButton.disabled = true;
+      saveButton.disabled =
+        true;
 
       return;
 
     }
 
+
+    gameStatus =
+      data.status;
+
+
+    if (
+      data.status !==
+      "waiting"
+    ) {
+
+      setStatus(
+        "⚠️ Cette partie est déjà lancée.",
+        "error"
+      );
+
+      saveButton.disabled =
+        true;
+
+      return;
+
+    }
+
+
     if (data.player_count) {
 
       playerCountElement.value =
-        String(data.player_count);
+        String(
+          data.player_count
+        );
 
     }
+
 
     if (data.undercover_count) {
 
       undercoverCountElement.value =
-        String(data.undercover_count);
+        String(
+          data.undercover_count
+        );
 
     }
+
 
     if (data.difficulty) {
 
@@ -492,6 +551,7 @@ async function loadGame() {
 
     }
 
+
     if (data.topic) {
 
       topicElement.value =
@@ -499,17 +559,22 @@ async function loadGame() {
 
     }
 
+
     updateDifficultyInfo();
+
     updatePreview();
+
 
     setStatus(
       "✅ Partie chargée.",
       "success"
     );
 
+
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Erreur Supabase : " +
@@ -535,26 +600,14 @@ async function saveConfiguration() {
 
   }
 
-  const players =
-    Number(
-      playerCountElement.value
-    );
 
-  const undercover =
-    Number(
-      undercoverCountElement.value
-    );
-
-  const difficulty =
-    difficultyElement.value;
-
-  const topic =
-    topicElement.value.trim();
-
-  if (undercover >= players) {
+  if (
+    gameStatus !==
+    "waiting"
+  ) {
 
     setStatus(
-      "❌ Il faut au moins 1 joueur classique.",
+      "❌ La partie est déjà lancée.",
       "error"
     );
 
@@ -562,39 +615,122 @@ async function saveConfiguration() {
 
   }
 
-  saveButton.disabled = true;
+
+  const players =
+    Number(
+      playerCountElement.value
+    );
+
+
+  const undercover =
+    Number(
+      undercoverCountElement.value
+    );
+
+
+  const difficulty =
+    difficultyElement.value;
+
+
+  const topic =
+    topicElement.value.trim();
+
+
+  if (
+    players < 3 ||
+    players > 10
+  ) {
+
+    setStatus(
+      "❌ Le nombre de joueurs doit être entre 3 et 10.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    undercover < 1 ||
+    undercover >= players
+  ) {
+
+    setStatus(
+      "❌ Nombre d'Undercover invalide.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  saveButton.disabled =
+    true;
+
 
   saveButton.textContent =
     "💾 Enregistrement...";
 
+
   try {
 
     const {
+      data,
       error
     } =
       await supabaseClient
         .from("games")
         .update({
-          player_count: players,
-          undercover_count: undercover,
-          difficulty: difficulty,
-          topic: topic || null,
+
+          player_count:
+            players,
+
+          undercover_count:
+            undercover,
+
+          difficulty:
+            difficulty,
+
+          topic:
+            topic || null,
+
           updated_at:
             new Date().toISOString()
+
         })
-        .eq("id", gameId);
+        .eq(
+          "id",
+          gameId
+        )
+        .select()
+        .single();
+
 
     if (error) {
       throw error;
     }
+
+
+    if (!data) {
+
+      throw new Error(
+        "La partie n'a pas été trouvée."
+      );
+
+    }
+
 
     setStatus(
       "✅ Configuration enregistrée !",
       "success"
     );
 
+
     saveButton.textContent =
       "✅ Enregistré";
+
 
     setTimeout(
       function() {
@@ -603,12 +739,14 @@ async function saveConfiguration() {
           "💾 Enregistrer";
 
       },
-      2000
+      1500
     );
+
 
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Impossible d'enregistrer : " +
@@ -616,12 +754,15 @@ async function saveConfiguration() {
       "error"
     );
 
+
     saveButton.textContent =
       "💾 Enregistrer";
 
   }
 
-  saveButton.disabled = false;
+
+  saveButton.disabled =
+    false;
 
 }
 
@@ -639,19 +780,22 @@ backButton.addEventListener(
     let finalPlayerId =
       playerId;
 
+
     if (!finalPlayerId) {
 
-      const saved =
-        localStorage.getItem(
-          "undercover_session"
-        );
+      try {
 
-      if (saved) {
+        const saved =
+          localStorage.getItem(
+            "undercover_session"
+          );
 
-        try {
+
+        if (saved) {
 
           const session =
             JSON.parse(saved);
+
 
           if (
             session.gameId ===
@@ -663,11 +807,12 @@ backButton.addEventListener(
 
           }
 
-        } catch (error) {}
+        }
 
-      }
+      } catch (error) {}
 
     }
+
 
     if (!gameId) {
 
@@ -678,9 +823,13 @@ backButton.addEventListener(
 
     }
 
+
     let url =
       "index-multiplayer.html?game=" +
-      encodeURIComponent(gameId);
+      encodeURIComponent(
+        gameId
+      );
+
 
     if (finalPlayerId) {
 
@@ -692,15 +841,19 @@ backButton.addEventListener(
 
     }
 
-    window.location.href =
-      url;
+
+    window.location.replace(
+      url
+    );
 
   }
 );
 
 
 updateDifficultyInfo();
+
 updatePreview();
+
 loadGame();
 
 </script>
