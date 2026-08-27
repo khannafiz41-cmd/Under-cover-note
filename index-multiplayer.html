@@ -2,6 +2,7 @@
 <html lang="fr">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -12,6 +13,7 @@
   <title>Undercover Notes - Multijoueur</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -117,7 +119,17 @@
       background: #18233a;
       border-radius: 10px;
     }
+
+    .config-info {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #18233a;
+      line-height: 1.7;
+    }
+
   </style>
+
 </head>
 
 <body>
@@ -129,6 +141,7 @@
   <div id="status">
     Connexion à Supabase...
   </div>
+
 
   <!-- ACCUEIL -->
 
@@ -149,6 +162,7 @@
       </button>
 
     </div>
+
 
     <div class="card">
 
@@ -174,15 +188,22 @@
 
   </section>
 
+
   <!-- LOBBY -->
 
-  <section id="lobby" class="hidden">
+  <section
+    id="lobby"
+    class="hidden"
+  >
 
     <div class="card">
 
       <h2>🎮 Partie</h2>
 
-      <div id="gameCode" class="game-code">
+      <div
+        id="gameCode"
+        class="game-code"
+      >
         ----
       </div>
 
@@ -190,7 +211,15 @@
         Envoie ce code à tes amis.
       </p>
 
+      <div
+        id="configInfo"
+        class="config-info"
+      >
+        ⚙️ Configuration en cours...
+      </div>
+
     </div>
+
 
     <div class="card">
 
@@ -202,21 +231,34 @@
 
     </div>
 
-    <button id="configButton" class="hidden">
+
+    <button
+      id="configButton"
+      class="hidden"
+    >
       ⚙️ Configurer la partie
     </button>
 
-    <button id="startButton" class="hidden green">
+
+    <button
+      id="startButton"
+      class="hidden green"
+    >
       🎮 Lancer la partie
     </button>
 
-    <button id="leaveButton" class="secondary">
+
+    <button
+      id="leaveButton"
+      class="secondary"
+    >
       ← Quitter le lobby
     </button>
 
   </section>
 
 </main>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -237,8 +279,12 @@ const supabaseClient =
 
 let currentGame = null;
 let currentPlayer = null;
+
 let realtimeChannel = null;
+let playersChannel = null;
+
 let gamePollTimer = null;
+let redirecting = false;
 
 
 const statusElement =
@@ -256,6 +302,9 @@ const gameCodeElement =
 const playerListElement =
   document.getElementById("playerList");
 
+const configInfoElement =
+  document.getElementById("configInfo");
+
 const configButton =
   document.getElementById("configButton");
 
@@ -266,10 +315,16 @@ const leaveButton =
   document.getElementById("leaveButton");
 
 
-function setStatus(message, type = "") {
+function setStatus(
+  message,
+  type = ""
+) {
 
-  statusElement.textContent = message;
-  statusElement.className = type;
+  statusElement.textContent =
+    message;
+
+  statusElement.className =
+    type;
 
 }
 
@@ -281,13 +336,19 @@ function generateGameCode() {
 
   let code = "";
 
-  for (let i = 0; i < 4; i++) {
+  for (
+    let i = 0;
+    i < 4;
+    i++
+  ) {
 
-    code += characters[
-      Math.floor(
-        Math.random() * characters.length
-      )
-    ];
+    code +=
+      characters[
+        Math.floor(
+          Math.random() *
+          characters.length
+        )
+      ];
 
   }
 
@@ -298,15 +359,25 @@ function generateGameCode() {
 
 function saveSession() {
 
-  if (!currentGame || !currentPlayer) {
+  if (
+    !currentGame ||
+    !currentPlayer
+  ) {
+
     return;
+
   }
 
   localStorage.setItem(
     "undercover_session",
     JSON.stringify({
-      gameId: currentGame.id,
-      playerId: currentPlayer.id
+
+      gameId:
+        currentGame.id,
+
+      playerId:
+        currentPlayer.id
+
     })
   );
 
@@ -322,13 +393,70 @@ function clearSession() {
 }
 
 
+function difficultyLabel(
+  value
+) {
+
+  if (value === "medium") {
+    return "🔵 Moyen";
+  }
+
+  if (value === "hard") {
+    return "🟠 Difficile";
+  }
+
+  if (value === "subtle") {
+    return "🔴 Subtil";
+  }
+
+  return "🟢 Facile";
+
+}
+
+
+function updateConfigInfo() {
+
+  if (!currentGame) {
+    return;
+  }
+
+  configInfoElement.innerHTML =
+
+    "👥 " +
+    (currentGame.player_count || "?") +
+    " joueurs<br>" +
+
+    "🕵️ " +
+    (currentGame.undercover_count || "?") +
+    " Undercover<br>" +
+
+    "🎯 " +
+    difficultyLabel(
+      currentGame.difficulty
+    ) +
+
+    "<br>" +
+
+    "📝 " +
+    (
+      currentGame.topic
+        ? escapeHTML(currentGame.topic)
+        : "Thème libre"
+    );
+
+}
+
+
 async function createGame() {
 
+  const input =
+    document.getElementById(
+      "createName"
+    );
+
   const name =
-    document
-      .getElementById("createName")
-      .value
-      .trim();
+    input.value.trim();
+
 
   if (!name) {
 
@@ -341,14 +469,17 @@ async function createGame() {
 
   }
 
+
   setStatus(
     "Création de la partie..."
   );
+
 
   try {
 
     const code =
       generateGameCode();
+
 
     const {
       data: game,
@@ -357,20 +488,34 @@ async function createGame() {
       await supabaseClient
         .from("games")
         .insert({
+
           code: code,
+
           max_players: 10,
+
           undercover_count: 1,
+
           player_count: 3,
+
           topic: null,
+
           difficulty: "easy",
-          status: "waiting"
+
+          status: "waiting",
+
+          phase: "lobby",
+
+          current_round: 1
+
         })
         .select()
         .single();
 
+
     if (gameError) {
       throw gameError;
     }
+
 
     const {
       data: player,
@@ -379,31 +524,48 @@ async function createGame() {
       await supabaseClient
         .from("players")
         .insert({
-          game_id: game.id,
-          name: name,
-          is_host: true,
-          connected: true
+
+          game_id:
+            game.id,
+
+          name:
+            name,
+
+          is_host:
+            true,
+
+          connected:
+            true
+
         })
         .select()
         .single();
+
 
     if (playerError) {
       throw playerError;
     }
 
-    currentGame = game;
-    currentPlayer = player;
+
+    currentGame =
+      game;
+
+    currentPlayer =
+      player;
+
 
     saveSession();
 
     showLobby();
+
 
   } catch (error) {
 
     console.error(error);
 
     setStatus(
-      "❌ Erreur : " + error.message,
+      "❌ Erreur : " +
+      error.message,
       "error"
     );
 
@@ -427,7 +589,11 @@ async function joinGame() {
       .value
       .trim();
 
-  if (!code || !name) {
+
+  if (
+    !code ||
+    !name
+  ) {
 
     setStatus(
       "❌ Entre le code et ton prénom.",
@@ -438,9 +604,11 @@ async function joinGame() {
 
   }
 
+
   setStatus(
     "Recherche de la partie..."
   );
+
 
   try {
 
@@ -454,9 +622,11 @@ async function joinGame() {
         .eq("code", code)
         .maybeSingle();
 
+
     if (error) {
       throw error;
     }
+
 
     if (!game) {
 
@@ -469,7 +639,11 @@ async function joinGame() {
 
     }
 
-    if (game.status !== "waiting") {
+
+    if (
+      game.status !==
+      "waiting"
+    ) {
 
       setStatus(
         "❌ Cette partie a déjà commencé.",
@@ -480,6 +654,63 @@ async function joinGame() {
 
     }
 
+
+    const {
+      count
+    } =
+      await supabaseClient
+        .from("players")
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
+        .eq(
+          "game_id",
+          game.id
+        );
+
+
+    if (
+      count >=
+      (game.max_players || 10)
+    ) {
+
+      setStatus(
+        "❌ La partie est complète.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      data: existing
+    } =
+      await supabaseClient
+        .from("players")
+        .select("id")
+        .eq("game_id", game.id)
+        .eq("name", name)
+        .maybeSingle();
+
+
+    if (existing) {
+
+      setStatus(
+        "❌ Ce prénom est déjà utilisé.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
     const {
       data: player,
       error: playerError
@@ -487,31 +718,48 @@ async function joinGame() {
       await supabaseClient
         .from("players")
         .insert({
-          game_id: game.id,
-          name: name,
-          is_host: false,
-          connected: true
+
+          game_id:
+            game.id,
+
+          name:
+            name,
+
+          is_host:
+            false,
+
+          connected:
+            true
+
         })
         .select()
         .single();
+
 
     if (playerError) {
       throw playerError;
     }
 
-    currentGame = game;
-    currentPlayer = player;
+
+    currentGame =
+      game;
+
+    currentPlayer =
+      player;
+
 
     saveSession();
 
     showLobby();
+
 
   } catch (error) {
 
     console.error(error);
 
     setStatus(
-      "❌ Erreur : " + error.message,
+      "❌ Erreur : " +
+      error.message,
       "error"
     );
 
@@ -522,34 +770,60 @@ async function joinGame() {
 
 function showLobby() {
 
-  homeElement.classList.add("hidden");
-  lobbyElement.classList.remove("hidden");
+  homeElement
+    .classList
+    .add("hidden");
+
+  lobbyElement
+    .classList
+    .remove("hidden");
+
 
   gameCodeElement.textContent =
     currentGame.code;
+
+
+  updateConfigInfo();
+
 
   if (
     currentPlayer &&
     currentPlayer.is_host
   ) {
 
-    configButton.classList.remove("hidden");
-    startButton.classList.remove("hidden");
+    configButton
+      .classList
+      .remove("hidden");
+
+    startButton
+      .classList
+      .remove("hidden");
 
   } else {
 
-    configButton.classList.add("hidden");
-    startButton.classList.add("hidden");
+    configButton
+      .classList
+      .add("hidden");
+
+    startButton
+      .classList
+      .add("hidden");
 
   }
+
 
   setStatus(
     "✅ Lobby chargé",
     "success"
   );
 
+
   loadPlayers();
+
   subscribeToGame();
+
+  subscribeToPlayers();
+
   startGamePolling();
 
 }
@@ -561,17 +835,27 @@ async function loadPlayers() {
     return;
   }
 
+
   const {
     data,
     error
   } =
     await supabaseClient
       .from("players")
-      .select("*")
-      .eq("game_id", currentGame.id)
-      .order("created_at", {
-        ascending: true
-      });
+      .select(
+        "id, name, is_host, connected"
+      )
+      .eq(
+        "game_id",
+        currentGame.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
 
   if (error) {
 
@@ -584,12 +868,15 @@ async function loadPlayers() {
 
   }
 
+
   renderPlayers(data);
 
 }
 
 
-function renderPlayers(players) {
+function renderPlayers(
+  players
+) {
 
   if (
     !players ||
@@ -603,13 +890,15 @@ function renderPlayers(players) {
 
   }
 
+
   playerListElement.innerHTML =
     players
       .map(function(player) {
 
         return `
           <div class="player">
-            🟢 ${escapeHTML(player.name)}
+            ${player.connected ? "🟢" : "⚪"}
+            ${escapeHTML(player.name)}
             ${player.is_host ? " 👑" : ""}
           </div>
         `;
@@ -620,7 +909,9 @@ function renderPlayers(players) {
 }
 
 
-function escapeHTML(value) {
+function escapeHTML(
+  value
+) {
 
   return String(value)
     .replace(
@@ -650,14 +941,21 @@ configButton.addEventListener(
       !currentPlayer ||
       !currentPlayer.is_host
     ) {
+
       return;
+
     }
+
 
     window.location.href =
       "config.html?game=" +
-      encodeURIComponent(currentGame.id) +
+      encodeURIComponent(
+        currentGame.id
+      ) +
       "&player=" +
-      encodeURIComponent(currentPlayer.id);
+      encodeURIComponent(
+        currentPlayer.id
+      );
 
   }
 );
@@ -676,80 +974,62 @@ async function startGame() {
     !currentPlayer ||
     !currentPlayer.is_host
   ) {
+
     return;
+
   }
 
-  startButton.disabled = true;
+
+  startButton.disabled =
+    true;
 
   startButton.textContent =
     "🎮 Lancement...";
 
+
   setStatus(
-    "🎮 Lancement de la partie..."
+    "🎮 Préparation des rôles..."
   );
+
 
   try {
 
     const {
-      data: game,
-      error: loadError
+      data,
+      error
     } =
       await supabaseClient
-        .from("games")
-        .select("*")
-        .eq("id", currentGame.id)
-        .single();
+        .rpc(
+          "start_undercover_game",
+          {
+            p_game_id:
+              currentGame.id
+          }
+        );
 
-    if (loadError) {
-      throw loadError;
+
+    if (error) {
+      throw error;
     }
 
-    if (
-      !game.player_count ||
-      !game.undercover_count
-    ) {
 
-      throw new Error(
-        "Configure d'abord la partie."
-      );
+    console.log(
+      "Partie créée :",
+      data
+    );
 
-    }
 
-    if (
-      game.undercover_count >=
-      game.player_count
-    ) {
+    currentGame.status =
+      "playing";
 
-      throw new Error(
-        "Le nombre d'Undercover doit être inférieur au nombre de joueurs."
-      );
+    currentGame.phase =
+      "reveal";
 
-    }
-
-    const {
-      error: updateError
-    } =
-      await supabaseClient
-        .from("games")
-        .update({
-          status: "playing",
-          updated_at: new Date().toISOString()
-        })
-        .eq("id", currentGame.id);
-
-    if (updateError) {
-      throw updateError;
-    }
-
-    currentGame = {
-      ...currentGame,
-      ...game,
-      status: "playing"
-    };
 
     saveSession();
 
     goToGame();
+
 
   } catch (error) {
 
@@ -758,13 +1038,16 @@ async function startGame() {
       error
     );
 
+
     setStatus(
       "❌ Erreur au lancement : " +
       error.message,
       "error"
     );
 
-    startButton.disabled = false;
+
+    startButton.disabled =
+      false;
 
     startButton.textContent =
       "🎮 Lancer la partie";
@@ -777,17 +1060,32 @@ async function startGame() {
 function goToGame() {
 
   if (
+    redirecting ||
     !currentGame ||
     !currentPlayer
   ) {
+
     return;
+
   }
+
+
+  redirecting =
+    true;
+
+
+  stopGamePolling();
+
 
   window.location.href =
     "game.html?game=" +
-    encodeURIComponent(currentGame.id) +
+    encodeURIComponent(
+      currentGame.id
+    ) +
     "&player=" +
-    encodeURIComponent(currentPlayer.id);
+    encodeURIComponent(
+      currentPlayer.id
+    );
 
 }
 
@@ -798,38 +1096,54 @@ function subscribeToGame() {
     return;
   }
 
+
   if (realtimeChannel) {
 
-    supabaseClient.removeChannel(
-      realtimeChannel
-    );
+    supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
 
   }
+
 
   realtimeChannel =
     supabaseClient
       .channel(
-        "game-" + currentGame.id
+        "lobby-game-" +
+        currentGame.id
       )
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
+
+          event:
+            "UPDATE",
+
+          schema:
+            "public",
+
+          table:
+            "games",
+
           filter:
             "id=eq." +
             currentGame.id
+
         },
         function(payload) {
+
+          currentGame =
+            payload.new;
+
+
+          updateConfigInfo();
+
 
           if (
             payload.new.status ===
             "playing"
           ) {
-
-            currentGame =
-              payload.new;
 
             saveSession();
 
@@ -839,14 +1153,60 @@ function subscribeToGame() {
 
         }
       )
-      .subscribe(function(status) {
+      .subscribe();
 
-        console.log(
-          "Realtime lobby :",
-          status
-        );
 
-      });
+}
+
+
+function subscribeToPlayers() {
+
+  if (!currentGame) {
+    return;
+  }
+
+
+  if (playersChannel) {
+
+    supabaseClient
+      .removeChannel(
+        playersChannel
+      );
+
+  }
+
+
+  playersChannel =
+    supabaseClient
+      .channel(
+        "lobby-players-" +
+        currentGame.id
+      )
+      .on(
+        "postgres_changes",
+        {
+
+          event:
+            "*",
+
+          schema:
+            "public",
+
+          table:
+            "players",
+
+          filter:
+            "game_id=eq." +
+            currentGame.id
+
+        },
+        function() {
+
+          loadPlayers();
+
+        }
+      )
+      .subscribe();
 
 }
 
@@ -854,6 +1214,7 @@ function subscribeToGame() {
 function startGamePolling() {
 
   stopGamePolling();
+
 
   gamePollTimer =
     setInterval(
@@ -868,9 +1229,12 @@ function stopGamePolling() {
 
   if (gamePollTimer) {
 
-    clearInterval(gamePollTimer);
+    clearInterval(
+      gamePollTimer
+    );
 
-    gamePollTimer = null;
+    gamePollTimer =
+      null;
 
   }
 
@@ -879,9 +1243,15 @@ function stopGamePolling() {
 
 async function checkGameStatus() {
 
-  if (!currentGame) {
+  if (
+    !currentGame ||
+    redirecting
+  ) {
+
     return;
+
   }
+
 
   try {
 
@@ -892,14 +1262,29 @@ async function checkGameStatus() {
       await supabaseClient
         .from("games")
         .select("*")
-        .eq("id", currentGame.id)
+        .eq(
+          "id",
+          currentGame.id
+        )
         .maybeSingle();
 
-    if (error || !data) {
+
+    if (
+      error ||
+      !data
+    ) {
+
       return;
+
     }
 
-    currentGame = data;
+
+    currentGame =
+      data;
+
+
+    updateConfigInfo();
+
 
     if (
       currentGame.status ===
@@ -931,19 +1316,23 @@ async function restoreSessionFromUrl() {
       window.location.search
     );
 
+
   const gameId =
     params.get("game");
 
   const playerId =
     params.get("player");
 
+
   if (!gameId) {
     return false;
   }
 
+
   setStatus(
     "🔄 Récupération de la partie..."
   );
+
 
   try {
 
@@ -954,21 +1343,30 @@ async function restoreSessionFromUrl() {
       await supabaseClient
         .from("games")
         .select("*")
-        .eq("id", gameId)
+        .eq(
+          "id",
+          gameId
+        )
         .maybeSingle();
+
 
     if (gameError) {
       throw gameError;
     }
 
+
     if (!game) {
+
       throw new Error(
         "Partie introuvable."
       );
+
     }
+
 
     let finalPlayerId =
       playerId;
+
 
     if (!finalPlayerId) {
 
@@ -977,12 +1375,14 @@ async function restoreSessionFromUrl() {
           "undercover_session"
         );
 
+
       if (saved) {
 
         try {
 
           const session =
             JSON.parse(saved);
+
 
           if (
             session.gameId ===
@@ -1000,6 +1400,7 @@ async function restoreSessionFromUrl() {
 
     }
 
+
     if (!finalPlayerId) {
 
       setStatus(
@@ -1011,6 +1412,7 @@ async function restoreSessionFromUrl() {
 
     }
 
+
     const {
       data: player,
       error: playerError
@@ -1018,13 +1420,21 @@ async function restoreSessionFromUrl() {
       await supabaseClient
         .from("players")
         .select("*")
-        .eq("id", finalPlayerId)
-        .eq("game_id", gameId)
+        .eq(
+          "id",
+          finalPlayerId
+        )
+        .eq(
+          "game_id",
+          gameId
+        )
         .maybeSingle();
+
 
     if (playerError) {
       throw playerError;
     }
+
 
     if (!player) {
 
@@ -1034,10 +1444,16 @@ async function restoreSessionFromUrl() {
 
     }
 
-    currentGame = game;
-    currentPlayer = player;
+
+    currentGame =
+      game;
+
+    currentPlayer =
+      player;
+
 
     saveSession();
+
 
     if (
       currentGame.status ===
@@ -1050,9 +1466,11 @@ async function restoreSessionFromUrl() {
 
     }
 
+
     showLobby();
 
     return true;
+
 
   } catch (error) {
 
@@ -1061,11 +1479,13 @@ async function restoreSessionFromUrl() {
       error
     );
 
+
     setStatus(
       "❌ Impossible de récupérer la partie : " +
       error.message,
       "error"
     );
+
 
     return false;
 
@@ -1078,37 +1498,44 @@ async function leaveGame() {
 
   stopGamePolling();
 
+
+  if (realtimeChannel) {
+
+    await supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
+
+    realtimeChannel =
+      null;
+
+  }
+
+
+  if (playersChannel) {
+
+    await supabaseClient
+      .removeChannel(
+        playersChannel
+      );
+
+    playersChannel =
+      null;
+
+  }
+
+
   try {
-
-    if (realtimeChannel) {
-
-      await supabaseClient
-        .removeChannel(
-          realtimeChannel
-        );
-
-      realtimeChannel = null;
-
-    }
 
     if (currentPlayer) {
 
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("players")
-          .delete()
-          .eq("id", currentPlayer.id);
-
-      if (error) {
-
-        console.error(
-          "Erreur suppression joueur :",
-          error
+      await supabaseClient
+        .from("players")
+        .delete()
+        .eq(
+          "id",
+          currentPlayer.id
         );
-
-      }
 
     }
 
@@ -1118,16 +1545,37 @@ async function leaveGame() {
 
   }
 
+
   clearSession();
 
-  currentGame = null;
-  currentPlayer = null;
 
-  lobbyElement.classList.add("hidden");
-  homeElement.classList.remove("hidden");
+  currentGame =
+    null;
 
-  configButton.classList.add("hidden");
-  startButton.classList.add("hidden");
+  currentPlayer =
+    null;
+
+  redirecting =
+    false;
+
+
+  lobbyElement
+    .classList
+    .add("hidden");
+
+  homeElement
+    .classList
+    .remove("hidden");
+
+
+  configButton
+    .classList
+    .add("hidden");
+
+  startButton
+    .classList
+    .add("hidden");
+
 
   setStatus(
     "Prêt à jouer."
@@ -1170,6 +1618,7 @@ async function testSupabase() {
         .select("id")
         .limit(1);
 
+
     if (error) {
 
       setStatus(
@@ -1182,8 +1631,10 @@ async function testSupabase() {
 
     }
 
+
     const restored =
       await restoreSessionFromUrl();
+
 
     if (!restored) {
 
@@ -1198,6 +1649,7 @@ async function testSupabase() {
 
     console.error(error);
 
+
     setStatus(
       "❌ Supabase : " +
       error.message,
@@ -1207,6 +1659,34 @@ async function testSupabase() {
   }
 
 }
+
+
+window.addEventListener(
+  "beforeunload",
+  function() {
+
+    stopGamePolling();
+
+    if (realtimeChannel) {
+
+      supabaseClient
+        .removeChannel(
+          realtimeChannel
+        );
+
+    }
+
+    if (playersChannel) {
+
+      supabaseClient
+        .removeChannel(
+          playersChannel
+        );
+
+    }
+
+  }
+);
 
 
 testSupabase();
