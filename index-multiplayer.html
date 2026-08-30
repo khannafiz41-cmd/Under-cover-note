@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr"><head>  <meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<head>
-  <meta charset="UTF-8">
+«»
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Undercover Notes - Multijoueur</title>
-
-  <style>
+  <title>Undercover Notes - Multijoueur</title>  <style>
 
     * {
       box-sizing: border-box;
@@ -139,138 +132,108 @@
       text-overflow: ellipsis;
     }
 
-  </style>
-
-</head>
-
-<body>
-
-<main>
-
-  <h1>🕵️ Undercover Notes</h1>
-
-  <div id="status">
+  </style></head><body><main>  <h1>🕵️ Undercover Notes</h1>  <div id="status">
     Connexion à Supabase...
-  </div>
+  </div>  <!-- ================================================= -->  <!-- ACCUEIL -->  <!-- ================================================= -->  <section id="home"><div class="card">
 
+  <h2>🎮 Créer une partie</h2>
 
-  <!-- ================================================= -->
-  <!-- ACCUEIL -->
-  <!-- ================================================= -->
-
-  <section id="home">
-
-    <div class="card">
-
-      <h2>🎮 Créer une partie</h2>
-
-      <input
-        id="createName"
-        placeholder="Ton prénom"
-        maxlength="20"
-      >
-
-      <button id="createButton">
-        Créer une partie
-      </button>
-
-    </div>
-
-
-    <div class="card">
-
-      <h2>👥 Rejoindre une partie</h2>
-
-      <input
-        id="joinCode"
-        placeholder="Code de la partie"
-        maxlength="6"
-      >
-
-      <input
-        id="joinName"
-        placeholder="Ton prénom"
-        maxlength="20"
-      >
-
-      <button id="joinButton">
-        Rejoindre
-      </button>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================================================= -->
-  <!-- LOBBY -->
-  <!-- ================================================= -->
-
-  <section
-    id="lobby"
-    class="hidden"
+  <input
+    id="createName"
+    placeholder="Ton prénom"
+    maxlength="20"
   >
 
-    <div class="card">
+  <button id="createButton">
+    Créer une partie
+  </button>
 
-      <h2>🎮 Partie</h2>
-
-      <div
-        id="gameCode"
-        class="game-code"
-      >
-        ----
-      </div>
-
-      <p style="text-align:center;">
-        Envoie ce code à tes amis.
-      </p>
-
-    </div>
+</div>
 
 
-    <div class="card">
+<div class="card">
 
-      <h2>👥 Joueurs</h2>
+  <h2>👥 Rejoindre une partie</h2>
 
-      <div id="playerList">
-        Aucun joueur.
-      </div>
+  <input
+    id="joinCode"
+    placeholder="Code de la partie"
+    maxlength="6"
+  >
 
-    </div>
+  <input
+    id="joinName"
+    placeholder="Ton prénom"
+    maxlength="20"
+  >
+
+  <button id="joinButton">
+    Rejoindre
+  </button>
+
+</div>
+
+  </section>  <!-- ================================================= -->  <!-- LOBBY -->  <!-- ================================================= -->  <section
+    id="lobby"
+    class="hidden"
+  ><div class="card">
+
+  <h2>🎮 Partie</h2>
+
+  <div
+    id="gameCode"
+    class="game-code"
+  >
+    ----
+  </div>
+
+  <p style="text-align:center;">
+    Envoie ce code à tes amis.
+  </p>
+
+</div>
 
 
-    <button
-      id="configButton"
-      class="hidden"
-    >
-      ⚙️ Configurer la partie
-    </button>
+<div class="card">
+
+  <h2>👥 Joueurs</h2>
+
+  <div id="playerList">
+    Aucun joueur.
+  </div>
+
+</div>
 
 
-    <button
-      id="startButton"
-      class="hidden green"
-    >
-      🎮 Lancer la partie
-    </button>
+<button
+  id="configButton"
+  class="hidden"
+>
+  ⚙️ Configurer la partie
+</button>
 
 
-    <button
-      id="leaveButton"
-      class="secondary"
-    >
-      ← Quitter le lobby
-    </button>
-
-  </section>
-
-</main>
+<button
+  id="startButton"
+  class="hidden green"
+>
+  🎮 Lancer la partie
+</button>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<button
+  id="leaveButton"
+  class="secondary"
+>
+  ← Quitter le lobby
+</button>
 
-<script>
+  </section></main><!-- ================================================= --><!-- SUPABASE --><!-- ================================================= --><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+
+
+/* ==================================================
+   SUPABASE
+================================================== */
 
 const SUPABASE_URL =
   "https://sarszeuyxrozsljhgyos.supabase.co";
@@ -285,6 +248,10 @@ const supabaseClient =
   );
 
 
+/* ==================================================
+   VARIABLES
+================================================== */
+
 let currentGame = null;
 let currentPlayer = null;
 
@@ -293,6 +260,10 @@ let realtimePlayersChannel = null;
 
 let gamePollTimer = null;
 
+
+/* ==================================================
+   ÉLÉMENTS
+================================================== */
 
 const statusElement =
   document.getElementById("status");
@@ -318,18 +289,29 @@ const startButton =
 const leaveButton =
   document.getElementById("leaveButton");
 
+const createButton =
+  document.getElementById("createButton");
+
+const joinButton =
+  document.getElementById("joinButton");
+
+
+/* ==================================================
+   STATUS
+================================================== */
 
 function setStatus(message, type = "") {
 
   statusElement.textContent = message;
+
   statusElement.className = type;
 
 }
 
 
-/* =========================================================
+/* ==================================================
    CODE DE PARTIE
-========================================================= */
+================================================== */
 
 function generateGameCode() {
 
@@ -355,9 +337,9 @@ function generateGameCode() {
 }
 
 
-/* =========================================================
+/* ==================================================
    SESSION
-========================================================= */
+================================================== */
 
 function saveSession() {
 
@@ -385,9 +367,15 @@ function clearSession() {
 }
 
 
-/* =========================================================
-   CRÉER
-========================================================= */
+/* ==================================================
+   CRÉER UNE PARTIE
+================================================== */
+
+createButton.addEventListener(
+  "click",
+  createGame
+);
+
 
 async function createGame() {
 
@@ -396,6 +384,7 @@ async function createGame() {
       .getElementById("createName")
       .value
       .trim();
+
 
   if (!name) {
 
@@ -408,9 +397,17 @@ async function createGame() {
 
   }
 
+
+  createButton.disabled = true;
+
+  createButton.textContent =
+    "Création...";
+
+
   setStatus(
     "Création de la partie..."
   );
+
 
   try {
 
@@ -425,13 +422,21 @@ async function createGame() {
       await supabaseClient
         .from("games")
         .insert({
+
           code: code,
+
           max_players: 10,
+
           player_count: 3,
+
           undercover_count: 1,
+
           topic: null,
+
           difficulty: "easy",
+
           status: "waiting"
+
         })
         .select()
         .single();
@@ -449,10 +454,23 @@ async function createGame() {
       await supabaseClient
         .from("players")
         .insert({
+
           game_id: game.id,
+
           name: name,
+
           is_host: true,
-          connected: true
+
+          connected: true,
+
+          alive: true,
+
+          eliminated: false,
+
+          revealed: false,
+
+          vote_for: null
+
         })
         .select()
         .single();
@@ -464,15 +482,19 @@ async function createGame() {
 
 
     currentGame = game;
+
     currentPlayer = player;
+
 
     saveSession();
 
     showLobby();
 
+
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Erreur : " +
@@ -482,12 +504,24 @@ async function createGame() {
 
   }
 
+
+  createButton.disabled = false;
+
+  createButton.textContent =
+    "Créer une partie";
+
 }
 
 
-/* =========================================================
-   REJOINDRE
-========================================================= */
+/* ==================================================
+   REJOINDRE UNE PARTIE
+================================================== */
+
+joinButton.addEventListener(
+  "click",
+  joinGame
+);
+
 
 async function joinGame() {
 
@@ -497,6 +531,7 @@ async function joinGame() {
       .value
       .trim()
       .toUpperCase();
+
 
   const name =
     document
@@ -517,6 +552,12 @@ async function joinGame() {
   }
 
 
+  joinButton.disabled = true;
+
+  joinButton.textContent =
+    "Recherche...";
+
+
   setStatus(
     "Recherche de la partie..."
   );
@@ -531,7 +572,10 @@ async function joinGame() {
       await supabaseClient
         .from("games")
         .select("*")
-        .eq("code", code)
+        .eq(
+          "code",
+          code
+        )
         .maybeSingle();
 
 
@@ -588,10 +632,13 @@ async function joinGame() {
     }
 
 
-    if (
-      count >=
-      (game.player_count || game.max_players || 10)
-    ) {
+    const maxPlayers =
+      game.player_count ||
+      game.max_players ||
+      10;
+
+
+    if (count >= maxPlayers) {
 
       setStatus(
         "❌ La partie est complète.",
@@ -610,10 +657,23 @@ async function joinGame() {
       await supabaseClient
         .from("players")
         .insert({
+
           game_id: game.id,
+
           name: name,
+
           is_host: false,
-          connected: true
+
+          connected: true,
+
+          alive: true,
+
+          eliminated: false,
+
+          revealed: false,
+
+          vote_for: null
+
         })
         .select()
         .single();
@@ -625,15 +685,19 @@ async function joinGame() {
 
 
     currentGame = game;
+
     currentPlayer = player;
+
 
     saveSession();
 
     showLobby();
 
+
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Erreur : " +
@@ -643,16 +707,23 @@ async function joinGame() {
 
   }
 
+
+  joinButton.disabled = false;
+
+  joinButton.textContent =
+    "Rejoindre";
+
 }
 
 
-/* =========================================================
-   AFFICHER LOBBY
-========================================================= */
+/* ==================================================
+   AFFICHER LE LOBBY
+================================================== */
 
 function showLobby() {
 
   homeElement.classList.add("hidden");
+
   lobbyElement.classList.remove("hidden");
 
 
@@ -665,13 +736,23 @@ function showLobby() {
     currentPlayer.is_host
   ) {
 
-    configButton.classList.remove("hidden");
-    startButton.classList.remove("hidden");
+    configButton.classList.remove(
+      "hidden"
+    );
+
+    startButton.classList.remove(
+      "hidden"
+    );
 
   } else {
 
-    configButton.classList.add("hidden");
-    startButton.classList.add("hidden");
+    configButton.classList.add(
+      "hidden"
+    );
+
+    startButton.classList.add(
+      "hidden"
+    );
 
   }
 
@@ -691,9 +772,9 @@ function showLobby() {
 }
 
 
-/* =========================================================
-   JOUEURS
-========================================================= */
+/* ==================================================
+   CHARGER LES JOUEURS
+================================================== */
 
 async function loadPlayers() {
 
@@ -733,10 +814,16 @@ async function loadPlayers() {
   }
 
 
-  renderPlayers(data || []);
+  renderPlayers(
+    data || []
+  );
 
 }
 
+
+/* ==================================================
+   AFFICHER LES JOUEURS
+================================================== */
 
 function renderPlayers(players) {
 
@@ -780,10 +867,22 @@ function renderPlayers(players) {
           <div class="player">
 
             <span class="player-name">
+
               🟢
               ${escapeHTML(player.name)}
-              ${player.is_host ? " 👑" : ""}
-              ${isMe ? " (toi)" : ""}
+
+              ${
+                player.is_host
+                  ? " 👑"
+                  : ""
+              }
+
+              ${
+                isMe
+                  ? " (toi)"
+                  : ""
+              }
+
             </span>
 
             ${kickButton}
@@ -797,6 +896,10 @@ function renderPlayers(players) {
 }
 
 
+/* ==================================================
+   PROTECTION HTML
+================================================== */
+
 function escapeHTML(value) {
 
   return String(value)
@@ -805,11 +908,13 @@ function escapeHTML(value) {
       function(char) {
 
         return {
+
           "&": "&amp;",
           "<": "&lt;",
           ">": "&gt;",
           '"': "&quot;",
           "'": "&#039;"
+
         }[char];
 
       }
@@ -818,9 +923,9 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================================
-   EXCLURE
-========================================================= */
+/* ==================================================
+   EXCLURE UN JOUEUR
+================================================== */
 
 async function kickPlayer(playerId) {
 
@@ -850,7 +955,10 @@ async function kickPlayer(playerId) {
       await supabaseClient
         .from("players")
         .delete()
-        .eq("id", playerId)
+        .eq(
+          "id",
+          playerId
+        )
         .eq(
           "game_id",
           currentGame.id
@@ -870,12 +978,14 @@ async function kickPlayer(playerId) {
 
     await loadPlayers();
 
+
   } catch (error) {
 
     console.error(error);
 
+
     setStatus(
-      "❌ Impossible d'exclure le joueur : " +
+      "❌ Impossible d'exclure : " +
       error.message,
       "error"
     );
@@ -885,9 +995,9 @@ async function kickPlayer(playerId) {
 }
 
 
-/* =========================================================
+/* ==================================================
    CONFIGURATION
-========================================================= */
+================================================== */
 
 configButton.addEventListener(
   "click",
@@ -916,9 +1026,9 @@ configButton.addEventListener(
 );
 
 
-/* =========================================================
-   LANCEMENT
-========================================================= */
+/* ==================================================
+   LANCER LA PARTIE
+================================================== */
 
 startButton.addEventListener(
   "click",
@@ -945,7 +1055,6 @@ async function startGame() {
 
   try {
 
-    /* On recharge seulement la partie. */
     const {
       data: game,
       error: gameError
@@ -998,11 +1107,82 @@ async function startGame() {
     }
 
 
+    const {
+      data: players,
+      error: playersError
+    } =
+      await supabaseClient
+        .from("players")
+        .select("id")
+        .eq(
+          "game_id",
+          currentGame.id
+        );
+
+
+    if (playersError) {
+      throw playersError;
+    }
+
+
+    if (
+      !players ||
+      players.length <
+      game.player_count
+    ) {
+
+      throw new Error(
+        "Il faut " +
+        game.player_count +
+        " joueurs pour commencer."
+      );
+
+    }
+
+
     /*
-      IMPORTANT :
-      On ne vérifie plus le joueur dans une
-      requête supplémentaire qui pouvait être
-      bloquée par une policy RLS.
+      On remet les joueurs
+      dans leur état de départ.
+    */
+
+    const {
+      error: resetError
+    } =
+      await supabaseClient
+        .from("players")
+        .update({
+
+          role: null,
+
+          note: null,
+
+          alive: true,
+
+          eliminated: false,
+
+          revealed: false,
+
+          vote_for: null,
+
+          secret_note: null,
+
+          secret_word: null
+
+        })
+        .eq(
+          "game_id",
+          currentGame.id
+        );
+
+
+    if (resetError) {
+      throw resetError;
+    }
+
+
+    /*
+      Le serveur/jeu attribuera
+      ensuite les rôles et les notes.
     */
 
     const {
@@ -1011,9 +1191,18 @@ async function startGame() {
       await supabaseClient
         .from("games")
         .update({
+
           status: "playing",
+
+          phase: "notes",
+
+          current_round: 1,
+
+          winner: null,
+
           updated_at:
             new Date().toISOString()
+
         })
         .eq(
           "id",
@@ -1027,15 +1216,23 @@ async function startGame() {
 
 
     currentGame = {
-      ...currentGame,
       ...game,
-      status: "playing"
+
+      status: "playing",
+
+      phase: "notes",
+
+      current_round: 1,
+
+      winner: null
+
     };
 
 
     saveSession();
 
     goToGame();
+
 
   } catch (error) {
 
@@ -1046,7 +1243,7 @@ async function startGame() {
 
 
     setStatus(
-      "❌ Impossible de lancer la partie : " +
+      "❌ Impossible de lancer : " +
       error.message,
       "error"
     );
@@ -1062,9 +1259,9 @@ async function startGame() {
 }
 
 
-/* =========================================================
+/* ==================================================
    ALLER AU JEU
-========================================================= */
+================================================== */
 
 function goToGame() {
 
@@ -1074,6 +1271,9 @@ function goToGame() {
   ) {
     return;
   }
+
+
+  stopGamePolling();
 
 
   window.location.href =
@@ -1089,9 +1289,9 @@ function goToGame() {
 }
 
 
-/* =========================================================
+/* ==================================================
    REALTIME
-========================================================= */
+================================================== */
 
 function subscribeToRealtime() {
 
@@ -1183,13 +1383,14 @@ function subscribeToRealtime() {
 }
 
 
-/* =========================================================
-   POLLING DE SÉCURITÉ
-========================================================= */
+/* ==================================================
+   POLLING
+================================================== */
 
 function startGamePolling() {
 
   stopGamePolling();
+
 
   gamePollTimer =
     setInterval(
@@ -1270,9 +1471,9 @@ async function checkGameStatus() {
 }
 
 
-/* =========================================================
+/* ==================================================
    RESTAURATION DE SESSION
-========================================================= */
+================================================== */
 
 async function restoreSessionFromUrl() {
 
@@ -1408,6 +1609,7 @@ async function restoreSessionFromUrl() {
 
 
     currentGame = game;
+
     currentPlayer = player;
 
 
@@ -1453,9 +1655,15 @@ async function restoreSessionFromUrl() {
 }
 
 
-/* =========================================================
+/* ==================================================
    QUITTER
-========================================================= */
+================================================== */
+
+leaveButton.addEventListener(
+  "click",
+  leaveGame
+);
+
 
 async function leaveGame() {
 
@@ -1488,7 +1696,7 @@ async function leaveGame() {
     }
 
 
-    if (currentPlayer) {
+    if (currentPlayer && currentGame) {
 
       const {
         error
@@ -1534,16 +1742,27 @@ async function leaveGame() {
 
   clearSession();
 
+
   currentGame = null;
   currentPlayer = null;
 
 
-  lobbyElement.classList.add("hidden");
-  homeElement.classList.remove("hidden");
+  lobbyElement.classList.add(
+    "hidden"
+  );
+
+  homeElement.classList.remove(
+    "hidden"
+  );
 
 
-  configButton.classList.add("hidden");
-  startButton.classList.add("hidden");
+  configButton.classList.add(
+    "hidden"
+  );
+
+  startButton.classList.add(
+    "hidden"
+  );
 
 
   setStatus(
@@ -1553,35 +1772,9 @@ async function leaveGame() {
 }
 
 
-leaveButton.addEventListener(
-  "click",
-  leaveGame
-);
-
-
-/* =========================================================
-   BOUTONS
-========================================================= */
-
-document
-  .getElementById("createButton")
-  .addEventListener(
-    "click",
-    createGame
-  );
-
-
-document
-  .getElementById("joinButton")
-  .addEventListener(
-    "click",
-    joinGame
-  );
-
-
-/* =========================================================
-   SUPABASE + RESTAURATION
-========================================================= */
+/* ==================================================
+   DÉMARRAGE
+================================================== */
 
 async function start() {
 
@@ -1614,6 +1807,7 @@ async function start() {
 
     }
 
+
   } catch (error) {
 
     console.error(error);
@@ -1633,15 +1827,16 @@ async function start() {
 start();
 
 
-/* =========================================================
+/* ==================================================
    NETTOYAGE
-========================================================= */
+================================================== */
 
 window.addEventListener(
   "beforeunload",
   function() {
 
     stopGamePolling();
+
 
     if (realtimeGameChannel) {
 
@@ -1650,6 +1845,7 @@ window.addEventListener(
       );
 
     }
+
 
     if (realtimePlayersChannel) {
 
@@ -1662,7 +1858,4 @@ window.addEventListener(
   }
 );
 
-</script>
-
-</body>
-  </html>
+</script></body></html>
