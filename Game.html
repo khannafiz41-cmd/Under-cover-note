@@ -30,11 +30,16 @@
       width: 100%;
       max-width: 600px;
       margin: auto;
-      padding: 25px 18px 50px;
+      padding: 25px 18px 60px;
     }
 
     h1 {
       text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
     }
 
     .card {
@@ -46,11 +51,12 @@
     }
 
     #status {
-      padding: 12px;
+      padding: 13px;
       border-radius: 12px;
       background: #18233a;
       text-align: center;
       line-height: 1.5;
+      margin-bottom: 15px;
     }
 
     .success {
@@ -63,66 +69,6 @@
 
     .hidden {
       display: none !important;
-    }
-
-    .code {
-      font-size: 32px;
-      font-weight: bold;
-      text-align: center;
-      letter-spacing: 7px;
-      margin: 15px 0;
-    }
-
-    .player-name {
-      text-align: center;
-      color: #cbd5e1;
-      font-size: 18px;
-    }
-
-    .role-card {
-      text-align: center;
-      padding: 30px 20px;
-      border-radius: 18px;
-      background: #18233a;
-      margin-top: 20px;
-    }
-
-    .role {
-      font-size: 32px;
-      font-weight: bold;
-      margin: 15px 0;
-    }
-
-    .word {
-      font-size: 38px;
-      font-weight: bold;
-      margin: 20px 0;
-      letter-spacing: 1px;
-    }
-
-    .word-hidden {
-      filter: blur(12px);
-      user-select: none;
-    }
-
-    .hint {
-      color: #cbd5e1;
-      line-height: 1.6;
-    }
-
-    .difficulty {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 9px 14px;
-      border-radius: 10px;
-      background: #18233a;
-      font-weight: bold;
-    }
-
-    .phase-title {
-      text-align: center;
-      font-size: 26px;
-      margin-bottom: 10px;
     }
 
     button {
@@ -138,17 +84,17 @@
       cursor: pointer;
     }
 
-    button.secondary {
-      background: #18233a;
-      border: 1px solid #293653;
+    button.green {
+      background: #16a34a;
     }
 
-    button.danger {
+    button.red {
       background: #dc2626;
     }
 
-    button.green {
-      background: #16a34a;
+    button.secondary {
+      background: #18233a;
+      border: 1px solid #293653;
     }
 
     button:disabled {
@@ -156,45 +102,133 @@
       cursor: not-allowed;
     }
 
-    .player-vote {
-      padding: 15px;
+    .code {
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      letter-spacing: 7px;
+      margin: 10px 0;
+    }
+
+    .player-name {
+      text-align: center;
+      color: #cbd5e1;
+      font-size: 18px;
+    }
+
+    .phase-title {
+      text-align: center;
+      font-size: 27px;
+      margin-bottom: 12px;
+    }
+
+    .hint {
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .role-card {
+      text-align: center;
       background: #18233a;
-      border-radius: 12px;
-      margin-top: 10px;
-      cursor: pointer;
+      border-radius: 18px;
+      padding: 28px 18px;
+      margin-top: 20px;
+    }
+
+    .role-icon {
+      font-size: 55px;
+    }
+
+    .role {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .note-box {
+      margin-top: 20px;
+      padding: 25px 15px;
+      border-radius: 15px;
+      background: #090f20;
+      border: 1px solid #293653;
+      text-align: center;
+    }
+
+    .note-label {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .note {
+      font-size: 46px;
+      font-weight: bold;
+    }
+
+    .note-hidden {
+      filter: blur(12px);
+      user-select: none;
+    }
+
+    .player-vote {
+      padding: 16px;
+      margin: 9px 0;
+      background: #18233a;
       border: 2px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 17px;
     }
 
     .player-vote.selected {
       border-color: #7c3aed;
+      background: #211943;
+    }
+
+    .player-vote.me {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .player-vote.eliminated {
-      opacity: 0.4;
+      opacity: 0.35;
       text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    .players-status {
+      margin-top: 15px;
+      padding: 14px;
+      background: #18233a;
+      border-radius: 12px;
+      text-align: center;
+      color: #cbd5e1;
     }
 
     .result {
       text-align: center;
-      padding: 25px 15px;
       background: #18233a;
       border-radius: 15px;
+      padding: 25px 15px;
+      line-height: 1.7;
     }
 
     .result-big {
       font-size: 40px;
       font-weight: bold;
-      margin: 15px 0;
+      margin: 12px 0;
     }
 
-    .info {
-      color: #cbd5e1;
-      line-height: 1.6;
+    .eliminated-name {
+      font-size: 25px;
+      font-weight: bold;
+      margin: 10px 0;
     }
 
   </style>
 
 </head>
+
 
 <body>
 
@@ -202,13 +236,14 @@
 
   <h1>🕵️ Undercover Notes</h1>
 
-
   <div id="status">
     Chargement de la partie...
   </div>
 
 
-  <!-- INFOS -->
+  <!-- ================================================= -->
+  <!-- INFORMATIONS -->
+  <!-- ================================================= -->
 
   <div class="card">
 
@@ -226,17 +261,12 @@
       Chargement...
     </div>
 
-    <div
-      id="difficulty"
-      class="difficulty"
-    >
-      🎯 Difficulté : ...
-    </div>
-
   </div>
 
 
+  <!-- ================================================= -->
   <!-- REVELATION -->
+  <!-- ================================================= -->
 
   <section
     id="revealSection"
@@ -248,14 +278,17 @@
     </h2>
 
     <p class="hint">
-      Regarde ton rôle et ton mot.
-      Ne montre surtout pas ton écran aux autres joueurs.
+      Regarde ton rôle et ta note.
+      Ne montre pas ton écran aux autres joueurs.
     </p>
 
 
     <div class="role-card">
 
-      <div id="roleIcon">
+      <div
+        id="roleIcon"
+        class="role-icon"
+      >
         🧑‍🌾
       </div>
 
@@ -263,36 +296,52 @@
         id="roleText"
         class="role"
       >
-        Joueur classique
+        JOUEUR CLASSIQUE
       </div>
 
 
-      <div
-        id="secretWord"
-        class="word word-hidden"
-      >
-        •••••••
+      <div class="note-box">
+
+        <div class="note-label">
+          TA NOTE
+        </div>
+
+        <div
+          id="secretNote"
+          class="note note-hidden"
+        >
+          ?
+        </div>
+
       </div>
 
 
-      <button
-        id="revealButton"
-      >
-        👁️ Révéler mon mot
+      <button id="revealButton">
+        👁️ Révéler ma note
       </button>
 
     </div>
 
 
     <p class="hint">
-      Quand tout le monde a mémorisé son mot,
-      la discussion peut commencer.
+      Quand tout le monde a regardé sa note,
+      l'hôte peut lancer la discussion.
     </p>
+
+
+    <button
+      id="discussionButton"
+      class="green hidden"
+    >
+      💬 Commencer la discussion
+    </button>
 
   </section>
 
 
+  <!-- ================================================= -->
   <!-- DISCUSSION -->
+  <!-- ================================================= -->
 
   <section
     id="discussionSection"
@@ -304,16 +353,18 @@
     </h2>
 
     <p class="hint">
-      Donnez chacun un indice sur votre mot
-      sans le dire directement.
+      Chacun donne des indices concernant sa note
+      sans révéler directement son rôle.
     </p>
 
 
-    <div
-      id="discussionInfo"
-      class="result"
-    >
-      🗣️ Discutez entre vous...
+    <div class="players-status">
+
+      Manche
+      <strong id="roundNumber">
+        1
+      </strong>
+
     </div>
 
 
@@ -327,7 +378,9 @@
   </section>
 
 
+  <!-- ================================================= -->
   <!-- VOTE -->
+  <!-- ================================================= -->
 
   <section
     id="voteSection"
@@ -339,12 +392,20 @@
     </h2>
 
     <p class="hint">
-      Sélectionne le joueur que tu penses être
+      Choisis une seule personne que tu penses être
       l'Undercover.
     </p>
 
 
     <div id="votePlayers"></div>
+
+
+    <div
+      id="voteStatus"
+      class="players-status"
+    >
+      Aucun vote enregistré.
+    </div>
 
 
     <button
@@ -358,7 +419,9 @@
   </section>
 
 
+  <!-- ================================================= -->
   <!-- RESULTAT -->
+  <!-- ================================================= -->
 
   <section
     id="resultSection"
@@ -370,16 +433,14 @@
     </h2>
 
 
-    <div
-      id="resultContent"
-      class="result"
-    >
-      Calcul du résultat...
+    <div id="resultContent" class="result">
+      Résultat...
     </div>
 
 
     <button
       id="newRoundButton"
+      class="green"
     >
       🔄 Nouvelle manche
     </button>
@@ -399,7 +460,12 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
 
 const SUPABASE_URL =
   "https://sarszeuyxrozsljhgyos.supabase.co";
@@ -414,11 +480,14 @@ const supabaseClient =
   );
 
 
+/* =========================================================
+   PARAMETRES URL
+========================================================= */
+
 const params =
   new URLSearchParams(
     window.location.search
   );
-
 
 const gameId =
   params.get("game");
@@ -426,6 +495,10 @@ const gameId =
 const playerId =
   params.get("player");
 
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
 const statusElement =
   document.getElementById("status");
@@ -435,9 +508,6 @@ const gameCodeElement =
 
 const playerNameElement =
   document.getElementById("playerName");
-
-const difficultyElement =
-  document.getElementById("difficulty");
 
 const revealSection =
   document.getElementById("revealSection");
@@ -457,14 +527,23 @@ const roleIcon =
 const roleText =
   document.getElementById("roleText");
 
-const secretWord =
-  document.getElementById("secretWord");
+const secretNote =
+  document.getElementById("secretNote");
 
 const revealButton =
   document.getElementById("revealButton");
 
+const discussionButton =
+  document.getElementById("discussionButton");
+
+const voteButton =
+  document.getElementById("voteButton");
+
 const votePlayers =
   document.getElementById("votePlayers");
+
+const voteStatus =
+  document.getElementById("voteStatus");
 
 const confirmVoteButton =
   document.getElementById(
@@ -476,18 +555,41 @@ const resultContent =
     "resultContent"
   );
 
+const newRoundButton =
+  document.getElementById(
+    "newRoundButton"
+  );
+
+const backButton =
+  document.getElementById(
+    "backButton"
+  );
+
+const roundNumber =
+  document.getElementById(
+    "roundNumber"
+  );
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 let currentGame = null;
 let currentPlayer = null;
 let players = [];
 
-let realtimeChannel = null;
+let gameChannel = null;
 let pollTimer = null;
 
 let selectedVote = null;
-let wordVisible = false;
-let changingPhase = false;
+let noteVisible = false;
+let processingVotes = false;
 
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
 
 function setStatus(
   message,
@@ -503,9 +605,7 @@ function setStatus(
 }
 
 
-function escapeHTML(
-  value
-) {
+function escapeHTML(value) {
 
   return String(value)
     .replace(
@@ -526,33 +626,29 @@ function escapeHTML(
 }
 
 
-function getDifficultyLabel(
-  value
-) {
+function hideAllSections() {
 
-  if (value === "medium") {
-    return "🔵 Moyen";
-  }
+  revealSection.classList.add("hidden");
 
-  if (value === "hard") {
-    return "🟠 Difficile";
-  }
+  discussionSection.classList.add("hidden");
 
-  if (value === "subtle") {
-    return "🔴 Subtil";
-  }
+  voteSection.classList.add("hidden");
 
-  return "🟢 Facile";
+  resultSection.classList.add("hidden");
 
 }
 
 
+/* =========================================================
+   CHARGEMENT
+========================================================= */
+
 async function loadGame() {
 
-  if (!gameId) {
+  if (!gameId || !playerId) {
 
     setStatus(
-      "❌ Aucune partie sélectionnée.",
+      "❌ Informations de partie manquantes.",
       "error"
     );
 
@@ -565,7 +661,7 @@ async function loadGame() {
 
     const {
       data: game,
-      error
+      error: gameError
     } =
       await supabaseClient
         .from("games")
@@ -577,19 +673,16 @@ async function loadGame() {
         .maybeSingle();
 
 
-    if (error) {
-      throw error;
+    if (gameError) {
+      throw gameError;
     }
 
 
     if (!game) {
 
-      setStatus(
-        "❌ Partie introuvable.",
-        "error"
+      throw new Error(
+        "Partie introuvable."
       );
-
-      return;
 
     }
 
@@ -623,12 +716,9 @@ async function loadGame() {
 
     if (!player) {
 
-      setStatus(
-        "❌ Joueur introuvable.",
-        "error"
+      throw new Error(
+        "Joueur introuvable."
       );
-
-      return;
 
     }
 
@@ -646,22 +736,13 @@ async function loadGame() {
       player.name;
 
 
-    difficultyElement.textContent =
-      "🎯 Difficulté : " +
-      getDifficultyLabel(
-        game.difficulty
-      );
-
-
     await loadPlayers();
 
 
-    renderPhase();
+    renderGame();
 
 
     subscribeToGame();
-
-    subscribeToPlayers();
 
     startPolling();
 
@@ -670,9 +751,8 @@ async function loadGame() {
 
     console.error(error);
 
-
     setStatus(
-      "❌ Erreur : " +
+      "❌ " +
       error.message,
       "error"
     );
@@ -681,6 +761,10 @@ async function loadGame() {
 
 }
 
+
+/* =========================================================
+   CHARGER JOUEURS
+========================================================= */
 
 async function loadPlayers() {
 
@@ -691,7 +775,7 @@ async function loadPlayers() {
     await supabaseClient
       .from("players")
       .select(
-        "id, name, role, secret_word, eliminated, vote_for"
+        "id, name, role, note, secret_note, alive, eliminated, vote_for, is_host"
       )
       .eq(
         "game_id",
@@ -707,7 +791,10 @@ async function loadPlayers() {
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      "Erreur joueurs :",
+      error
+    );
 
     return;
 
@@ -717,12 +804,34 @@ async function loadPlayers() {
   players =
     data || [];
 
+
+  const me =
+    players.find(
+      function(player) {
+
+        return player.id === playerId;
+
+      }
+    );
+
+
+  if (me) {
+
+    currentPlayer =
+      me;
+
+  }
+
 }
 
 
-function renderPhase() {
+/* =========================================================
+   AFFICHAGE GENERAL
+========================================================= */
 
-  if (!currentGame) {
+function renderGame() {
+
+  if (!currentGame || !currentPlayer) {
     return;
   }
 
@@ -736,7 +845,18 @@ function renderPhase() {
   ) {
 
     setStatus(
-      "⏳ En attente du lancement..."
+      "⏳ La partie n'est pas encore lancée."
+    );
+
+    return;
+
+  }
+
+
+  if (!currentGame.phase) {
+
+    setStatus(
+      "🎮 Préparation de la partie..."
     );
 
     return;
@@ -780,48 +900,28 @@ function renderPhase() {
 
   }
 
-  else {
-
-    renderReveal();
-
-  }
-
 }
 
 
-function hideAllSections() {
-
-  revealSection
-    .classList
-    .add("hidden");
-
-  discussionSection
-    .classList
-    .add("hidden");
-
-  voteSection
-    .classList
-    .add("hidden");
-
-  resultSection
-    .classList
-    .add("hidden");
-
-}
-
+/* =========================================================
+   REVELATION
+========================================================= */
 
 function renderReveal() {
 
-  revealSection
-    .classList
-    .remove("hidden");
+  revealSection.classList.remove(
+    "hidden"
+  );
 
 
   const role =
     currentPlayer.role;
 
 
-  if (role === "undercover") {
+  if (
+    role ===
+    "undercover"
+  ) {
 
     roleIcon.textContent =
       "🕵️";
@@ -829,7 +929,9 @@ function renderReveal() {
     roleText.textContent =
       "UNDERCOVER";
 
-  } else {
+  }
+
+  else {
 
     roleIcon.textContent =
       "🧑‍🌾";
@@ -840,37 +942,364 @@ function renderReveal() {
   }
 
 
-  secretWord.textContent =
-    currentPlayer.secret_word ||
-    "Mot indisponible";
+  const note =
+    currentPlayer.secret_note ??
+    currentPlayer.note;
 
 
-  wordVisible =
-    false;
+  secretNote.textContent =
+    note !== null &&
+    note !== undefined
+      ? note
+      : "?";
 
 
-  secretWord
-    .classList
-    .add("word-hidden");
+  if (!noteVisible) {
+
+    secretNote.classList.add(
+      "note-hidden"
+    );
+
+    revealButton.textContent =
+      "👁️ Révéler ma note";
+
+  }
 
 
-  revealButton.textContent =
-    "👁️ Révéler mon mot";
+  roundNumber.textContent =
+    currentGame.current_round ||
+    currentGame.round ||
+    1;
 
 
   setStatus(
-    "🔐 Regarde ton rôle et ton mot.",
+    "🔐 Regarde ta note sans la montrer.",
+    "success"
+  );
+
+
+  if (
+    currentPlayer.is_host
+  ) {
+
+    discussionButton.classList.remove(
+      "hidden"
+    );
+
+  }
+
+  else {
+
+    discussionButton.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   AFFICHER / CACHER NOTE
+========================================================= */
+
+revealButton.addEventListener(
+  "click",
+  function() {
+
+    noteVisible =
+      !noteVisible;
+
+
+    if (noteVisible) {
+
+      secretNote.classList.remove(
+        "note-hidden"
+      );
+
+      revealButton.textContent =
+        "🙈 Cacher ma note";
+
+    }
+
+    else {
+
+      secretNote.classList.add(
+        "note-hidden"
+      );
+
+      revealButton.textContent =
+        "👁️ Révéler ma note";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   DISTRIBUTION DES ROLES + NOTES
+========================================================= */
+
+async function distributeRolesAndNotes() {
+
+  if (
+    !currentPlayer ||
+    !currentPlayer.is_host
+  ) {
+
+    return;
+
+  }
+
+
+  setStatus(
+    "🎲 Distribution des rôles et des notes..."
+  );
+
+
+  const {
+    data: freshPlayers,
+    error: playersError
+  } =
+    await supabaseClient
+      .from("players")
+      .select(
+        "id, name, is_host, eliminated, alive"
+      )
+      .eq(
+        "game_id",
+        gameId
+      );
+
+
+  if (playersError) {
+    throw playersError;
+  }
+
+
+  if (
+    !freshPlayers ||
+    freshPlayers.length < 2
+  ) {
+
+    throw new Error(
+      "Il faut au moins 2 joueurs."
+    );
+
+  }
+
+
+  const undercoverCount =
+    Math.max(
+      1,
+      Math.min(
+        Number(
+          currentGame.undercover_count ||
+          1
+        ),
+        freshPlayers.length - 1
+      )
+    );
+
+
+  const shuffled =
+    [...freshPlayers]
+      .sort(
+        function() {
+          return Math.random() - 0.5;
+        }
+      );
+
+
+  const undercoverIds =
+    shuffled
+      .slice(
+        0,
+        undercoverCount
+      )
+      .map(
+        function(player) {
+          return player.id;
+        }
+      );
+
+
+  const normalNote =
+    currentGame.normal_note ??
+    currentGame.village_note ??
+    1;
+
+
+  const undercoverNote =
+    currentGame.undercover_note ??
+    currentGame.village_note ??
+    0;
+
+
+  for (
+    const player of freshPlayers
+  ) {
+
+    const isUndercover =
+      undercoverIds.includes(
+        player.id
+      );
+
+
+    const assignedRole =
+      isUndercover
+        ? "undercover"
+        : "civil";
+
+
+    const assignedNote =
+      isUndercover
+        ? undercoverNote
+        : normalNote;
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("players")
+        .update({
+
+          role:
+            assignedRole,
+
+          note:
+            assignedNote,
+
+          secret_note:
+            assignedNote,
+
+          alive:
+            true,
+
+          eliminated:
+            false,
+
+          vote_for:
+            null,
+
+          revealed:
+            false
+
+        })
+        .eq(
+          "id",
+          player.id
+        )
+        .eq(
+          "game_id",
+          gameId
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+  }
+
+
+  const {
+    error: gameError
+  } =
+    await supabaseClient
+      .from("games")
+      .update({
+
+        status:
+          "playing",
+
+        phase:
+          "reveal",
+
+        winner:
+          null,
+
+        current_round:
+          currentGame.current_round ||
+          1,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        gameId
+      );
+
+
+  if (gameError) {
+    throw gameError;
+  }
+
+
+  setStatus(
+    "🎲 Rôles distribués !",
     "success"
   );
 
 }
 
 
+/* =========================================================
+   LANCER DISCUSSION
+========================================================= */
+
+discussionButton.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !currentPlayer ||
+      !currentPlayer.is_host
+    ) {
+
+      return;
+
+    }
+
+
+    try {
+
+      await distributeRolesAndNotes();
+
+    } catch (error) {
+
+      console.error(error);
+
+      setStatus(
+        "❌ Distribution impossible : " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   DISCUSSION
+========================================================= */
+
 function renderDiscussion() {
 
-  discussionSection
-    .classList
-    .remove("hidden");
+  discussionSection.classList.remove(
+    "hidden"
+  );
+
+
+  roundNumber.textContent =
+    currentGame.current_round ||
+    1;
 
 
   setStatus(
@@ -879,48 +1308,112 @@ function renderDiscussion() {
   );
 
 
-  const round =
-    currentGame.current_round ||
-    1;
+  if (
+    currentPlayer &&
+    currentPlayer.is_host
+  ) {
 
+    voteButton.disabled =
+      false;
 
-  document.getElementById(
-    "discussionInfo"
-  ).innerHTML =
+  }
 
-    "🗣️ Manche " +
-    round +
-    "<br><br>" +
+  else {
 
-    "Chaque joueur donne un indice.<br>" +
+    voteButton.disabled =
+      true;
 
-    "Ne prononcez pas votre mot directement.";
+  }
 
 }
 
 
+/* =========================================================
+   PASSER AU VOTE
+========================================================= */
+
+voteButton.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !currentPlayer ||
+      !currentPlayer.is_host
+    ) {
+
+      setStatus(
+        "Seul l'hôte peut passer au vote.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .update({
+
+          phase:
+            "vote",
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          gameId
+        );
+
+
+    if (error) {
+
+      setStatus(
+        "❌ Impossible de passer au vote : " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   VOTE
+========================================================= */
+
 function renderVote() {
 
-  voteSection
-    .classList
-    .remove("hidden");
+  voteSection.classList.remove(
+    "hidden"
+  );
 
 
   setStatus(
-    "🗳️ Choisis l'Undercover.",
+    "🗳️ Choisis une personne.",
     "success"
   );
 
 
   selectedVote =
+    currentPlayer.vote_for ||
     null;
 
 
   confirmVoteButton.disabled =
-    true;
+    !selectedVote;
 
 
   renderVotePlayers();
+
+  updateVoteStatus();
 
 }
 
@@ -935,8 +1428,8 @@ function renderVotePlayers() {
     function(player) {
 
       if (
-        player.id ===
-        currentPlayer.id
+        player.eliminated ||
+        player.alive === false
       ) {
 
         return;
@@ -955,12 +1448,24 @@ function renderVotePlayers() {
 
 
       if (
-        player.eliminated
+        player.id ===
+        currentPlayer.id
       ) {
 
         div.classList.add(
-          "eliminated"
+          "me"
         );
+
+        div.textContent =
+          "👤 " +
+          player.name +
+          " (toi)";
+
+        votePlayers.appendChild(
+          div
+        );
+
+        return;
 
       }
 
@@ -971,20 +1476,13 @@ function renderVotePlayers() {
 
 
       if (
-        player.eliminated
+        selectedVote ===
+        player.id
       ) {
 
-        div.textContent +=
-          " — éliminé";
-
-      }
-
-
-      if (
-        player.eliminated
-      ) {
-
-        return;
+        div.classList.add(
+          "selected"
+        );
 
       }
 
@@ -1034,164 +1532,9 @@ function renderVotePlayers() {
 }
 
 
-async function renderResult() {
-
-  resultSection
-    .classList
-    .remove("hidden");
-
-
-  const undercover =
-    players.find(
-      function(player) {
-
-        return (
-          player.role ===
-          "undercover"
-        );
-
-      }
-    );
-
-
-  if (!undercover) {
-
-    resultContent.textContent =
-      "Résultat indisponible.";
-
-    return;
-
-  }
-
-
-  const eliminated =
-    players.find(
-      function(player) {
-
-        return player.eliminated;
-
-      }
-    );
-
-
-  if (
-    currentGame.winner ===
-    "civil"
-  ) {
-
-    resultContent.innerHTML =
-
-      "🎉 Les joueurs classiques gagnent !<br><br>" +
-
-      "🕵️ L'Undercover était : <strong>" +
-      escapeHTML(
-        undercover.name
-      ) +
-      "</strong><br><br>" +
-
-      "🔤 Son mot était : <strong>" +
-      escapeHTML(
-        undercover.secret_word
-      ) +
-      "</strong>";
-
-  }
-
-  else if (
-    currentGame.winner ===
-    "undercover"
-  ) {
-
-    resultContent.innerHTML =
-
-      "🕵️ L'Undercover gagne !<br><br>" +
-
-      "L'Undercover était : <strong>" +
-      escapeHTML(
-        undercover.name
-      ) +
-      "</strong><br><br>" +
-
-      "🔤 Son mot était : <strong>" +
-      escapeHTML(
-        undercover.secret_word
-      ) +
-      "</strong>";
-
-  }
-
-  else {
-
-    resultContent.innerHTML =
-
-      "🎮 Manche terminée.<br><br>" +
-
-      (
-        eliminated
-          ? "❌ Joueur éliminé : <strong>" +
-            escapeHTML(
-              eliminated.name
-            ) +
-            "</strong>"
-          : ""
-      );
-
-  }
-
-}
-
-
-revealButton.addEventListener(
-  "click",
-  function() {
-
-    wordVisible =
-      !wordVisible;
-
-
-    if (wordVisible) {
-
-      secretWord
-        .classList
-        .remove(
-          "word-hidden"
-        );
-
-      revealButton.textContent =
-        "🙈 Cacher mon mot";
-
-    } else {
-
-      secretWord
-        .classList
-        .add(
-          "word-hidden"
-        );
-
-      revealButton.textContent =
-        "👁️ Révéler mon mot";
-
-    }
-
-  }
-);
-
-
-document
-  .getElementById(
-    "voteButton"
-  )
-  .addEventListener(
-    "click",
-    async function() {
-
-      await changePhase(
-        "vote"
-      );
-
-    }
-  );
-
+/* =========================================================
+   ENREGISTRER VOTE
+========================================================= */
 
 confirmVoteButton.addEventListener(
   "click",
@@ -1201,8 +1544,13 @@ confirmVoteButton.addEventListener(
 
 async function submitVote() {
 
-  if (!selectedVote) {
+  if (
+    !selectedVote ||
+    !currentPlayer
+  ) {
+
     return;
+
   }
 
 
@@ -1226,6 +1574,10 @@ async function submitVote() {
         .eq(
           "id",
           currentPlayer.id
+        )
+        .eq(
+          "game_id",
+          gameId
         );
 
 
@@ -1234,11 +1586,17 @@ async function submitVote() {
     }
 
 
+    currentPlayer.vote_for =
+      selectedVote;
+
+
     setStatus(
-      "✅ Vote enregistré. Attends les autres joueurs.",
+      "✅ Vote enregistré ! Attends les autres joueurs.",
       "success"
     );
 
+
+    await updateVoteStatus();
 
     await checkVotes();
 
@@ -1247,13 +1605,11 @@ async function submitVote() {
 
     console.error(error);
 
-
     setStatus(
       "❌ Erreur du vote : " +
       error.message,
       "error"
     );
-
 
     confirmVoteButton.disabled =
       false;
@@ -1263,7 +1619,11 @@ async function submitVote() {
 }
 
 
-async function checkVotes() {
+/* =========================================================
+   STATUT DES VOTES
+========================================================= */
+
+async function updateVoteStatus() {
 
   const {
     data,
@@ -1272,7 +1632,71 @@ async function checkVotes() {
     await supabaseClient
       .from("players")
       .select(
-        "id, role, vote_for, eliminated, name, secret_word"
+        "id, name, vote_for, eliminated, alive"
+      )
+      .eq(
+        "game_id",
+        gameId
+      );
+
+
+  if (error) {
+    return;
+  }
+
+
+  const activePlayers =
+    data.filter(
+      function(player) {
+
+        return (
+          !player.eliminated &&
+          player.alive !== false
+        );
+
+      }
+    );
+
+
+  const votes =
+    activePlayers.filter(
+      function(player) {
+
+        return !!player.vote_for;
+
+      }
+    );
+
+
+  voteStatus.textContent =
+    "🗳️ " +
+    votes.length +
+    " / " +
+    activePlayers.length +
+    " joueur(s) ont voté.";
+
+}
+
+
+/* =========================================================
+   COMPTER LES VOTES
+========================================================= */
+
+async function checkVotes() {
+
+  if (processingVotes) {
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("players")
+      .select(
+        "id, name, role, vote_for, eliminated, alive"
       )
       .eq(
         "game_id",
@@ -1293,7 +1717,10 @@ async function checkVotes() {
     data.filter(
       function(player) {
 
-        return !player.eliminated;
+        return (
+          !player.eliminated &&
+          player.alive !== false
+        );
 
       }
     );
@@ -1303,7 +1730,7 @@ async function checkVotes() {
     activePlayers.filter(
       function(player) {
 
-        return player.vote_for;
+        return !!player.vote_for;
 
       }
     );
@@ -1319,228 +1746,393 @@ async function checkVotes() {
   }
 
 
-  const counts = {};
-
-
-  votedPlayers.forEach(
-    function(player) {
-
-      counts[player.vote_for] =
-        (
-          counts[player.vote_for] ||
-          0
-        ) + 1;
-
-    }
-  );
-
-
-  let targetId =
-    null;
-
-  let highest =
-    0;
-
-
-  Object.keys(counts).forEach(
-    function(id) {
-
-      if (
-        counts[id] >
-        highest
-      ) {
-
-        highest =
-          counts[id];
-
-        targetId =
-          id;
-
-      }
-
-    }
-  );
-
-
-  if (!targetId) {
-    return;
-  }
-
-
-  const target =
-    data.find(
-      function(player) {
-
-        return player.id ===
-          targetId;
-
-      }
-    );
-
-
-  if (!target) {
-    return;
-  }
-
-
-  await supabaseClient
-    .from("players")
-    .update({
-
-      eliminated:
-        true
-
-    })
-    .eq(
-      "id",
-      target.id
-    );
-
-
-  if (
-    target.role ===
-    "undercover"
-  ) {
-
-    await supabaseClient
-      .from("games")
-      .update({
-
-        phase:
-          "result",
-
-        winner:
-          "civil",
-
-        updated_at:
-          new Date().toISOString()
-
-      })
-      .eq(
-        "id",
-        gameId
-      );
-
-  } else {
-
-    await supabaseClient
-      .from("games")
-      .update({
-
-        phase:
-          "result",
-
-        winner:
-          "undercover",
-
-        updated_at:
-          new Date().toISOString()
-
-      })
-      .eq(
-        "id",
-        gameId
-      );
-
-  }
-
-}
-
-
-async function changePhase(
-  phase
-) {
-
-  if (
-    !currentPlayer ||
-    !currentPlayer.is_host
-  ) {
-
-    return;
-
-  }
-
-
-  if (changingPhase) {
-    return;
-  }
-
-
-  changingPhase =
+  processingVotes =
     true;
 
 
   try {
 
+    const counts = {};
+
+
+    votedPlayers.forEach(
+      function(player) {
+
+        counts[player.vote_for] =
+          (
+            counts[player.vote_for] ||
+            0
+          ) + 1;
+
+      }
+    );
+
+
+    let targetId =
+      null;
+
+    let highest =
+      -1;
+
+
+    Object.keys(counts)
+      .forEach(
+        function(id) {
+
+          if (
+            counts[id] >
+            highest
+          ) {
+
+            highest =
+              counts[id];
+
+            targetId =
+              id;
+
+          }
+
+        }
+      );
+
+
+    if (!targetId) {
+      return;
+    }
+
+
+    const target =
+      activePlayers.find(
+        function(player) {
+
+          return (
+            player.id ===
+            targetId
+          );
+
+        }
+      );
+
+
+    if (!target) {
+      return;
+    }
+
+
+    /*
+      On élimine la personne
+      ayant reçu le plus de votes.
+    */
+
     const {
-      error
+      error: eliminateError
     } =
       await supabaseClient
-        .from("games")
+        .from("players")
         .update({
 
-          phase:
-            phase,
+          eliminated:
+            true,
 
-          updated_at:
-            new Date().toISOString()
+          alive:
+            false,
+
+          revealed:
+            true
 
         })
         .eq(
           "id",
-          gameId
+          target.id
         );
 
 
-    if (error) {
-      throw error;
+    if (eliminateError) {
+      throw eliminateError;
     }
+
+
+    /*
+      Si l'Undercover est éliminé :
+      les joueurs classiques gagnent.
+    */
+
+    if (
+      target.role ===
+      "undercover"
+    ) {
+
+      await finishGame(
+        "civil",
+        target
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Si un joueur classique est éliminé :
+      l'Undercover a réussi à tromper les autres.
+    */
+
+    await finishGame(
+      "undercover",
+      target
+    );
 
 
   } catch (error) {
 
+    console.error(
+      "Erreur traitement vote :",
+      error
+    );
+
+  } finally {
+
+    processingVotes =
+      false;
+
+  }
+
+}
+
+
+/* =========================================================
+   FIN DE PARTIE
+========================================================= */
+
+async function finishGame(
+  winner,
+  eliminatedPlayer
+) {
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("games")
+      .update({
+
+        phase:
+          "result",
+
+        winner:
+          winner,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq(
+        "id",
+        gameId
+      );
+
+
+  if (error) {
+
     console.error(error);
 
+    return;
 
-    setStatus(
-      "❌ Impossible de changer de phase : " +
-      error.message,
-      "error"
+  }
+
+
+  currentGame.phase =
+    "result";
+
+  currentGame.winner =
+    winner;
+
+}
+
+
+/* =========================================================
+   RESULTAT
+========================================================= */
+
+async function renderResult() {
+
+  resultSection.classList.remove(
+    "hidden"
+  );
+
+
+  await loadPlayers();
+
+
+  const eliminated =
+    players.find(
+      function(player) {
+
+        return (
+          player.eliminated &&
+          player.revealed
+        );
+
+      }
+    );
+
+
+  const undercover =
+    players.find(
+      function(player) {
+
+        return (
+          player.role ===
+          "undercover"
+        );
+
+      }
+    );
+
+
+  if (
+    currentGame.winner ===
+    "civil"
+  ) {
+
+    resultContent.innerHTML =
+
+      '<div class="result-big">🎉</div>' +
+
+      "<strong>Les joueurs classiques gagnent !</strong><br><br>" +
+
+      (
+        eliminated
+          ? '<div class="eliminated-name">❌ ' +
+            escapeHTML(
+              eliminated.name
+            ) +
+            "</div>" +
+            "était l'Undercover."
+          : ""
+      );
+
+  }
+
+  else if (
+    currentGame.winner ===
+    "undercover"
+  ) {
+
+    resultContent.innerHTML =
+
+      '<div class="result-big">🕵️</div>' +
+
+      "<strong>L'Undercover gagne !</strong><br><br>" +
+
+      (
+        eliminated
+          ? '<div class="eliminated-name">❌ ' +
+            escapeHTML(
+              eliminated.name
+            ) +
+            "</div>" +
+            "était un joueur classique."
+          : ""
+      );
+
+
+    if (undercover) {
+
+      resultContent.innerHTML +=
+
+        "<br>🕵️ L'Undercover était " +
+        "<strong>" +
+        escapeHTML(
+          undercover.name
+        ) +
+        "</strong>.";
+
+    }
+
+  }
+
+  else {
+
+    resultContent.innerHTML =
+      "🎮 Manche terminée.";
+
+  }
+
+
+  if (
+    currentPlayer &&
+    currentPlayer.is_host
+  ) {
+
+    newRoundButton.classList.remove(
+      "hidden"
+    );
+
+  }
+
+  else {
+
+    newRoundButton.classList.add(
+      "hidden"
     );
 
   }
 
 
-  changingPhase =
-    false;
+  setStatus(
+    "🏆 Partie terminée.",
+    "success"
+  );
 
 }
 
 
-document
-  .getElementById(
-    "newRoundButton"
-  )
-  .addEventListener(
-    "click",
-    async function() {
+/* =========================================================
+   NOUVELLE MANCHE
+========================================================= */
 
-      if (
-        !currentPlayer ||
-        !currentPlayer.is_host
-      ) {
+newRoundButton.addEventListener(
+  "click",
+  async function() {
 
-        setStatus(
-          "Seul l'hôte peut lancer une nouvelle manche.",
-          "error"
-        );
+    if (
+      !currentPlayer ||
+      !currentPlayer.is_host
+    ) {
 
-        return;
+      return;
 
+    }
+
+
+    newRoundButton.disabled =
+      true;
+
+
+    try {
+
+      const {
+        data: freshPlayers,
+        error: playersError
+      } =
+        await supabaseClient
+          .from("players")
+          .select("id")
+          .eq(
+            "game_id",
+            gameId
+          );
+
+
+      if (playersError) {
+        throw playersError;
       }
 
 
-      try {
+      for (
+        const player of freshPlayers
+      ) {
 
         const {
           error
@@ -1550,18 +2142,31 @@ document
             .update({
 
               role:
-                "civil",
+                null,
 
-              secret_word:
+              note:
+                null,
+
+              secret_note:
                 null,
 
               eliminated:
+                false,
+
+              alive:
+                true,
+
+              revealed:
                 false,
 
               vote_for:
                 null
 
             })
+            .eq(
+              "id",
+              player.id
+            )
             .eq(
               "game_id",
               gameId
@@ -1572,119 +2177,135 @@ document
           throw error;
         }
 
-
-        const {
-          error: gameError
-        } =
-          await supabaseClient
-            .from("games")
-            .update({
-
-              winner:
-                null,
-
-              phase:
-                "reveal",
-
-              current_round:
-                (
-                  currentGame.current_round ||
-                  1
-                ) + 1,
-
-              updated_at:
-                new Date().toISOString()
-
-            })
-            .eq(
-              "id",
-              gameId
-            );
+      }
 
 
-        if (gameError) {
-          throw gameError;
-        }
+      const nextRound =
+        (
+          currentGame.current_round ||
+          1
+        ) + 1;
 
 
+      const {
+        error: gameError
+      } =
         await supabaseClient
-          .rpc(
-            "start_undercover_game",
-            {
-              p_game_id:
-                gameId
-            }
+          .from("games")
+          .update({
+
+            winner:
+              null,
+
+            phase:
+              "reveal",
+
+            status:
+              "playing",
+
+            current_round:
+              nextRound,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            gameId
           );
 
 
-      } catch (error) {
-
-        console.error(error);
-
-
-        setStatus(
-          "❌ Impossible de recommencer : " +
-          error.message,
-          "error"
-        );
-
-      }
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "backButton"
-  )
-  .addEventListener(
-    "click",
-    function() {
-
-      stopPolling();
-
-
-      if (realtimeChannel) {
-
-        supabaseClient
-          .removeChannel(
-            realtimeChannel
-          );
-
+      if (gameError) {
+        throw gameError;
       }
 
 
-      window.location.href =
-        "index-multiplayer.html?game=" +
-        encodeURIComponent(
-          gameId
-        ) +
-        "&player=" +
-        encodeURIComponent(
-          playerId
-        );
+      /*
+        L'hôte distribue immédiatement
+        les nouvelles identités.
+      */
+
+      await loadGame();
+
+      await distributeRolesAndNotes();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      setStatus(
+        "❌ Impossible de recommencer : " +
+        error.message,
+        "error"
+      );
+
+      newRoundButton.disabled =
+        false;
 
     }
-  );
 
+  }
+);
+
+
+/* =========================================================
+   RETOUR LOBBY
+========================================================= */
+
+backButton.addEventListener(
+  "click",
+  function() {
+
+    stopPolling();
+
+
+    if (gameChannel) {
+
+      supabaseClient.removeChannel(
+        gameChannel
+      );
+
+      gameChannel =
+        null;
+
+    }
+
+
+    window.location.href =
+      "index-multiplayer.html?game=" +
+      encodeURIComponent(
+        gameId
+      ) +
+      "&player=" +
+      encodeURIComponent(
+        playerId
+      );
+
+  }
+);
+
+
+/* =========================================================
+   REALTIME
+========================================================= */
 
 function subscribeToGame() {
 
-  if (realtimeChannel) {
+  if (gameChannel) {
 
-    supabaseClient
-      .removeChannel(
-        realtimeChannel
-      );
+    supabaseClient.removeChannel(
+      gameChannel
+    );
 
   }
 
 
-  realtimeChannel =
+  gameChannel =
     supabaseClient
       .channel(
-        "playing-game-" +
+        "undercover-game-" +
         gameId
       )
       .on(
@@ -1713,7 +2334,7 @@ function subscribeToGame() {
 
           await loadPlayers();
 
-          renderPhase();
+          renderGame();
 
         }
       )
@@ -1722,43 +2343,9 @@ function subscribeToGame() {
 }
 
 
-function subscribeToPlayers() {
-
-  supabaseClient
-    .channel(
-      "playing-players-" +
-      gameId
-    )
-    .on(
-      "postgres_changes",
-      {
-
-        event:
-          "*",
-
-        schema:
-          "public",
-
-        table:
-          "players",
-
-        filter:
-          "game_id=eq." +
-          gameId
-
-      },
-      async function() {
-
-        await loadPlayers();
-
-        renderPhase();
-
-      }
-    )
-    .subscribe();
-
-}
-
+/* =========================================================
+   POLLING
+========================================================= */
 
 function startPolling() {
 
@@ -1767,11 +2354,7 @@ function startPolling() {
 
   pollTimer =
     setInterval(
-      async function() {
-
-        await refreshGame();
-
-      },
+      refreshGame,
       2500
     );
 
@@ -1804,7 +2387,8 @@ async function refreshGame() {
   try {
 
     const {
-      data: game
+      data: game,
+      error: gameError
     } =
       await supabaseClient
         .from("games")
@@ -1816,8 +2400,13 @@ async function refreshGame() {
         .maybeSingle();
 
 
-    if (!game) {
+    if (
+      gameError ||
+      !game
+    ) {
+
       return;
+
     }
 
 
@@ -1852,7 +2441,8 @@ async function refreshGame() {
 
     await loadPlayers();
 
-    renderPhase();
+
+    renderGame();
 
 
   } catch (error) {
@@ -1867,6 +2457,10 @@ async function refreshGame() {
 }
 
 
+/* =========================================================
+   NETTOYAGE
+========================================================= */
+
 window.addEventListener(
   "beforeunload",
   function() {
@@ -1874,12 +2468,11 @@ window.addEventListener(
     stopPolling();
 
 
-    if (realtimeChannel) {
+    if (gameChannel) {
 
-      supabaseClient
-        .removeChannel(
-          realtimeChannel
-        );
+      supabaseClient.removeChannel(
+        gameChannel
+      );
 
     }
 
@@ -1887,9 +2480,14 @@ window.addEventListener(
 );
 
 
+/* =========================================================
+   DEMARRAGE
+========================================================= */
+
 loadGame();
 
 </script>
 
 </body>
+
 </html>
