@@ -190,12 +190,6 @@
       cursor: not-allowed;
     }
 
-    .player-vote.eliminated {
-      opacity: 0.35;
-      text-decoration: line-through;
-      cursor: not-allowed;
-    }
-
     .players-status {
       margin-top: 15px;
       padding: 14px;
@@ -325,7 +319,7 @@
 
     <p class="hint">
       Quand tout le monde a regardé sa note,
-      l'hôte peut lancer la discussion.
+      l'hôte peut commencer la discussion.
     </p>
 
 
@@ -370,7 +364,7 @@
 
     <button
       id="voteButton"
-      class="green"
+      class="green hidden"
     >
       🗳️ Passer au vote
     </button>
@@ -433,14 +427,17 @@
     </h2>
 
 
-    <div id="resultContent" class="result">
+    <div
+      id="resultContent"
+      class="result"
+    >
       Résultat...
     </div>
 
 
     <button
       id="newRoundButton"
-      class="green"
+      class="green hidden"
     >
       🔄 Nouvelle manche
     </button>
@@ -580,10 +577,12 @@ let currentPlayer = null;
 let players = [];
 
 let gameChannel = null;
+let playerChannel = null;
 let pollTimer = null;
 
 let selectedVote = null;
 let noteVisible = false;
+
 let processingVotes = false;
 
 
@@ -613,11 +612,13 @@ function escapeHTML(value) {
       function(char) {
 
         return {
+
           "&": "&amp;",
           "<": "&lt;",
           ">": "&gt;",
           '"': "&quot;",
           "'": "&#039;"
+
         }[char];
 
       }
@@ -628,19 +629,27 @@ function escapeHTML(value) {
 
 function hideAllSections() {
 
-  revealSection.classList.add("hidden");
+  revealSection.classList.add(
+    "hidden"
+  );
 
-  discussionSection.classList.add("hidden");
+  discussionSection.classList.add(
+    "hidden"
+  );
 
-  voteSection.classList.add("hidden");
+  voteSection.classList.add(
+    "hidden"
+  );
 
-  resultSection.classList.add("hidden");
+  resultSection.classList.add(
+    "hidden"
+  );
 
 }
 
 
 /* =========================================================
-   CHARGEMENT
+   CHARGEMENT INITIAL
 ========================================================= */
 
 async function loadGame() {
@@ -658,6 +667,10 @@ async function loadGame() {
 
 
   try {
+
+    /*
+      Charger partie.
+    */
 
     const {
       data: game,
@@ -690,6 +703,10 @@ async function loadGame() {
     currentGame =
       game;
 
+
+    /*
+      Charger joueur.
+    */
 
     const {
       data: player,
@@ -751,6 +768,7 @@ async function loadGame() {
 
     console.error(error);
 
+
     setStatus(
       "❌ " +
       error.message,
@@ -775,7 +793,7 @@ async function loadPlayers() {
     await supabaseClient
       .from("players")
       .select(
-        "id, name, role, note, secret_note, alive, eliminated, vote_for, is_host"
+        "id, name, role, note, secret_note, alive, eliminated, vote_for, is_host, revealed"
       )
       .eq(
         "game_id",
@@ -818,7 +836,10 @@ async function loadPlayers() {
   if (me) {
 
     currentPlayer =
-      me;
+      {
+        ...currentPlayer,
+        ...me
+      };
 
   }
 
@@ -831,7 +852,10 @@ async function loadPlayers() {
 
 function renderGame() {
 
-  if (!currentGame || !currentPlayer) {
+  if (
+    !currentGame ||
+    !currentPlayer
+  ) {
     return;
   }
 
@@ -853,50 +877,43 @@ function renderGame() {
   }
 
 
-  if (!currentGame.phase) {
-
-    setStatus(
-      "🎮 Préparation de la partie..."
-    );
-
-    return;
-
-  }
-
-
-  if (
-    currentGame.phase ===
-    "reveal"
+  switch (
+    currentGame.phase
   ) {
 
-    renderReveal();
+    case "reveal":
 
-  }
+      renderReveal();
 
-  else if (
-    currentGame.phase ===
-    "discussion"
-  ) {
+      break;
 
-    renderDiscussion();
 
-  }
+    case "discussion":
 
-  else if (
-    currentGame.phase ===
-    "vote"
-  ) {
+      renderDiscussion();
 
-    renderVote();
+      break;
 
-  }
 
-  else if (
-    currentGame.phase ===
-    "result"
-  ) {
+    case "vote":
 
-    renderResult();
+      renderVote();
+
+      break;
+
+
+    case "result":
+
+      renderResult();
+
+      break;
+
+
+    default:
+
+      setStatus(
+        "⏳ Préparation de la partie..."
+      );
 
   }
 
@@ -954,7 +971,18 @@ function renderReveal() {
       : "?";
 
 
-  if (!noteVisible) {
+  if (noteVisible) {
+
+    secretNote.classList.remove(
+      "note-hidden"
+    );
+
+    revealButton.textContent =
+      "🙈 Cacher ma note";
+
+  }
+
+  else {
 
     secretNote.classList.add(
       "note-hidden"
@@ -968,14 +996,7 @@ function renderReveal() {
 
   roundNumber.textContent =
     currentGame.current_round ||
-    currentGame.round ||
     1;
-
-
-  setStatus(
-    "🔐 Regarde ta note sans la montrer.",
-    "success"
-  );
 
 
   if (
@@ -996,11 +1017,17 @@ function renderReveal() {
 
   }
 
+
+  setStatus(
+    "🔐 Regarde ton identité et ta note.",
+    "success"
+  );
+
 }
 
 
 /* =========================================================
-   AFFICHER / CACHER NOTE
+   REVELER NOTE
 ========================================================= */
 
 revealButton.addEventListener(
@@ -1038,210 +1065,46 @@ revealButton.addEventListener(
 
 
 /* =========================================================
-   DISTRIBUTION DES ROLES + NOTES
+   DISCUSSION
 ========================================================= */
 
-async function distributeRolesAndNotes() {
+function renderDiscussion() {
 
-  if (
-    !currentPlayer ||
-    !currentPlayer.is_host
-  ) {
-
-    return;
-
-  }
-
-
-  setStatus(
-    "🎲 Distribution des rôles et des notes..."
+  discussionSection.classList.remove(
+    "hidden"
   );
 
 
-  const {
-    data: freshPlayers,
-    error: playersError
-  } =
-    await supabaseClient
-      .from("players")
-      .select(
-        "id, name, is_host, eliminated, alive"
-      )
-      .eq(
-        "game_id",
-        gameId
-      );
-
-
-  if (playersError) {
-    throw playersError;
-  }
-
-
-  if (
-    !freshPlayers ||
-    freshPlayers.length < 2
-  ) {
-
-    throw new Error(
-      "Il faut au moins 2 joueurs."
-    );
-
-  }
-
-
-  const undercoverCount =
-    Math.max(
-      1,
-      Math.min(
-        Number(
-          currentGame.undercover_count ||
-          1
-        ),
-        freshPlayers.length - 1
-      )
-    );
-
-
-  const shuffled =
-    [...freshPlayers]
-      .sort(
-        function() {
-          return Math.random() - 0.5;
-        }
-      );
-
-
-  const undercoverIds =
-    shuffled
-      .slice(
-        0,
-        undercoverCount
-      )
-      .map(
-        function(player) {
-          return player.id;
-        }
-      );
-
-
-  const normalNote =
-    currentGame.normal_note ??
-    currentGame.village_note ??
+  roundNumber.textContent =
+    currentGame.current_round ||
     1;
 
 
-  const undercoverNote =
-    currentGame.undercover_note ??
-    currentGame.village_note ??
-    0;
-
-
-  for (
-    const player of freshPlayers
+  if (
+    currentPlayer &&
+    currentPlayer.is_host
   ) {
 
-    const isUndercover =
-      undercoverIds.includes(
-        player.id
-      );
+    voteButton.classList.remove(
+      "hidden"
+    );
 
-
-    const assignedRole =
-      isUndercover
-        ? "undercover"
-        : "civil";
-
-
-    const assignedNote =
-      isUndercover
-        ? undercoverNote
-        : normalNote;
-
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("players")
-        .update({
-
-          role:
-            assignedRole,
-
-          note:
-            assignedNote,
-
-          secret_note:
-            assignedNote,
-
-          alive:
-            true,
-
-          eliminated:
-            false,
-
-          vote_for:
-            null,
-
-          revealed:
-            false
-
-        })
-        .eq(
-          "id",
-          player.id
-        )
-        .eq(
-          "game_id",
-          gameId
-        );
-
-
-    if (error) {
-      throw error;
-    }
+    voteButton.disabled =
+      false;
 
   }
 
+  else {
 
-  const {
-    error: gameError
-  } =
-    await supabaseClient
-      .from("games")
-      .update({
+    voteButton.classList.add(
+      "hidden"
+    );
 
-        status:
-          "playing",
-
-        phase:
-          "reveal",
-
-        winner:
-          null,
-
-        current_round:
-          currentGame.current_round ||
-          1,
-
-        updated_at:
-          new Date().toISOString()
-
-      })
-      .eq(
-        "id",
-        gameId
-      );
-
-
-  if (gameError) {
-    throw gameError;
   }
 
 
   setStatus(
-    "🎲 Rôles distribués !",
+    "💬 Phase de discussion",
     "success"
   );
 
@@ -1249,7 +1112,7 @@ async function distributeRolesAndNotes() {
 
 
 /* =========================================================
-   LANCER DISCUSSION
+   COMMENCER DISCUSSION
 ========================================================= */
 
 discussionButton.addEventListener(
@@ -1266,66 +1129,56 @@ discussionButton.addEventListener(
     }
 
 
+    discussionButton.disabled =
+      true;
+
+
     try {
 
-      await distributeRolesAndNotes();
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("games")
+          .update({
+
+            phase:
+              "discussion",
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            gameId
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
 
     } catch (error) {
 
       console.error(error);
 
+
       setStatus(
-        "❌ Distribution impossible : " +
+        "❌ Impossible de commencer la discussion : " +
         error.message,
         "error"
       );
+
+
+      discussionButton.disabled =
+        false;
 
     }
 
   }
 );
-
-
-/* =========================================================
-   DISCUSSION
-========================================================= */
-
-function renderDiscussion() {
-
-  discussionSection.classList.remove(
-    "hidden"
-  );
-
-
-  roundNumber.textContent =
-    currentGame.current_round ||
-    1;
-
-
-  setStatus(
-    "💬 Phase de discussion",
-    "success"
-  );
-
-
-  if (
-    currentPlayer &&
-    currentPlayer.is_host
-  ) {
-
-    voteButton.disabled =
-      false;
-
-  }
-
-  else {
-
-    voteButton.disabled =
-      true;
-
-  }
-
-}
 
 
 /* =========================================================
@@ -1341,43 +1194,56 @@ voteButton.addEventListener(
       !currentPlayer.is_host
     ) {
 
-      setStatus(
-        "Seul l'hôte peut passer au vote.",
-        "error"
-      );
-
       return;
 
     }
 
 
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("games")
-        .update({
-
-          phase:
-            "vote",
-
-          updated_at:
-            new Date().toISOString()
-
-        })
-        .eq(
-          "id",
-          gameId
-        );
+    voteButton.disabled =
+      true;
 
 
-    if (error) {
+    try {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("games")
+          .update({
+
+            phase:
+              "vote",
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            gameId
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+    } catch (error) {
+
+      console.error(error);
+
 
       setStatus(
         "❌ Impossible de passer au vote : " +
         error.message,
         "error"
       );
+
+
+      voteButton.disabled =
+        false;
 
     }
 
@@ -1447,6 +1313,10 @@ function renderVotePlayers() {
         "player-vote";
 
 
+      /*
+        Impossible de voter pour soi-même.
+      */
+
       if (
         player.id ===
         currentPlayer.id
@@ -1458,7 +1328,9 @@ function renderVotePlayers() {
 
         div.textContent =
           "👤 " +
-          player.name +
+          escapeHTML(
+            player.name
+          ) +
           " (toi)";
 
         votePlayers.appendChild(
@@ -1591,25 +1463,38 @@ async function submitVote() {
 
 
     setStatus(
-      "✅ Vote enregistré ! Attends les autres joueurs.",
+      "✅ Vote enregistré !",
       "success"
     );
 
 
     await updateVoteStatus();
 
-    await checkVotes();
 
+    /*
+      Seul l'hôte traite la fin
+      du vote.
+    */
+
+    if (
+      currentPlayer.is_host
+    ) {
+
+      await checkVotes();
+
+    }
 
   } catch (error) {
 
     console.error(error);
+
 
     setStatus(
       "❌ Erreur du vote : " +
       error.message,
       "error"
     );
+
 
     confirmVoteButton.disabled =
       false;
@@ -1620,7 +1505,7 @@ async function submitVote() {
 
 
 /* =========================================================
-   STATUT DES VOTES
+   STATUT VOTES
 ========================================================= */
 
 async function updateVoteStatus() {
@@ -1679,13 +1564,19 @@ async function updateVoteStatus() {
 
 
 /* =========================================================
-   COMPTER LES VOTES
+   TRAITEMENT DES VOTES
 ========================================================= */
 
 async function checkVotes() {
 
-  if (processingVotes) {
+  if (
+    processingVotes ||
+    !currentPlayer ||
+    !currentPlayer.is_host
+  ) {
+
     return;
+
   }
 
 
@@ -1736,6 +1627,10 @@ async function checkVotes() {
     );
 
 
+  /*
+    Tout le monde doit avoir voté.
+  */
+
   if (
     votedPlayers.length <
     activePlayers.length
@@ -1758,15 +1653,26 @@ async function checkVotes() {
     votedPlayers.forEach(
       function(player) {
 
-        counts[player.vote_for] =
-          (
-            counts[player.vote_for] ||
-            0
-          ) + 1;
+        if (
+          !counts[player.vote_for]
+        ) {
+
+          counts[player.vote_for] =
+            0;
+
+        }
+
+
+        counts[player.vote_for]++;
 
       }
     );
 
+
+    /*
+      Cherche le joueur ayant
+      le plus de votes.
+    */
 
     let targetId =
       null;
@@ -1820,8 +1726,7 @@ async function checkVotes() {
 
 
     /*
-      On élimine la personne
-      ayant reçu le plus de votes.
+      Elimination.
     */
 
     const {
@@ -1844,6 +1749,10 @@ async function checkVotes() {
         .eq(
           "id",
           target.id
+        )
+        .eq(
+          "game_id",
+          gameId
         );
 
 
@@ -1853,8 +1762,8 @@ async function checkVotes() {
 
 
     /*
-      Si l'Undercover est éliminé :
-      les joueurs classiques gagnent.
+      Undercover éliminé =
+      victoire des civils.
     */
 
     if (
@@ -1863,8 +1772,7 @@ async function checkVotes() {
     ) {
 
       await finishGame(
-        "civil",
-        target
+        "civil"
       );
 
       return;
@@ -1873,13 +1781,12 @@ async function checkVotes() {
 
 
     /*
-      Si un joueur classique est éliminé :
-      l'Undercover a réussi à tromper les autres.
+      Civil éliminé =
+      victoire Undercover.
     */
 
     await finishGame(
-      "undercover",
-      target
+      "undercover"
     );
 
 
@@ -1901,12 +1808,11 @@ async function checkVotes() {
 
 
 /* =========================================================
-   FIN DE PARTIE
+   FIN PARTIE
 ========================================================= */
 
 async function finishGame(
-  winner,
-  eliminatedPlayer
+  winner
 ) {
 
   const {
@@ -1946,6 +1852,9 @@ async function finishGame(
 
   currentGame.winner =
     winner;
+
+
+  renderGame();
 
 }
 
@@ -2014,6 +1923,7 @@ async function renderResult() {
 
   }
 
+
   else if (
     currentGame.winner ===
     "undercover"
@@ -2081,7 +1991,7 @@ async function renderResult() {
 
 
   setStatus(
-    "🏆 Partie terminée.",
+    "🏆 Manche terminée.",
     "success"
   );
 
@@ -2094,160 +2004,370 @@ async function renderResult() {
 
 newRoundButton.addEventListener(
   "click",
-  async function() {
+  startNewRound
+);
 
-    if (
-      !currentPlayer ||
-      !currentPlayer.is_host
-    ) {
 
-      return;
+async function startNewRound() {
+
+  if (
+    !currentPlayer ||
+    !currentPlayer.is_host
+  ) {
+
+    return;
+
+  }
+
+
+  newRoundButton.disabled =
+    true;
+
+
+  try {
+
+    /*
+      Récupération de la partie
+      la plus récente.
+    */
+
+    const {
+      data: freshGame,
+      error: gameError
+    } =
+      await supabaseClient
+        .from("games")
+        .select("*")
+        .eq(
+          "id",
+          gameId
+        )
+        .maybeSingle();
+
+
+    if (gameError) {
+      throw gameError;
+    }
+
+
+    if (!freshGame) {
+
+      throw new Error(
+        "Partie introuvable."
+      );
 
     }
 
 
-    newRoundButton.disabled =
-      true;
+    /*
+      Joueurs.
+    */
+
+    const {
+      data: freshPlayers,
+      error: playersError
+    } =
+      await supabaseClient
+        .from("players")
+        .select("*")
+        .eq(
+          "game_id",
+          gameId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        );
 
 
-    try {
+    if (playersError) {
+      throw playersError;
+    }
+
+
+    if (
+      !freshPlayers ||
+      freshPlayers.length < 2
+    ) {
+
+      throw new Error(
+        "Il faut au moins 2 joueurs."
+      );
+
+    }
+
+
+    /*
+      Nettoyage de la manche précédente.
+    */
+
+    for (
+      const player of freshPlayers
+    ) {
 
       const {
-        data: freshPlayers,
-        error: playersError
+        error
       } =
         await supabaseClient
           .from("players")
-          .select("id")
+          .update({
+
+            role:
+              null,
+
+            note:
+              null,
+
+            secret_note:
+              null,
+
+            eliminated:
+              false,
+
+            alive:
+              true,
+
+            revealed:
+              false,
+
+            vote_for:
+              null
+
+          })
+          .eq(
+            "id",
+            player.id
+          )
           .eq(
             "game_id",
             gameId
           );
 
 
-      if (playersError) {
-        throw playersError;
+      if (error) {
+        throw error;
       }
 
-
-      for (
-        const player of freshPlayers
-      ) {
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("players")
-            .update({
-
-              role:
-                null,
-
-              note:
-                null,
-
-              secret_note:
-                null,
-
-              eliminated:
-                false,
-
-              alive:
-                true,
-
-              revealed:
-                false,
-
-              vote_for:
-                null
-
-            })
-            .eq(
-              "id",
-              player.id
-            )
-            .eq(
-              "game_id",
-              gameId
-            );
+    }
 
 
-        if (error) {
-          throw error;
-        }
+    /*
+      Nouvelle manche.
+    */
 
-      }
+    const nextRound =
+      Number(
+        freshGame.current_round ||
+        1
+      ) + 1;
 
 
-      const nextRound =
-        (
-          currentGame.current_round ||
-          1
-        ) + 1;
+    /*
+      On reste playing.
+    */
+
+    const {
+      error: resetGameError
+    } =
+      await supabaseClient
+        .from("games")
+        .update({
+
+          status:
+            "playing",
+
+          phase:
+            "reveal",
+
+          winner:
+            null,
+
+          current_round:
+            nextRound,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          gameId
+        );
+
+
+    if (resetGameError) {
+      throw resetGameError;
+    }
+
+
+    /*
+      Attribution de la nouvelle manche.
+    */
+
+    const undercoverCount =
+      Math.max(
+        1,
+        Math.min(
+          Number(
+            freshGame.undercover_count ||
+            1
+          ),
+          freshPlayers.length - 1
+        )
+      );
+
+
+    const shuffled =
+      [...freshPlayers]
+        .sort(
+          () => Math.random() - 0.5
+        );
+
+
+    const undercoverIds =
+      shuffled
+        .slice(
+          0,
+          undercoverCount
+        )
+        .map(
+          player => player.id
+        );
+
+
+    const normalNote =
+      freshGame.normal_note ??
+      freshGame.village_note ??
+      1;
+
+
+    const undercoverNote =
+      freshGame.undercover_note ??
+      0;
+
+
+    for (
+      const player of freshPlayers
+    ) {
+
+      const isUndercover =
+        undercoverIds.includes(
+          player.id
+        );
+
+
+      const role =
+        isUndercover
+          ? "undercover"
+          : "civil";
+
+
+      const note =
+        isUndercover
+          ? undercoverNote
+          : normalNote;
 
 
       const {
-        error: gameError
+        error
       } =
         await supabaseClient
-          .from("games")
+          .from("players")
           .update({
 
-            winner:
-              null,
+            role:
+              role,
 
-            phase:
-              "reveal",
+            note:
+              note,
 
-            status:
-              "playing",
+            secret_note:
+              note,
 
-            current_round:
-              nextRound,
+            alive:
+              true,
 
-            updated_at:
-              new Date().toISOString()
+            eliminated:
+              false,
+
+            revealed:
+              false,
+
+            vote_for:
+              null
 
           })
           .eq(
             "id",
+            player.id
+          )
+          .eq(
+            "game_id",
             gameId
           );
 
 
-      if (gameError) {
-        throw gameError;
+      if (error) {
+        throw error;
       }
-
-
-      /*
-        L'hôte distribue immédiatement
-        les nouvelles identités.
-      */
-
-      await loadGame();
-
-      await distributeRolesAndNotes();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      setStatus(
-        "❌ Impossible de recommencer : " +
-        error.message,
-        "error"
-      );
-
-      newRoundButton.disabled =
-        false;
 
     }
 
+
+    /*
+      Recharge tout.
+    */
+
+    currentGame = {
+      ...freshGame,
+      status: "playing",
+      phase: "reveal",
+      winner: null,
+      current_round: nextRound
+    };
+
+
+    noteVisible =
+      false;
+
+    selectedVote =
+      null;
+
+    processingVotes =
+      false;
+
+
+    await loadPlayers();
+
+    renderGame();
+
+
+    setStatus(
+      "🔄 Nouvelle manche !",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    setStatus(
+      "❌ Impossible de recommencer : " +
+      error.message,
+      "error"
+    );
+
+
+    newRoundButton.disabled =
+      false;
+
   }
-);
+
+}
 
 
 /* =========================================================
@@ -2268,6 +2388,18 @@ backButton.addEventListener(
       );
 
       gameChannel =
+        null;
+
+    }
+
+
+    if (playerChannel) {
+
+      supabaseClient.removeChannel(
+        playerChannel
+      );
+
+      playerChannel =
         null;
 
     }
@@ -2302,11 +2434,26 @@ function subscribeToGame() {
   }
 
 
+  if (playerChannel) {
+
+    supabaseClient.removeChannel(
+      playerChannel
+    );
+
+  }
+
+
+  /*
+    Changements de la partie.
+  */
+
   gameChannel =
     supabaseClient
       .channel(
         "undercover-game-" +
-        gameId
+        gameId +
+        "-" +
+        Date.now()
       )
       .on(
         "postgres_changes",
@@ -2335,6 +2482,89 @@ function subscribeToGame() {
           await loadPlayers();
 
           renderGame();
+
+
+          /*
+            Si le vote vient d'être lancé,
+            on actualise le compteur.
+          */
+
+          if (
+            currentGame.phase ===
+            "vote"
+          ) {
+
+            await updateVoteStatus();
+
+          }
+
+        }
+      )
+      .subscribe();
+
+
+  /*
+    Changements des joueurs :
+    votes, rôles, éliminations, etc.
+  */
+
+  playerChannel =
+    supabaseClient
+      .channel(
+        "undercover-players-" +
+        gameId +
+        "-" +
+        Date.now()
+      )
+      .on(
+        "postgres_changes",
+        {
+
+          event:
+            "*",
+
+          schema:
+            "public",
+
+          table:
+            "players",
+
+          filter:
+            "game_id=eq." +
+            gameId
+
+        },
+        async function() {
+
+          await loadPlayers();
+
+          renderGame();
+
+
+          if (
+            currentGame &&
+            currentGame.phase ===
+            "vote"
+          ) {
+
+            await updateVoteStatus();
+
+
+            /*
+              L'hôte vérifie automatiquement
+              si tout le monde a voté.
+            */
+
+            if (
+              currentPlayer &&
+              currentPlayer.is_host
+            ) {
+
+              await checkVotes();
+
+            }
+
+          }
 
         }
       )
@@ -2445,6 +2675,23 @@ async function refreshGame() {
     renderGame();
 
 
+    /*
+      L'hôte vérifie régulièrement
+      les votes.
+    */
+
+    if (
+      currentGame.phase ===
+      "vote" &&
+      currentPlayer &&
+      currentPlayer.is_host
+    ) {
+
+      await checkVotes();
+
+    }
+
+
   } catch (error) {
 
     console.error(
@@ -2472,6 +2719,15 @@ window.addEventListener(
 
       supabaseClient.removeChannel(
         gameChannel
+      );
+
+    }
+
+
+    if (playerChannel) {
+
+      supabaseClient.removeChannel(
+        playerChannel
       );
 
     }
