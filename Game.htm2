@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Undercover Notes - Partie</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #080c18;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 18px 50px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .card {
+      background: #111a2e;
+      border: 1px solid #293653;
+      border-radius: 18px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+
+    #status {
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: #18233a;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .success {
+      color: #86efac;
+    }
+
+    .error {
+      color: #fca5a5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .phase {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      margin: 10px 0 20px;
+    }
+
+    .note {
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      padding: 30px 15px;
+      background: #18233a;
+      border-radius: 16px;
+      margin: 20px 0;
+    }
+
+    .info {
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 12px;
+      background: #7c3aed;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #18233a;
+      border: 1px solid #293653;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .player {
+      padding: 14px;
+      margin: 8px 0;
+      background: #18233a;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .player.selected {
+      border-color: #7c3aed;
+      background: #241a45;
+    }
+
+    .player.dead {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .result {
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 16px;
+      background: #18233a;
+      font-size: 22px;
+      line-height: 1.6;
+    }
+
+    .big {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .timer {
+      text-align: center;
+      font-size: 40px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .small {
+      font-size: 14px;
+      opacity: 0.75;
+    }
+  </style>
+</head>
+
+<body>
+
+<main>
+
+  <h1>🕵️ Undercover Notes</h1>
+
+  <div id="status">
+    Connexion à Supabase...
+  </div>
+
+  <!-- =========================
+       CHARGEMENT
+  ========================== -->
+
+  <section id="loading">
+
+    <div class="card">
+      <div class="info">
+        ⏳ Chargement de la partie...
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       NOTE
+  ========================== -->
+
+  <section id="noteScreen" class="hidden">
+
+    <div class="phase">
+      📝 Ta note
+    </div>
+
+    <div class="card">
+
+      <p class="info">
+        Voici la note qui t'a été attribuée.
+      </p>
+
+      <div id="myNote" class="note">
+        ...
+      </div>
+
+      <p id="myRole" class="info">
+        Ton rôle est caché.
+      </p>
+
+      <button id="readyButton">
+        ✅ J'ai vu ma note
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       DISCUSSION
+  ========================== -->
+
+  <section id="discussionScreen" class="hidden">
+
+    <div class="phase">
+      💬 Discussion
+    </div>
+
+    <div class="card">
+
+      <div id="timer" class="timer">
+        0
+      </div>
+
+      <p class="info">
+        Donnez vos indices en utilisant vos notes.
+      </p>
+
+      <div id="discussionPlayers">
+      </div>
+
+      <button id="goVoteButton">
+        🗳️ Passer au vote
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       VOTE
+  ========================== -->
+
+  <section id="voteScreen" class="hidden">
+
+    <div class="phase">
+      🗳️ Vote
+    </div>
+
+    <div class="card">
+
+      <p class="info">
+        Choisis <strong>une seule personne</strong>.
+      </p>
+
+      <div id="votePlayers">
+      </div>
+
+      <button id="confirmVoteButton" disabled>
+        ✅ Confirmer mon vote
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       RESULTAT
+  ========================== -->
+
+  <section id="resultScreen" class="hidden">
+
+    <div class="phase">
+      🔎 Résultat
+    </div>
+
+    <div class="card">
+
+      <div id="eliminationResult" class="result">
+      </div>
+
+      <button id="nextRoundButton">
+        ➡️ Continuer
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       VICTOIRE
+  ========================== -->
+
+  <section id="winnerScreen" class="hidden">
+
+    <div class="card">
+
+      <div id="winnerResult" class="result">
+      </div>
+
+      <button
+        class="secondary"
+        onclick="window.location.href='index-multiplayer.html'"
+      >
+        ← Retour au multijoueur
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* ==================================================
+   SUPABASE
+================================================== */
+
+const SUPABASE_URL =
+  "https://sarszeuyxrozsljhgyos.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_K_iSNYX03boGTMYWG07hfQ_TjG0FaaA";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ==================================================
+   PARTIE
+================================================== */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const gameId =
+  params.get("game");
+
+
+let currentGame = null;
+let currentPlayer = null;
+let players = [];
+let selectedPlayer = null;
+let realtimeChannel = null;
+let timerInterval = null;
+
+
+/* ==================================================
+   ELEMENTS
+================================================== */
+
+const statusElement =
+  document.getElementById("status");
+
+const loadingScreen =
+  document.getElementById("loading");
+
+const noteScreen =
+  document.getElementById("noteScreen");
+
+const discussionScreen =
+  document.getElementById("discussionScreen");
+
+const voteScreen =
+  document.getElementById("voteScreen");
+
+const resultScreen =
+  document.getElementById("resultScreen");
+
+const winnerScreen =
+  document.getElementById("winnerScreen");
+
+const myNoteElement =
+  document.getElementById("myNote");
+
+const myRoleElement =
+  document.getElementById("myRole");
+
+const readyButton =
+  document.getElementById("readyButton");
+
+const goVoteButton =
+  document.getElementById("goVoteButton");
+
+const confirmVoteButton =
+  document.getElementById("confirmVoteButton");
+
+const nextRoundButton =
+  document.getElementById("nextRoundButton");
+
+const votePlayersElement =
+  document.getElementById("votePlayers");
+
+const discussionPlayersElement =
+  document.getElementById("discussionPlayers");
+
+const eliminationResultElement =
+  document.getElementById("eliminationResult");
+
+const winnerResultElement =
+  document.getElementById("winnerResult");
+
+const timerElement =
+  document.getElementById("timer");
+
+
+/* ==================================================
+   STATUS
+================================================== */
+
+function setStatus(
+  message,
+  type = ""
+) {
+
+  statusElement.textContent =
+    message;
+
+  statusElement.className =
+    type;
+
+}
+
+
+/* ==================================================
+   AFFICHER UNE SEULE ECRAN
+================================================== */
+
+function showScreen(screen) {
+
+  loadingScreen.classList.add("hidden");
+  noteScreen.classList.add("hidden");
+  discussionScreen.classList.add("hidden");
+  voteScreen.classList.add("hidden");
+  resultScreen.classList.add("hidden");
+  winnerScreen.classList.add("hidden");
+
+  screen.classList.remove("hidden");
+
+}
+
+
+/* ==================================================
+   CHARGER LA PARTIE
+================================================== */
+
+async function loadGame() {
+
+  if (!gameId) {
+
+    setStatus(
+      "❌ Aucune partie sélectionnée.",
+      "error"
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const {
+      data: game,
+      error
+    } =
+      await supabaseClient
+        .from("games")
+        .select("*")
+        .eq("id", gameId)
+        .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!game) {
+
+      setStatus(
+        "❌ Partie introuvable.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    currentGame = game;
+
+    await loadPlayers();
+
+    /*
+      On cherche le joueur sur cet appareil.
+
+      Le joueur est mémorisé dans localStorage
+      lorsqu'il rejoint/crée la partie.
+    */
+
+    const savedPlayerId =
+      localStorage.getItem(
+        "undercover_player_" + gameId
+      );
+
+    if (savedPlayerId) {
+
+      currentPlayer =
+        players.find(
+          function(player) {
+            return player.id === savedPlayerId;
+          }
+        );
+
+    }
+
+    /*
+      Si aucun joueur mémorisé,
+      on utilise le premier joueur
+      pour éviter un écran bloqué.
+    */
+
+    if (!currentPlayer && players.length === 1) {
+
+      currentPlayer =
+        players[0];
+
+    }
+
+    if (!currentPlayer) {
+
+      setStatus(
+        "❌ Joueur introuvable.",
+        "error"
+      );
+
+      showScreen(loadingScreen);
+
+      return;
+
+    }
+
+    setStatus(
+      "✅ Partie chargée",
+      "success"
+    );
+
+    updateScreen();
+
+    subscribeToGame();
+
+  } catch (error) {
+
+    console.error(error);
+
+    setStatus(
+      "❌ Erreur : " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+   CHARGER LES JOUEURS
+================================================== */
+
+async function loadPlayers() {
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("players")
+      .select("*")
+      .eq(
+        "game_id",
+        gameId
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+  if (error) {
+
+    throw error;
+
+  }
+
+  players =
+    data || [];
+
+}
+
+
+/* ==================================================
+   DETERMINER L'ECRAN
+================================================== */
+
+function updateScreen() {
+
+  if (!currentGame) {
+    return;
+  }
+
+  const phase =
+    currentGame.phase || "waiting";
+
+  /*
+    Partie terminée
+  */
+
+  if (
+    currentGame.winner
+  ) {
+
+    showWinner();
+
+    return;
+
+  }
+
+  /*
+    Si la partie vient de commencer,
+    on montre la note.
+  */
+
+  if (
+    phase === "playing" ||
+    phase === "notes"
+  ) {
+
+    if (
+      !currentPlayer.revealed
+    ) {
+
+      showNoteScreen();
+
+    } else {
+
+      showDiscussionScreen();
+
+    }
+
+    return;
+
+  }
+
+  /*
+    Discussion
+  */
+
+  if (
+    phase === "discussion"
+  ) {
+
+    showDiscussionScreen();
+
+    return;
+
+  }
+
+  /*
+    Vote
+  */
+
+  if (
+    phase === "vote"
+  ) {
+
+    showVoteScreen();
+
+    return;
+
+  }
+
+  /*
+    Résultat
+  */
+
+  if (
+    phase === "result"
+  ) {
+
+    showResultScreen();
+
+    return;
+
+  }
+
+  /*
+    Par défaut
+  */
+
+  showNoteScreen();
+
+}
+
+
+/* ==================================================
+   NOTE DU JOUEUR
+================================================== */
+
+function showNoteScreen() {
+
+  showScreen(noteScreen);
+
+  const note =
+    currentPlayer.note;
+
+  if (
+    note !== null &&
+    note !== undefined &&
+    note !== ""
+  ) {
+
+    myNoteElement.textContent =
+      note;
+
+  } else {
+
+    myNoteElement.textContent =
+      "Aucune note";
+
+  }
+
+  if (
+    currentPlayer.role === "undercover"
+  ) {
+
+    myRoleElement.textContent =
+      "🕵️ Tu es Undercover.";
+
+  } else {
+
+    myRoleElement.textContent =
+      "🧑‍🌾 Tu es Villageois.";
+
+  }
+
+}
+
+
+/* ==================================================
+   JOUEUR PRET
+================================================== */
+
+readyButton.addEventListener(
+  "click",
+  async function() {
+
+    readyButton.disabled =
+      true;
+
+    readyButton.textContent =
+      "✅ Note vue";
+
+    try {
+
+      await supabaseClient
+        .from("players")
+        .update({
+          revealed: true
+        })
+        .eq(
+          "id",
+          currentPlayer.id
+        );
+
+      currentPlayer.revealed =
+        true;
+
+      /*
+        Si tous les joueurs ont vu leur note,
+        l'hôte peut lancer la discussion.
+      */
+
+      await checkAllReady();
+
+    } catch (error) {
+
+      console.error(error);
+
+      readyButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/* ==================================================
+   TOUS LES JOUEURS PRETS
+================================================== */
+
+async function checkAllReady() {
+
+  await loadPlayers();
+
+  const alivePlayers =
+    players.filter(
+      function(player) {
+        return player.alive !== false;
+      }
+    );
+
+  const everyoneReady =
+    alivePlayers.length > 0 &&
+    alivePlayers.every(
+      function(player) {
+        return player.revealed === true;
+      }
+    );
+
+  if (
+    everyoneReady &&
+    currentPlayer.is_host
+  ) {
+
+    await startDiscussion();
+
+  }
+
+}
+
+
+/* ==================================================
+   DISCUSSION
+================================================== */
+
+async function startDiscussion() {
+
+  await supabaseClient
+    .from("games")
+    .update({
+
+      phase: "discussion"
+
+    })
+    .eq(
+      "id",
+      currentGame.id
+    );
+
+}
+
+
+/* ==================================================
+   AFFICHER DISCUSSION
+================================================== */
+
+function showDiscussionScreen() {
+
+  showScreen(
+    discussionScreen
+  );
+
+  renderDiscussionPlayers();
+
+  startTimer();
+
+}
+
+
+/* ==================================================
+   JOUEURS DISCUSSION
+================================================== */
+
+function renderDiscussionPlayers() {
+
+  discussionPlayersElement.innerHTML = "";
+
+  const alivePlayers =
+    players.filter(
+      function(player) {
+        return player.alive !== false;
+      }
+    );
+
+  alivePlayers.forEach(
+    function(player) {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "player";
+
+      div.textContent =
+        "🟢 " +
+        player.name;
+
+      if (
+        player.id === currentPlayer.id
+      ) {
+
+        div.textContent +=
+          " 👤";
+
+      }
+
+      discussionPlayersElement
+        .appendChild(div);
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   TIMER
+================================================== */
+
+function startTimer() {
+
+  clearInterval(
+    timerInterval
+  );
+
+  let seconds =
+    Number(
+      currentGame.discussion_seconds
+    ) || 60;
+
+  timerElement.textContent =
+    seconds;
+
+  timerInterval =
+    setInterval(
+      function() {
+
+        seconds--;
+
+        timerElement.textContent =
+          seconds;
+
+        if (seconds <= 0) {
+
+          clearInterval(
+            timerInterval
+          );
+
+        }
+
+      },
+      1000
+    );
+
+}
+
+
+/* ==================================================
+   PASSER AU VOTE
+================================================== */
+
+goVoteButton.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !currentPlayer.is_host
+    ) {
+
+      setStatus(
+        "Seul l'hôte peut passer au vote.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    await supabaseClient
+      .from("games")
+      .update({
+
+        phase: "vote"
+
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+  }
+);
+
+
+/* ==================================================
+   VOTE
+================================================== */
+
+function showVoteScreen() {
+
+  showScreen(
+    voteScreen
+  );
+
+  selectedPlayer =
+    null;
+
+  confirmVoteButton.disabled =
+    true;
+
+  renderVotePlayers();
+
+}
+
+
+/* ==================================================
+   AFFICHER LES JOUEURS POUR LE VOTE
+================================================== */
+
+function renderVotePlayers() {
+
+  votePlayersElement.innerHTML = "";
+
+  const alivePlayers =
+    players.filter(
+      function(player) {
+
+        return (
+          player.alive !== false &&
+          player.id !== currentPlayer.id
+        );
+
+      }
+    );
+
+  alivePlayers.forEach(
+    function(player) {
+
+      const div =
+        document.createElement("div");
+
+      div.className =
+        "player";
+
+      div.textContent =
+        "👤 " +
+        player.name;
+
+      div.addEventListener(
+        "click",
+        function() {
+
+          document
+            .querySelectorAll(
+              "#votePlayers .player"
+            )
+            .forEach(
+              function(item) {
+
+                item.classList.remove(
+                  "selected"
+                );
+
+              }
+            );
+
+          div.classList.add(
+            "selected"
+          );
+
+          selectedPlayer =
+            player;
+
+          confirmVoteButton.disabled =
+            false;
+
+        }
+      );
+
+      votePlayersElement
+        .appendChild(div);
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   CONFIRMER VOTE
+================================================== */
+
+confirmVoteButton.addEventListener(
+  "click",
+  async function() {
+
+    if (!selectedPlayer) {
+      return;
+    }
+
+    confirmVoteButton.disabled =
+      true;
+
+    try {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("players")
+          .update({
+
+            vote_for:
+              selectedPlayer.id
+
+          })
+          .eq(
+            "id",
+            currentPlayer.id
+          );
+
+      if (error) {
+        throw error;
+      }
+
+      setStatus(
+        "✅ Vote enregistré.",
+        "success"
+      );
+
+      await checkAllVotes();
+
+    } catch (error) {
+
+      console.error(error);
+
+      setStatus(
+        "❌ Erreur du vote : " +
+        error.message,
+        "error"
+      );
+
+      confirmVoteButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/* ==================================================
+   VERIFIER LES VOTES
+================================================== */
+
+async function checkAllVotes() {
+
+  await loadPlayers();
+
+  const alivePlayers =
+    players.filter(
+      function(player) {
+
+        return player.alive !== false;
+
+      }
+    );
+
+  const everyoneVoted =
+    alivePlayers.every(
+      function(player) {
+
+        return (
+          player.vote_for !== null &&
+          player.vote_for !== undefined
+        );
+
+      }
+    );
+
+  if (
+    everyoneVoted &&
+    currentPlayer.is_host
+  ) {
+
+    await calculateResult();
+
+  }
+
+}
+
+
+/* ==================================================
+   CALCUL RESULTAT
+================================================== */
+
+async function calculateResult() {
+
+  await loadPlayers();
+
+  const alivePlayers =
+    players.filter(
+      function(player) {
+
+        return player.alive !== false;
+
+      }
+    );
+
+  const counts = {};
+
+  alivePlayers.forEach(
+    function(player) {
+
+      if (
+        player.vote_for
+      ) {
+
+        counts[player.vote_for] =
+          (counts[player.vote_for] || 0) + 1;
+
+      }
+
+    }
+  );
+
+  let eliminatedId =
+    null;
+
+  let highestVotes =
+    0;
+
+  Object.keys(counts).forEach(
+    function(playerId) {
+
+      if (
+        counts[playerId] >
+        highestVotes
+      ) {
+
+        highestVotes =
+          counts[playerId];
+
+        eliminatedId =
+          playerId;
+
+      }
+
+    }
+  );
+
+  /*
+    Egalité :
+    personne n'est éliminé.
+  */
+
+  if (!eliminatedId) {
+
+    await supabaseClient
+      .from("games")
+      .update({
+        phase: "result"
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+    return;
+
+  }
+
+  const eliminatedPlayer =
+    players.find(
+      function(player) {
+
+        return player.id === eliminatedId;
+
+      }
+    );
+
+  /*
+    Elimination
+  */
+
+  await supabaseClient
+    .from("players")
+    .update({
+
+      alive: false,
+
+      eliminated: true
+
+    })
+    .eq(
+      "id",
+      eliminatedId
+    );
+
+  /*
+    Vérifier victoire
+  */
+
+  await loadPlayers();
+
+  const remainingUndercover =
+    players.filter(
+      function(player) {
+
+        return (
+          player.alive !== false &&
+          player.role === "undercover"
+        );
+
+      }
+    );
+
+  const remainingVillage =
+    players.filter(
+      function(player) {
+
+        return (
+          player.alive !== false &&
+          player.role !== "undercover"
+        );
+
+      }
+    );
+
+  if (
+    remainingUndercover.length === 0
+  ) {
+
+    await supabaseClient
+      .from("games")
+      .update({
+
+        winner: "village",
+        phase: "finished",
+        status: "finished"
+
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+    return;
+
+  }
+
+  /*
+    Si les Undercover sont au moins aussi
+    nombreux que les villageois restants,
+    ils gagnent.
+  */
+
+  if (
+    remainingUndercover.length >=
+    remainingVillage.length
+  ) {
+
+    await supabaseClient
+      .from("games")
+      .update({
+
+        winner: "undercover",
+        phase: "finished",
+        status: "finished"
+
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+    return;
+
+  }
+
+  /*
+    Sinon on montre le résultat.
+  */
+
+  await supabaseClient
+    .from("games")
+    .update({
+
+      phase: "result"
+
+    })
+    .eq(
+      "id",
+      currentGame.id
+    );
+
+}
+
+
+/* ==================================================
+   RESULTAT ELIMINATION
+================================================== */
+
+function showResultScreen() {
+
+  showScreen(
+    resultScreen
+  );
+
+  const eliminated =
+    players.find(
+      function(player) {
+
+        return player.eliminated === true &&
+          player.alive === false;
+
+      }
+    );
+
+  if (!eliminated) {
+
+    eliminationResultElement.innerHTML =
+      "<div class='big'>🤝</div>" +
+      "Égalité !" +
+      "<br>" +
+      "<span class='small'>" +
+      "Personne n'est éliminé ce tour." +
+      "</span>";
+
+    return;
+
+  }
+
+  let roleText =
+    "🧑‍🌾 Villageois";
+
+  if (
+    eliminated.role === "undercover"
+  ) {
+
+    roleText =
+      "🕵️ UNDERCOVER";
+
+  }
+
+  eliminationResultElement.innerHTML =
+    "<div class='big'>❌</div>" +
+    "<strong>" +
+    escapeHTML(
+      eliminated.name
+    ) +
+    "</strong>" +
+    " est éliminé." +
+    "<br><br>" +
+    "Son rôle était :<br>" +
+    "<strong>" +
+    roleText +
+    "</strong>";
+
+}
+
+
+/* ==================================================
+   TOUR SUIVANT
+================================================== */
+
+nextRoundButton.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !currentPlayer.is_host
+    ) {
+
+      setStatus(
+        "L'hôte doit continuer la partie.",
+        "error"
+      );
+
+      return;
+
+    }
+
+    /*
+      Réinitialiser les votes et les révélations
+      pour les joueurs encore vivants.
+    */
+
+    await supabaseClient
+      .from("players")
+      .update({
+
+        vote_for: null,
+        revealed: false
+
+      })
+      .eq(
+        "game_id",
+        currentGame.id
+      )
+      .eq(
+        "alive",
+        true
+      );
+
+    const nextRound =
+      Number(
+        currentGame.current_round ||
+        currentGame.round ||
+        1
+      ) + 1;
+
+    await supabaseClient
+      .from("games")
+      .update({
+
+        phase: "notes",
+
+        current_round:
+          nextRound,
+
+        round:
+          nextRound
+
+      })
+      .eq(
+        "id",
+        currentGame.id
+      );
+
+  }
+);
+
+
+/* ==================================================
+   VICTOIRE
+================================================== */
+
+function showWinner() {
+
+  showScreen(
+    winnerScreen
+  );
+
+  if (
+    currentGame.winner ===
+    "undercover"
+  ) {
+
+    winnerResultElement.innerHTML =
+      "<div class='big'>🕵️</div>" +
+      "<strong>LES UNDERCOVER GAGNENT !</strong>" +
+      "<br><br>" +
+      "Ils ont réussi à rester parmi les villageois.";
+
+  } else {
+
+    winnerResultElement.innerHTML =
+      "<div class='big'>🏆</div>" +
+      "<strong>LES VILLAGEOIS GAGNENT !</strong>" +
+      "<br><br>" +
+      "Tous les Undercover ont été éliminés.";
+
+  }
+
+}
+
+
+/* ==================================================
+   REALTIME
+================================================== */
+
+function subscribeToGame() {
+
+  if (realtimeChannel) {
+
+    supabaseClient
+      .removeChannel(
+        realtimeChannel
+      );
+
+  }
+
+  realtimeChannel =
+    supabaseClient
+      .channel(
+        "game-" +
+        currentGame.id
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "games",
+          filter:
+            "id=eq." +
+            currentGame.id
+        },
+        async function(payload) {
+
+          if (
+            payload.new
+          ) {
+
+            currentGame =
+              payload.new;
+
+          }
+
+          await loadPlayers();
+
+          updateScreen();
+
+        }
+      )
+
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "players",
+          filter:
+            "game_id=eq." +
+            currentGame.id
+        },
+        async function() {
+
+          await loadPlayers();
+
+          updateScreen();
+
+        }
+      )
+
+      .subscribe(
+        function(status) {
+
+          console.log(
+            "Realtime :",
+            status
+          );
+
+        }
+      );
+
+}
+
+
+/* ==================================================
+   SECURITE HTML
+================================================== */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      function(char) {
+
+        return {
+
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+
+        }[char];
+
+      }
+    );
+
+}
+
+
+/* ==================================================
+   DEMARRAGE
+================================================== */
+
+loadGame();
+
+</script>
+
+</body>
+</html>
