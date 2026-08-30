@@ -244,7 +244,7 @@
         id="playerCount"
         class="player-count"
       >
-        0 joueur
+        0 / 3 joueur(s)
       </div>
 
     </div>
@@ -368,14 +368,13 @@ const joinButton =
 function setStatus(message, type = "") {
 
   statusElement.textContent = message;
-
   statusElement.className = type;
 
 }
 
 
 /* =========================================================
-   CODE PARTIE
+   CODE DE PARTIE
 ========================================================= */
 
 function generateGameCode() {
@@ -476,16 +475,22 @@ async function createGame() {
 
   try {
 
-    let code = generateGameCode();
+    let code =
+      generateGameCode();
 
     let game = null;
 
+
     /*
-      On évite autant que possible
-      les doublons de code.
+      Création de la partie.
+      On réessaie si le code existe déjà.
     */
 
-    for (let attempt = 0; attempt < 10; attempt++) {
+    for (
+      let attempt = 0;
+      attempt < 10;
+      attempt++
+    ) {
 
       const {
         data,
@@ -538,7 +543,8 @@ async function createGame() {
       }
 
 
-      code = generateGameCode();
+      code =
+        generateGameCode();
 
     }
 
@@ -551,6 +557,12 @@ async function createGame() {
 
     }
 
+
+    /*
+      IMPORTANT :
+      On ne met PAS role: null ici.
+      Le rôle sera attribué au lancement.
+    */
 
     const {
       data: player,
@@ -576,8 +588,6 @@ async function createGame() {
 
           vote_for: null,
 
-          role: null,
-
           note: null,
 
           secret_note: null
@@ -588,13 +598,28 @@ async function createGame() {
 
 
     if (playerError) {
+
+      /*
+        Si la création du joueur échoue,
+        on supprime la partie créée
+        pour éviter une partie fantôme.
+      */
+
+      await supabaseClient
+        .from("games")
+        .delete()
+        .eq("id", game.id);
+
       throw playerError;
+
     }
 
 
-    currentGame = game;
+    currentGame =
+      game;
 
-    currentPlayer = player;
+    currentPlayer =
+      player;
 
 
     saveSession();
@@ -604,7 +629,10 @@ async function createGame() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Création :",
+      error
+    );
 
 
     setStatus(
@@ -616,7 +644,8 @@ async function createGame() {
   }
 
 
-  createButton.disabled = false;
+  createButton.disabled =
+    false;
 
   createButton.textContent =
     "Créer une partie";
@@ -663,7 +692,8 @@ async function joinGame() {
   }
 
 
-  joinButton.disabled = true;
+  joinButton.disabled =
+    true;
 
   joinButton.textContent =
     "Recherche...";
@@ -707,7 +737,10 @@ async function joinGame() {
     }
 
 
-    if (game.status !== "waiting") {
+    if (
+      game.status !==
+      "waiting"
+    ) {
 
       setStatus(
         "❌ Cette partie a déjà commencé.",
@@ -743,13 +776,6 @@ async function joinGame() {
     }
 
 
-    /*
-      player_count = nombre de joueurs
-      nécessaire pour lancer.
-
-      max_players = sécurité maximale.
-    */
-
     const requiredPlayers =
       Number(
         game.player_count ||
@@ -763,7 +789,10 @@ async function joinGame() {
       );
 
 
-    if (count >= maxPlayers) {
+    if (
+      count >=
+      maxPlayers
+    ) {
 
       setStatus(
         "❌ La partie est complète.",
@@ -775,7 +804,10 @@ async function joinGame() {
     }
 
 
-    if (count >= requiredPlayers) {
+    if (
+      count >=
+      requiredPlayers
+    ) {
 
       setStatus(
         "❌ Le nombre de joueurs configuré est déjà atteint.",
@@ -787,6 +819,11 @@ async function joinGame() {
     }
 
 
+    /*
+      IMPORTANT :
+      Pas de role: null.
+    */
+
     const {
       data: player,
       error: playerError
@@ -795,27 +832,35 @@ async function joinGame() {
         .from("players")
         .insert({
 
-          game_id: game.id,
+          game_id:
+            game.id,
 
-          name: name,
+          name:
+            name,
 
-          is_host: false,
+          is_host:
+            false,
 
-          connected: true,
+          connected:
+            true,
 
-          alive: true,
+          alive:
+            true,
 
-          eliminated: false,
+          eliminated:
+            false,
 
-          revealed: false,
+          revealed:
+            false,
 
-          vote_for: null,
+          vote_for:
+            null,
 
-          role: null,
+          note:
+            null,
 
-          note: null,
-
-          secret_note: null
+          secret_note:
+            null
 
         })
         .select()
@@ -827,9 +872,11 @@ async function joinGame() {
     }
 
 
-    currentGame = game;
+    currentGame =
+      game;
 
-    currentPlayer = player;
+    currentPlayer =
+      player;
 
 
     saveSession();
@@ -839,7 +886,10 @@ async function joinGame() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Rejoindre :",
+      error
+    );
 
 
     setStatus(
@@ -851,7 +901,8 @@ async function joinGame() {
   }
 
 
-  joinButton.disabled = false;
+  joinButton.disabled =
+    false;
 
   joinButton.textContent =
     "Rejoindre";
@@ -860,14 +911,18 @@ async function joinGame() {
 
 
 /* =========================================================
-   AFFICHER LOBBY
+   AFFICHER LE LOBBY
 ========================================================= */
 
 function showLobby() {
 
-  homeElement.classList.add("hidden");
+  homeElement.classList.add(
+    "hidden"
+  );
 
-  lobbyElement.classList.remove("hidden");
+  lobbyElement.classList.remove(
+    "hidden"
+  );
 
 
   gameCodeElement.textContent =
@@ -916,7 +971,7 @@ function showLobby() {
 
 
 /* =========================================================
-   CHARGER JOUEURS
+   CHARGER LES JOUEURS
 ========================================================= */
 
 async function loadPlayers() {
@@ -965,18 +1020,22 @@ async function loadPlayers() {
 
 
 /* =========================================================
-   AFFICHER JOUEURS
+   AFFICHER LES JOUEURS
 ========================================================= */
 
 function renderPlayers(players) {
 
+  const required =
+    Number(
+      currentGame?.player_count ||
+      3
+    );
+
+
   playerCountElement.textContent =
     players.length +
     " / " +
-    (
-      currentGame?.player_count ||
-      "?"
-    ) +
+    required +
     " joueur(s)";
 
 
@@ -992,58 +1051,60 @@ function renderPlayers(players) {
 
   playerListElement.innerHTML =
     players
-      .map(function(player) {
+      .map(
+        function(player) {
 
-        const isMe =
-          currentPlayer &&
-          player.id ===
-          currentPlayer.id;
-
-
-        const kickButton =
-          currentPlayer &&
-          currentPlayer.is_host &&
-          !player.is_host &&
-          !isMe
-            ? `
-              <button
-                class="red small"
-                onclick="kickPlayer('${player.id}')"
-              >
-                🚫 Exclure
-              </button>
-            `
-            : "";
+          const isMe =
+            currentPlayer &&
+            player.id ===
+            currentPlayer.id;
 
 
-        return `
-          <div class="player">
+          const kickButton =
+            currentPlayer &&
+            currentPlayer.is_host &&
+            !player.is_host &&
+            !isMe
+              ? `
+                <button
+                  class="red small"
+                  onclick="kickPlayer('${player.id}')"
+                >
+                  🚫 Exclure
+                </button>
+              `
+              : "";
 
-            <span class="player-name">
 
-              🟢
-              ${escapeHTML(player.name)}
+          return `
+            <div class="player">
 
-              ${
-                player.is_host
-                  ? " 👑"
-                  : ""
-              }
+              <span class="player-name">
 
-              ${
-                isMe
-                  ? " (toi)"
-                  : ""
-              }
+                🟢
+                ${escapeHTML(player.name)}
 
-            </span>
+                ${
+                  player.is_host
+                    ? " 👑"
+                    : ""
+                }
 
-            ${kickButton}
+                ${
+                  isMe
+                    ? " (toi)"
+                    : ""
+                }
 
-          </div>
-        `;
+              </span>
 
-      })
+              ${kickButton}
+
+            </div>
+          `;
+
+        }
+      )
       .join("");
 
 }
@@ -1077,17 +1138,21 @@ function escapeHTML(value) {
 
 
 /* =========================================================
-   EXCLURE JOUEUR
+   EXCLURE UN JOUEUR
 ========================================================= */
 
-async function kickPlayer(playerId) {
+async function kickPlayer(
+  playerId
+) {
 
   if (
     !currentGame ||
     !currentPlayer ||
     !currentPlayer.is_host
   ) {
+
     return;
+
   }
 
 
@@ -1096,7 +1161,9 @@ async function kickPlayer(playerId) {
       "Voulez-vous vraiment exclure ce joueur ?"
     )
   ) {
+
     return;
+
   }
 
 
@@ -1134,7 +1201,10 @@ async function kickPlayer(playerId) {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Exclusion :",
+      error
+    );
 
 
     setStatus(
@@ -1161,7 +1231,9 @@ configButton.addEventListener(
       !currentPlayer ||
       !currentPlayer.is_host
     ) {
+
       return;
+
     }
 
 
@@ -1215,13 +1287,15 @@ async function distributeRolesForGame(
 
 
   /*
-    Mélange fiable pour un petit groupe.
+    Mélange des joueurs.
   */
 
   const shuffled =
     [...gamePlayers]
       .sort(
-        () => Math.random() - 0.5
+        () =>
+          Math.random() -
+          0.5
       );
 
 
@@ -1232,13 +1306,13 @@ async function distributeRolesForGame(
         undercoverCount
       )
       .map(
-        player => player.id
+        player =>
+          player.id
       );
 
 
   /*
-    Notes configurées dans la partie.
-    Si elles sont absentes, valeurs par défaut.
+    Notes configurées.
   */
 
   const normalNote =
@@ -1253,7 +1327,7 @@ async function distributeRolesForGame(
 
 
   /*
-    Attribution joueur par joueur.
+    Attribution des rôles.
   */
 
   for (
@@ -1266,13 +1340,13 @@ async function distributeRolesForGame(
       );
 
 
-    const role =
+    const assignedRole =
       isUndercover
         ? "undercover"
         : "civil";
 
 
-    const note =
+    const assignedNote =
       isUndercover
         ? undercoverNote
         : normalNote;
@@ -1285,19 +1359,26 @@ async function distributeRolesForGame(
         .from("players")
         .update({
 
-          role: role,
+          role:
+            assignedRole,
 
-          note: note,
+          note:
+            assignedNote,
 
-          secret_note: note,
+          secret_note:
+            assignedNote,
 
-          alive: true,
+          alive:
+            true,
 
-          eliminated: false,
+          eliminated:
+            false,
 
-          revealed: false,
+          revealed:
+            false,
 
-          vote_for: null
+          vote_for:
+            null
 
         })
         .eq(
@@ -1320,7 +1401,7 @@ async function distributeRolesForGame(
 
 
 /* =========================================================
-   LANCER PARTIE
+   LANCER LA PARTIE
 ========================================================= */
 
 startButton.addEventListener(
@@ -1336,11 +1417,14 @@ async function startGame() {
     !currentPlayer ||
     !currentPlayer.is_host
   ) {
+
     return;
+
   }
 
 
-  startButton.disabled = true;
+  startButton.disabled =
+    true;
 
   startButton.textContent =
     "🎮 Lancement...";
@@ -1349,7 +1433,7 @@ async function startGame() {
   try {
 
     /*
-      1. On relit la partie.
+      1. Relecture de la partie.
     */
 
     const {
@@ -1381,7 +1465,7 @@ async function startGame() {
 
 
     /*
-      2. On récupère les joueurs.
+      2. Récupération des joueurs.
     */
 
     const {
@@ -1415,6 +1499,13 @@ async function startGame() {
       );
 
 
+    const maxPlayers =
+      Number(
+        game.max_players ||
+        10
+      );
+
+
     if (
       !gamePlayers ||
       gamePlayers.length <
@@ -1426,7 +1517,11 @@ async function startGame() {
         requiredPlayers +
         " joueurs pour commencer. " +
         "Actuellement : " +
-        (gamePlayers?.length || 0) +
+        (
+          gamePlayers
+            ? gamePlayers.length
+            : 0
+        ) +
         "."
       );
 
@@ -1435,7 +1530,7 @@ async function startGame() {
 
     if (
       gamePlayers.length >
-      Number(game.max_players || 10)
+      maxPlayers
     ) {
 
       throw new Error(
@@ -1465,8 +1560,7 @@ async function startGame() {
 
 
     /*
-      3. Attribution AVANT de lancer
-         la phase reveal.
+      3. Attribution des rôles.
     */
 
     await distributeRolesForGame(
@@ -1476,8 +1570,7 @@ async function startGame() {
 
 
     /*
-      4. On met le jeu directement
-         en phase reveal.
+      4. Passage en jeu.
     */
 
     const {
@@ -1488,13 +1581,17 @@ async function startGame() {
         .from("games")
         .update({
 
-          status: "playing",
+          status:
+            "playing",
 
-          phase: "reveal",
+          phase:
+            "reveal",
 
-          current_round: 1,
+          current_round:
+            1,
 
-          winner: null,
+          winner:
+            null,
 
           updated_at:
             new Date().toISOString()
@@ -1521,10 +1618,7 @@ async function startGame() {
 
 
     /*
-      5. Tout le monde va recevoir
-         le changement Realtime.
-         L'hôte peut aussi aller
-         directement au jeu.
+      5. Direction vers game.html.
     */
 
     goToGame();
@@ -1545,7 +1639,8 @@ async function startGame() {
     );
 
 
-    startButton.disabled = false;
+    startButton.disabled =
+      false;
 
     startButton.textContent =
       "🎮 Lancer la partie";
@@ -1565,7 +1660,9 @@ function goToGame() {
     !currentGame ||
     !currentPlayer
   ) {
+
     return;
+
   }
 
 
@@ -1614,23 +1711,34 @@ function subscribeToRealtime() {
   }
 
 
+  const channelSuffix =
+    Date.now();
+
+
   realtimeGameChannel =
     supabaseClient
       .channel(
         "game-status-" +
         currentGame.id +
         "-" +
-        Date.now()
+        channelSuffix
       )
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
-          schema: "public",
-          table: "games",
+          event:
+            "UPDATE",
+
+          schema:
+            "public",
+
+          table:
+            "games",
+
           filter:
             "id=eq." +
             currentGame.id
+
         },
         function(payload) {
 
@@ -1660,17 +1768,24 @@ function subscribeToRealtime() {
         "players-" +
         currentGame.id +
         "-" +
-        Date.now()
+        channelSuffix
       )
       .on(
         "postgres_changes",
         {
-          event: "*",
-          schema: "public",
-          table: "players",
+          event:
+            "*",
+
+          schema:
+            "public",
+
+          table:
+            "players",
+
           filter:
             "game_id=eq." +
             currentGame.id
+
         },
         function() {
 
@@ -1709,7 +1824,8 @@ function stopGamePolling() {
       gamePollTimer
     );
 
-    gamePollTimer = null;
+    gamePollTimer =
+      null;
 
   }
 
@@ -1739,8 +1855,13 @@ async function checkGameStatus() {
         .maybeSingle();
 
 
-    if (error || !data) {
+    if (
+      error ||
+      !data
+    ) {
+
       return;
+
     }
 
 
@@ -1758,7 +1879,6 @@ async function checkGameStatus() {
       goToGame();
 
     }
-
 
   } catch (error) {
 
@@ -1870,9 +1990,7 @@ async function restoreSessionFromUrl() {
 
 
     if (!finalPlayerId) {
-
       return false;
-
     }
 
 
@@ -1983,7 +2101,8 @@ async function leaveGame() {
           realtimeGameChannel
         );
 
-      realtimeGameChannel = null;
+      realtimeGameChannel =
+        null;
 
     }
 
@@ -1995,7 +2114,8 @@ async function leaveGame() {
           realtimePlayersChannel
         );
 
-      realtimePlayersChannel = null;
+      realtimePlayersChannel =
+        null;
 
     }
 
@@ -2050,8 +2170,11 @@ async function leaveGame() {
   clearSession();
 
 
-  currentGame = null;
-  currentPlayer = null;
+  currentGame =
+    null;
+
+  currentPlayer =
+    null;
 
 
   lobbyElement.classList.add(
@@ -2114,10 +2237,11 @@ async function start() {
 
     }
 
-
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     setStatus(
