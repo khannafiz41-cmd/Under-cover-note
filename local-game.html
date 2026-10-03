@@ -1,1446 +1,1235 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
-<meta
-  name="theme-color"
-  content="#080c18"
->
-
-<title>Undercover Notes - Local</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Undercover Notes — Local</title>
 
 <style>
-
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
-html,
+:root {
+  --bg: #0f1020;
+  --card: #1b1d35;
+  --card2: #252846;
+  --text: #f5f6ff;
+  --muted: #aeb2d0;
+  --primary: #7c5cff;
+  --primary2: #6847e8;
+  --danger: #ff5d73;
+  --success: #42d392;
+  --warning: #ffbd59;
+  --border: rgba(255,255,255,.1);
+}
+
 body {
   margin: 0;
-  min-height: 100%;
-  background: #080c18;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-body {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top, #242754 0%, var(--bg) 45%);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-main {
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
   width: 100%;
-  max-width: 620px;
-  margin: auto;
-  padding: 18px 16px 45px;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 18px;
 }
 
-header {
-  text-align: center;
-  padding: 12px 0 5px;
-  font-size: 20px;
-  font-weight: bold;
+.screen {
+  display: none;
+  min-height: calc(100vh - 36px);
+  align-items: center;
+  justify-content: center;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.panel {
+  width: 100%;
+  background: rgba(27,29,53,.96);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 20px 70px rgba(0,0,0,.3);
 }
 
 .logo {
-  font-size: 62px;
   text-align: center;
-  margin-top: 20px;
+  font-size: 48px;
+  margin-bottom: 8px;
 }
 
 h1 {
+  margin: 0 0 8px;
   text-align: center;
-  font-size: 42px;
-  margin: 10px 0;
+  font-size: 30px;
 }
 
 h2 {
   margin-top: 0;
-}
-
-h3 {
-  margin-top: 0;
+  font-size: 25px;
 }
 
 .subtitle {
+  color: var(--muted);
   text-align: center;
-  color: #aab5ca;
-  line-height: 1.6;
-  margin: 0 auto 25px;
-  max-width: 480px;
+  line-height: 1.5;
+  margin-bottom: 25px;
 }
 
-.card {
-  background: #111a2e;
-  border: 1px solid #293653;
-  border-radius: 20px;
-  padding: 20px;
-  margin: 16px 0;
-}
-
-.center {
-  text-align: center;
-}
-
-.hidden {
-  display: none !important;
-}
-
-button {
-  width: 100%;
-  padding: 17px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 14px;
-  background: #7c3aed;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-button.secondary {
-  background: #18233a;
-  border: 1px solid #293653;
-}
-
-button.green {
-  background: #16a34a;
-}
-
-button.red {
-  background: #dc2626;
+.section {
+  margin-top: 22px;
 }
 
 label {
   display: block;
-  margin-top: 15px;
-  margin-bottom: 7px;
-  font-weight: bold;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
 input,
 select {
   width: 100%;
-  padding: 15px;
-  border-radius: 12px;
-  border: 1px solid #293653;
-  background: #090f20;
-  color: white;
-  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: #121426;
+  color: var(--text);
+  padding: 14px;
   outline: none;
 }
 
 input:focus,
 select:focus {
-  border-color: #7c3aed;
+  border-color: var(--primary);
 }
 
-.players {
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 15px 18px;
+  font-weight: 800;
+  color: white;
+  background: var(--primary);
+  margin-top: 12px;
+  transition: transform .12s, opacity .12s;
+}
+
+button:active {
+  transform: scale(.98);
+}
+
+button.secondary {
+  background: var(--card2);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+button.success {
+  background: var(--success);
+  color: #07140e;
+}
+
+button.warning {
+  background: var(--warning);
+  color: #241500;
+}
+
+.back {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.difficulty-list {
   display: grid;
   gap: 10px;
 }
 
-.player-row {
-  display: flex;
-  gap: 8px;
+.difficulty {
+  position: relative;
 }
 
-.number {
-  width: 45px;
-  min-width: 45px;
+.difficulty input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.difficulty label {
+  margin: 0;
+  padding: 15px;
+  border: 1px solid var(--border);
+  background: #121426;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.difficulty input:checked + label {
+  border-color: var(--primary);
+  background: rgba(124,92,255,.16);
+}
+
+.difficulty-title {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  background: #18233a;
-  border-radius: 12px;
-  font-weight: bold;
 }
 
-.info {
-  color: #cbd5e1;
-  line-height: 1.6;
+.difficulty-title strong {
+  font-size: 17px;
 }
 
-.warning {
-  padding: 12px;
-  border-radius: 12px;
-  background: #3a2418;
-  border: 1px solid #6b3f20;
-  color: #fed7aa;
+.difficulty-description {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 5px;
+  font-weight: 500;
+}
+
+.player-list {
+  display: grid;
+  gap: 10px;
   margin-top: 12px;
 }
 
-.success {
-  color: #86efac;
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.pass-screen {
+.player-number {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: var(--card2);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.player-row input {
+  flex: 1;
+}
+
+.info {
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: rgba(124,92,255,.1);
+  color: var(--muted);
+  line-height: 1.45;
+  margin-top: 14px;
+}
+
+.pass-card {
   text-align: center;
-  padding: 35px 10px;
 }
 
 .pass-icon {
-  font-size: 75px;
-  margin-bottom: 15px;
+  font-size: 65px;
+  margin-bottom: 12px;
 }
 
 .pass-name {
-  font-size: 34px;
-  font-weight: bold;
-  margin: 12px 0;
-  overflow-wrap: anywhere;
-}
-
-.pass-message {
-  color: #cbd5e1;
-  line-height: 1.6;
-  font-size: 17px;
+  font-size: 29px;
+  font-weight: 900;
+  margin: 10px 0;
 }
 
 .secret-card {
   text-align: center;
-  padding: 30px 18px;
-  background: #111a2e;
-  border: 1px solid #293653;
-  border-radius: 22px;
-  margin-top: 20px;
 }
 
-.secret-lock {
-  font-size: 65px;
+.secret-box {
+  margin: 25px 0;
+  padding: 30px 20px;
+  background: linear-gradient(145deg, #292d52, #17192d);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 24px;
 }
 
-.role-icon {
-  font-size: 65px;
-  margin-top: 10px;
+.secret-number {
+  font-size: 82px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -4px;
+  margin: 15px 0;
 }
 
-.role {
-  font-size: 28px;
-  font-weight: bold;
-  margin: 12px 0;
-}
-
-.note-box {
-  background: #090f20;
-  border: 1px solid #293653;
-  border-radius: 18px;
-  padding: 25px 15px;
-  margin-top: 20px;
-}
-
-.note-label {
-  color: #94a3b8;
+.secret-warning {
+  color: var(--warning);
   font-size: 14px;
-  margin-bottom: 8px;
+  font-weight: 700;
 }
 
-.note {
-  font-size: 70px;
-  font-weight: bold;
-}
-
-.note-small {
-  font-size: 25px;
-  color: #94a3b8;
-}
-
-.topic {
-  text-align: center;
-  font-size: 55px;
-  font-weight: bold;
-  margin: 30px 0;
+.hidden-secret {
+  filter: blur(18px);
+  user-select: none;
 }
 
 .timer {
   text-align: center;
-  font-size: 65px;
-  font-weight: bold;
-  margin: 20px 0;
-  letter-spacing: 2px;
+  font-size: 64px;
+  font-weight: 900;
+  margin: 25px 0;
+  font-variant-numeric: tabular-nums;
 }
 
-.vote-player {
+.timer.warning {
+  color: var(--warning);
+}
+
+.timer.danger {
+  color: var(--danger);
+}
+
+.discussion-box {
+  text-align: center;
+}
+
+.vote-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.vote-button {
+  background: var(--card2);
+  text-align: left;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 17px;
-  margin: 9px 0;
-  border-radius: 14px;
-  background: #18233a;
-  border: 2px solid transparent;
-  cursor: pointer;
-  font-size: 17px;
+  justify-content: space-between;
 }
 
-.vote-player.selected {
-  border-color: #7c3aed;
-  background: #211943;
+.vote-button.selected {
+  background: var(--primary);
 }
 
-.vote-player input {
-  width: 20px;
-  height: 20px;
+.vote-number {
+  opacity: .7;
+  font-size: 13px;
+}
+
+.result {
+  text-align: center;
 }
 
 .result-icon {
-  font-size: 75px;
+  font-size: 70px;
+}
+
+.result-title {
+  font-size: 30px;
+  font-weight: 950;
   margin: 10px 0;
 }
 
-.result-big {
-  font-size: 30px;
-  font-weight: bold;
-  margin: 12px 0;
+.result-subtitle {
+  color: var(--muted);
+  line-height: 1.5;
 }
 
-.eliminated {
-  margin: 18px 0;
-  padding: 18px;
-  background: #090f20;
-  border-radius: 15px;
+.players-result {
+  margin-top: 20px;
+  display: grid;
+  gap: 8px;
 }
 
-.round-badge {
-  display: inline-block;
-  padding: 8px 14px;
-  background: #18233a;
-  border: 1px solid #293653;
-  border-radius: 999px;
-  color: #cbd5e1;
+.result-player {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--card2);
+  border-radius: 13px;
 }
 
-.divider {
-  height: 1px;
-  background: #293653;
-  margin: 20px 0;
+.alive {
+  color: var(--success);
 }
 
-.rules p {
-  line-height: 1.6;
-  color: #cbd5e1;
+.dead {
+  color: var(--danger);
+  text-decoration: line-through;
 }
 
-.footer-note {
-  text-align: center;
-  color: #64748b;
+.small {
   font-size: 13px;
-  margin-top: 25px;
+  color: var(--muted);
 }
 
+.badge {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 10px;
+  }
+
+  .panel {
+    padding: 19px;
+    border-radius: 22px;
+  }
+
+  h1 {
+    font-size: 27px;
+  }
+
+  .secret-number {
+    font-size: 72px;
+  }
+
+  .timer {
+    font-size: 54px;
+  }
+}
 </style>
-
 </head>
-
 
 <body>
 
-<header>
-  🕵️ Undercover Notes
-</header>
+<div class="app">
+
+  <!-- ACCUEIL -->
+  <section id="homeScreen" class="screen active">
+    <div class="panel">
+      <div class="logo">🕵️</div>
+      <h1>Undercover Notes</h1>
+      <p class="subtitle">
+        Mode local<br>
+        Un seul téléphone, plusieurs joueurs.
+      </p>
+
+      <button onclick="showScreen('setupScreen')">
+        🎮 Nouvelle partie
+      </button>
+
+      <button class="back" onclick="goBack()">
+        ← Retour
+      </button>
+    </div>
+  </section>
+
+
+  <!-- CONFIGURATION -->
+  <section id="setupScreen" class="screen">
+    <div class="panel">
+      <h2>⚙️ Configuration</h2>
+
+      <div class="section">
+        <label for="playerCount">Nombre de joueurs</label>
+        <select id="playerCount" onchange="updatePlayerInputs()">
+          <option value="3">3 joueurs</option>
+          <option value="4">4 joueurs</option>
+          <option value="5" selected>5 joueurs</option>
+          <option value="6">6 joueurs</option>
+          <option value="7">7 joueurs</option>
+          <option value="8">8 joueurs</option>
+          <option value="9">9 joueurs</option>
+          <option value="10">10 joueurs</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <label for="undercoverCount">Nombre d'Undercover</label>
+        <select id="undercoverCount">
+          <option value="1">1 Undercover</option>
+          <option value="2">2 Undercover</option>
+          <option value="3">3 Undercover</option>
+          <option value="4">4 Undercover</option>
+        </select>
+
+        <div class="info">
+          💡 Pour une partie équilibrée, 1 ou 2 Undercover sont généralement
+          adaptés aux petits groupes.
+        </div>
+      </div>
+
+      <div class="section">
+        <label for="discussionTime">Temps de discussion</label>
+        <select id="discussionTime">
+          <option value="1">1 minute</option>
+          <option value="2" selected>2 minutes</option>
+          <option value="3">3 minutes</option>
+          <option value="4">4 minutes</option>
+          <option value="5">5 minutes</option>
+        </select>
+      </div>
+
+      <div class="section">
+        <label>🎯 Difficulté</label>
+
+        <div class="difficulty-list">
+
+          <div class="difficulty">
+            <input
+              type="radio"
+              name="difficulty"
+              id="easy"
+              value="easy"
+              checked
+            >
+            <label for="easy">
+              <div class="difficulty-title">
+                <strong>🟢 Facile</strong>
+                <span class="badge">Très différent</span>
+              </div>
+              <div class="difficulty-description">
+                Les deux notes sont très éloignées. Facile à comprendre.
+              </div>
+            </label>
+          </div>
+
+          <div class="difficulty">
+            <input
+              type="radio"
+              name="difficulty"
+              id="medium"
+              value="medium"
+            >
+            <label for="medium">
+              <div class="difficulty-title">
+                <strong>🟡 Moyen</strong>
+                <span class="badge">Différent</span>
+              </div>
+              <div class="difficulty-description">
+                Les notes sont différentes, mais il faut déjà réfléchir.
+              </div>
+            </label>
+          </div>
+
+          <div class="difficulty">
+            <input
+              type="radio"
+              name="difficulty"
+              id="hard"
+              value="hard"
+            >
+            <label for="hard">
+              <div class="difficulty-title">
+                <strong>🔴 Difficile</strong>
+                <span class="badge">Proche</span>
+              </div>
+              <div class="difficulty-description">
+                Les notes sont très proches. Les discussions deviennent importantes.
+              </div>
+            </label>
+          </div>
+
+          <div class="difficulty">
+            <input
+              type="radio"
+              name="difficulty"
+              id="subtle"
+              value="subtle"
+            >
+            <label for="subtle">
+              <div class="difficulty-title">
+                <strong>🟣 Subtil</strong>
+                <span class="badge">Très proche</span>
+              </div>
+              <div class="difficulty-description">
+                Des notes presque identiques et des paires spécialement choisies.
+              </div>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <label>👥 Noms des joueurs</label>
+        <div id="playerInputs" class="player-list"></div>
+      </div>
+
+      <button onclick="startGame()">
+        🚀 Lancer la partie
+      </button>
+
+      <button class="back" onclick="showScreen('homeScreen')">
+        ← Retour
+      </button>
+    </div>
+  </section>
+
+
+  <!-- PASSAGE DU TELEPHONE -->
+  <section id="passScreen" class="screen">
+    <div class="panel pass-card">
+
+      <div class="pass-icon">📱</div>
+
+      <h2>Passe le téléphone</h2>
+
+      <p class="small">
+        Personne d'autre ne doit regarder l'écran.
+      </p>
+
+      <div class="pass-name" id="passPlayerName"></div>
+
+      <p class="subtitle">
+        Quand cette personne est prête, elle peut regarder sa carte secrète.
+      </p>
+
+      <button onclick="showSecretCard()">
+        👁️ Voir ma carte
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- CARTE SECRETE -->
+  <section id="secretScreen" class="screen">
+    <div class="panel secret-card">
+
+      <h2 id="secretPlayerName"></h2>
+
+      <p class="small">
+        Cette information est uniquement pour toi.
+      </p>
+
+      <div class="secret-box">
+
+        <div class="secret-warning">
+          🔒 NOTE SECRÈTE
+        </div>
+
+        <div id="secretNumber" class="secret-number hidden-secret">
+          ?
+        </div>
+
+        <div class="small">
+          Retient bien cette note.
+        </div>
+
+      </div>
+
+      <button
+        id="revealButton"
+        onclick="revealSecret()"
+      >
+        👁️ Afficher ma note
+      </button>
+
+      <button
+        id="hideButton"
+        class="secondary"
+        style="display:none"
+        onclick="hideSecret()"
+      >
+        🙈 Cacher ma note
+      </button>
+
+      <button
+        id="nextPrivateButton"
+        class="success"
+        style="display:none"
+        onclick="nextPrivatePlayer()"
+      >
+        ✓ J'ai retenu
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- DEBUT DISCUSSION -->
+  <section id="discussionStartScreen" class="screen">
+    <div class="panel discussion-box">
+
+      <div class="pass-icon">🗣️</div>
+
+      <h2>Tout le monde est prêt ?</h2>
+
+      <p class="subtitle">
+        Maintenant, discutez et essayez de trouver qui possède une note différente.
+      </p>
+
+      <div class="info">
+        ⚠️ Ne montrez jamais votre note aux autres joueurs.
+      </div>
+
+      <button onclick="startDiscussion()">
+        🗣️ Commencer la discussion
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- DISCUSSION -->
+  <section id="discussionScreen" class="screen">
+    <div class="panel discussion-box">
+
+      <div class="pass-icon">🗣️</div>
+
+      <h2>Discussion</h2>
+
+      <p class="subtitle">
+        Discutez, comparez vos réponses et essayez de repérer les notes différentes.
+      </p>
+
+      <div id="timer" class="timer">
+        02:00
+      </div>
+
+      <button
+        id="finishDiscussionButton"
+        onclick="startVoting()"
+      >
+        🗳️ Passer au vote
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- VOTE -->
+  <section id="voteScreen" class="screen">
+    <div class="panel">
+
+      <h2 id="voteTitle">🗳️ Vote</h2>
+
+      <p id="voteSubtitle" class="subtitle"></p>
+
+      <div id="voteList" class="vote-list"></div>
+
+      <button
+        id="confirmVoteButton"
+        class="success"
+        onclick="confirmVote()"
+        disabled
+      >
+        ✓ Confirmer le vote
+      </button>
+
+    </div>
+  </section>
+
+
+  <!-- RESULTAT -->
+  <section id="resultScreen" class="screen">
+    <div class="panel result">
+
+      <div id="resultIcon" class="result-icon">🏆</div>
+
+      <div id="resultTitle" class="result-title">
+        Résultat
+      </div>
+
+      <p id="resultSubtitle" class="result-subtitle"></p>
+
+      <div id="playersResult" class="players-result"></div>
+
+      <button onclick="nextRound()">
+        🔄 Manche suivante
+      </button>
+
+      <button class="secondary" onclick="showScreen('homeScreen')">
+        🏠 Menu principal
+      </button>
+
+    </div>
+  </section>
 
-
-<main>
-
-
-<!-- =====================================================
-     ACCUEIL
-===================================================== -->
-
-<section id="home">
-
-  <div class="logo">
-    🕵️
-  </div>
-
-  <h1>
-    Undercover
-    <br>
-    <span style="color:#c4b5fd;">
-      Notes
-    </span>
-  </h1>
-
-  <p class="subtitle">
-    Mode local · Un seul téléphone ·
-    Passez le téléphone à chaque joueur.
-  </p>
-
-  <button onclick="showSetup()">
-    📱 Jouer en local
-  </button>
-
-  <button
-    class="secondary"
-    onclick="showRules()"
-  >
-    📖 Comment jouer
-  </button>
-
-  <button
-    class="secondary"
-    onclick="goBack()"
-  >
-    ← Retour
-  </button>
-
-</section>
-
-
-
-<!-- =====================================================
-     CONFIGURATION
-===================================================== -->
-
-<section
-  id="setup"
-  class="hidden"
->
-
-  <h2>
-    🎮 Préparer la partie
-  </h2>
-
-  <div class="card">
-
-    <label for="playerCount">
-      Nombre de joueurs
-    </label>
-
-    <select id="playerCount">
-
-      <option value="3">
-        3 joueurs
-      </option>
-
-      <option value="4" selected>
-        4 joueurs
-      </option>
-
-      <option value="5">
-        5 joueurs
-      </option>
-
-      <option value="6">
-        6 joueurs
-      </option>
-
-      <option value="7">
-        7 joueurs
-      </option>
-
-      <option value="8">
-        8 joueurs
-      </option>
-
-      <option value="9">
-        9 joueurs
-      </option>
-
-      <option value="10">
-        10 joueurs
-      </option>
-
-    </select>
-
-
-    <label for="undercoverCount">
-      Nombre d'Undercover
-    </label>
-
-    <select id="undercoverCount">
-
-      <option value="1">
-        1 Undercover
-      </option>
-
-      <option value="2">
-        2 Undercover
-      </option>
-
-      <option value="3">
-        3 Undercover
-      </option>
-
-      <option value="4">
-        4 Undercover
-      </option>
-
-    </select>
-
-
-    <label for="discussionTime">
-      Temps de discussion
-    </label>
-
-    <select id="discussionTime">
-
-      <option value="60">
-        1 minute
-      </option>
-
-      <option value="120">
-        2 minutes
-      </option>
-
-      <option value="180" selected>
-        3 minutes
-      </option>
-
-      <option value="300">
-        5 minutes
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <div class="card">
-
-    <h3>
-      👥 Prénoms des joueurs
-    </h3>
-
-    <p class="info">
-      Entrez les prénoms. Le téléphone sera ensuite
-      passé à chaque joueur pour révéler sa carte.
-    </p>
-
-    <div
-      id="players"
-      class="players"
-    ></div>
-
-  </div>
-
-
-  <div
-    id="setupWarning"
-    class="warning hidden"
-  ></div>
-
-
-  <button onclick="startGame()">
-    🚀 Commencer
-  </button>
-
-  <button
-    class="secondary"
-    onclick="showHome()"
-  >
-    ← Retour
-  </button>
-
-</section>
-
-
-
-<!-- =====================================================
-     REGLES
-===================================================== -->
-
-<section
-  id="rules"
-  class="hidden"
->
-
-  <h2>
-    📖 Comment jouer
-  </h2>
-
-  <div class="card rules">
-
-    <p>
-      <b>1.</b>
-      Entrez les prénoms de tous les joueurs.
-    </p>
-
-    <p>
-      <b>2.</b>
-      Choisissez le nombre d'Undercover.
-    </p>
-
-    <p>
-      <b>3.</b>
-      Le téléphone est passé à chaque joueur.
-    </p>
-
-    <p>
-      <b>4.</b>
-      Chaque joueur découvre secrètement son rôle
-      et sa note.
-    </p>
-
-    <p>
-      <b>5.</b>
-      Tout le monde pose ensuite son téléphone
-      et la discussion commence.
-    </p>
-
-    <p>
-      <b>6.</b>
-      Chaque joueur vote à tour de rôle.
-    </p>
-
-    <p>
-      <b>7.</b>
-      Si tous les Undercover sont éliminés,
-      les Villageois gagnent.
-    </p>
-
-    <p>
-      <b>8.</b>
-      Si les Undercover sont aussi nombreux
-      ou plus nombreux que les Villageois,
-      les Undercover gagnent.
-    </p>
-
-  </div>
-
-  <button
-    class="secondary"
-    onclick="showHome()"
-  >
-    ← Retour
-  </button>
-
-</section>
-
-
-
-<!-- =====================================================
-     JEU
-===================================================== -->
-
-<section
-  id="game"
-  class="hidden"
->
-
-  <div id="gameContent"></div>
-
-</section>
-
-
-<div class="footer-note">
-  Mode local · Aucune connexion nécessaire
 </div>
 
 
-</main>
-
-
-
 <script>
-
 /* =========================================================
-   VARIABLES
+   ÉTAT DU JEU
 ========================================================= */
 
 let players = [];
 
-let undercoverCount = 1;
+let gameSettings = {
+  playerCount: 5,
+  undercoverCount: 1,
+  discussionTime: 2,
+  difficulty: "easy"
+};
 
-let villageNote = 7;
+let currentPrivateIndex = 0;
+let currentVoterIndex = 0;
+let selectedVoteIndex = null;
 
-let undercoverNote = 6;
-
-let currentPlayer = 0;
-
-let currentRound = 1;
-
-let discussionSeconds = 180;
-
-let timer = null;
-
-let votes = {};
-
-let theme = "";
+let discussionInterval = null;
+let remainingSeconds = 0;
 
 
 /* =========================================================
-   THEMES
+   OUTILS
 ========================================================= */
 
-const themes = [
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
 
-  "🌮 Tacos",
-  "🍕 Pizza",
-  "✈️ Voyages",
-  "🎬 Films",
-  "⚽ Sport",
-  "🎮 Jeux vidéo",
-  "🎵 Musique",
-  "🏫 École",
-  "☀️ Vacances",
-  "🐶 Animaux",
-  "📱 Téléphones",
-  "🚗 Voitures",
-  "🏠 Maison",
-  "☕ Café",
-  "👟 Mode",
-  "🍔 Fast-food",
-  "🎂 Anniversaire",
-  "🍦 Glaces",
-  "🏖️ Plage",
-  "🎁 Cadeaux"
+  document.getElementById(id).classList.add("active");
 
-];
-
-
-/* =========================================================
-   UTILITAIRES
-========================================================= */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replace(
-      /[&<>"']/g,
-      function(char) {
-
-        return {
-
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-
-        }[char];
-
-      }
-    );
-
-}
-
-
-function hideAll() {
-
-  document
-    .getElementById("home")
-    .classList.add("hidden");
-
-  document
-    .getElementById("setup")
-    .classList.add("hidden");
-
-  document
-    .getElementById("rules")
-    .classList.add("hidden");
-
-  document
-    .getElementById("game")
-    .classList.add("hidden");
-
-}
-
-
-function showHome() {
-
-  stopTimer();
-
-  hideAll();
-
-  document
-    .getElementById("home")
-    .classList.remove("hidden");
-
+  window.scrollTo(0, 0);
 }
 
 
 function goBack() {
-
-  /*
-    Si la page a été ouverte depuis index.html,
-    on revient simplement à la page précédente.
-  */
-
-  if (document.referrer) {
-
-    window.history.back();
-
-  }
-
-  else {
-
-    window.location.href = "index.html";
-
-  }
-
+  window.location.href = "index.html";
 }
 
 
-function showSetup() {
-
-  hideAll();
-
-  document
-    .getElementById("setup")
-    .classList.remove("hidden");
-
-  generatePlayerInputs();
-
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 
-function showRules() {
+function shuffle(array) {
+  const copy = [...array];
 
-  hideAll();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
 
-  document
-    .getElementById("rules")
-    .classList.remove("hidden");
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
 
+  return copy;
+}
+
+
+/* Évite qu'un nom joueur puisse injecter du HTML. */
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 
 /* =========================================================
-   JOUEURS
+   CONFIGURATION
 ========================================================= */
 
-document
-  .getElementById("playerCount")
-  .addEventListener(
-    "change",
-    generatePlayerInputs
+function updatePlayerInputs() {
+  const count = Number(
+    document.getElementById("playerCount").value
   );
 
-
-function generatePlayerInputs() {
-
-  const count =
-    Number(
-      document.getElementById(
-        "playerCount"
-      ).value
-    );
-
-  const container =
-    document.getElementById(
-      "players"
-    );
-
-  /*
-    On conserve les anciens prénoms
-    quand le nombre de joueurs change.
-  */
-
-  const oldNames =
-    Array.from(
-      document.querySelectorAll(
-        ".playerName"
-      )
-    ).map(
-      input =>
-        input.value
-    );
-
+  const container = document.getElementById("playerInputs");
 
   container.innerHTML = "";
 
+  for (let i = 0; i < count; i++) {
+    const row = document.createElement("div");
 
-  for (
-    let i = 0;
-    i < count;
-    i++
-  ) {
+    row.className = "player-row";
 
-    const row =
-      document.createElement(
-        "div"
-      );
+    row.innerHTML = `
+      <div class="player-number">${i + 1}</div>
 
-    row.className =
-      "player-row";
-
-
-    const number =
-      document.createElement(
-        "div"
-      );
-
-    number.className =
-      "number";
-
-    number.textContent =
-      i + 1;
-
-
-    const input =
-      document.createElement(
-        "input"
-      );
-
-    input.className =
-      "playerName";
-
-    input.type =
-      "text";
-
-    input.maxLength =
-      20;
-
-    input.placeholder =
-      "Joueur " +
-      (i + 1);
-
-    input.autocomplete =
-      "off";
-
-    input.value =
-      oldNames[i] || "";
-
-
-    row.appendChild(number);
-
-    row.appendChild(input);
+      <input
+        id="playerName${i}"
+        type="text"
+        maxlength="20"
+        placeholder="Joueur ${i + 1}"
+        value="Joueur ${i + 1}"
+      >
+    `;
 
     container.appendChild(row);
-
   }
-
 }
 
 
+updatePlayerInputs();
+
+
 /* =========================================================
-   DEMARRER LA PARTIE
+   DIFFICULTÉ
+=========================================================
+
+   Chaque manche utilise UNE paire de notes :
+
+   Facile :
+      exemple 2 / 8
+      écart = 6 à 8
+
+   Moyen :
+      exemple 2 / 5
+      écart = 3 à 5
+
+   Difficile :
+      exemple 2 / 3
+      écart = 1
+
+   Subtil :
+      exemple 6 / 7
+      écart = 1
+      mais les paires sont choisies parmi des valeurs
+      particulièrement proches.
+
+   IMPORTANT :
+   - Tous les villageois ont exactement la même note.
+   - Tous les Undercover ont exactement la même autre note.
+   - Aucun rôle n'est affiché sur les cartes.
 ========================================================= */
 
-function startGame() {
+const difficultyPairs = {
 
-  const inputs =
-    document.querySelectorAll(
-      ".playerName"
-    );
+  easy: [
+    [1, 7],
+    [1, 9],
+    [2, 8],
+    [2, 10],
+    [3, 9],
+    [3, 10],
+    [1, 8],
+    [2, 9]
+  ],
 
+  medium: [
+    [1, 4],
+    [2, 5],
+    [3, 6],
+    [4, 7],
+    [5, 8],
+    [6, 9],
+    [7, 10],
+    [1, 5],
+    [2, 6],
+    [3, 7]
+  ],
 
-  players = [];
+  hard: [
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 6],
+    [6, 7],
+    [7, 8],
+    [8, 9],
+    [9, 10]
+  ],
 
-
-  for (
-    let i = 0;
-    i < inputs.length;
-    i++
-  ) {
-
-    const name =
-      inputs[i].value.trim();
-
-
-    players.push({
-
-      name:
-        name ||
-        "Joueur " +
-        (i + 1),
-
-      alive:
-        true,
-
-      role:
-        null,
-
-      note:
-        null
-
-    });
-
-  }
-
-
-  undercoverCount =
-    Number(
-      document.getElementById(
-        "undercoverCount"
-      ).value
-    );
-
-
-  const warning =
-    document.getElementById(
-      "setupWarning"
-    );
+  subtle: [
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 6],
+    [6, 7],
+    [7, 8],
+    [8, 9],
+    [9, 10]
+  ]
+};
 
 
-  warning.classList.add(
-    "hidden"
+function getDifficulty() {
+  const selected = document.querySelector(
+    'input[name="difficulty"]:checked'
   );
 
+  return selected ? selected.value : "easy";
+}
 
-  if (
-    undercoverCount >=
-    players.length
-  ) {
 
-    warning.textContent =
-      "Il faut garder au moins un Villageois.";
+function generateNotes() {
 
-    warning.classList.remove(
-      "hidden"
-    );
+  const difficulty = gameSettings.difficulty;
 
-    return;
+  const pairs = difficultyPairs[difficulty];
 
-  }
-
+  const pair = pairs[
+    randomInt(0, pairs.length - 1)
+  ];
 
   /*
-    Empêche par exemple 4 Undercover
-    dans une partie de 3 joueurs.
+    On mélange aussi l'ordre.
+
+    Par exemple :
+      [2, 8]
+
+    peut devenir :
+      villageois = 8
+      undercover = 2
+
+    ou :
+      villageois = 2
+      undercover = 8
+
+    Cela empêche de déduire automatiquement :
+    "le plus petit nombre = villageois".
   */
 
-  if (
-    undercoverCount >
-    Math.floor(
-      players.length / 2
-    )
-  ) {
-
-    warning.textContent =
-      "Pour garder une partie équilibrée, choisis moins d'Undercover.";
-
-    warning.classList.remove(
-      "hidden"
-    );
-
-    return;
-
+  if (Math.random() < 0.5) {
+    return {
+      villageNote: pair[0],
+      undercoverNote: pair[1]
+    };
   }
 
-
-  discussionSeconds =
-    Number(
-      document.getElementById(
-        "discussionTime"
-      ).value
-    );
-
-
-  currentRound =
-    1;
-
-  generateRoles();
-
-  showPrivatePassScreen();
-
+  return {
+    villageNote: pair[1],
+    undercoverNote: pair[0]
+  };
 }
 
 
 /* =========================================================
-   GENERATION DES ROLES
+   GÉNÉRATION DES RÔLES
 ========================================================= */
 
 function generateRoles() {
 
-  villageNote =
-    Math.floor(
-      Math.random() * 10
-    ) + 1;
+  const notes = generateNotes();
+
+  /*
+    Tous les joueurs commencent villageois.
+  */
+
+  players.forEach(player => {
+    player.role = "civil";
+    player.note = notes.villageNote;
+    player.alive = true;
+  });
 
 
   /*
-    L'Undercover reçoit une note
-    différente mais proche.
+    On mélange les indices pour choisir
+    aléatoirement les Undercover.
   */
 
-  if (
-    villageNote === 1
-  ) {
-
-    undercoverNote =
-      2;
-
-  }
-
-  else if (
-    villageNote === 10
-  ) {
-
-    undercoverNote =
-      9;
-
-  }
-
-  else {
-
-    undercoverNote =
-      Math.random() < 0.5
-        ? villageNote - 1
-        : villageNote + 1;
-
-  }
-
-
-  const indexes =
-    players.map(
-      (_, index) =>
-        index
-    );
-
-
-  /*
-    Mélange Fisher-Yates.
-  */
-
-  for (
-    let i = indexes.length - 1;
-    i > 0;
-    i--
-  ) {
-
-    const j =
-      Math.floor(
-        Math.random() *
-        (i + 1)
-      );
-
-
-    [
-      indexes[i],
-      indexes[j]
-    ] =
-    [
-      indexes[j],
-      indexes[i]
-    ];
-
-  }
-
-
-  players.forEach(
-    player => {
-
-      player.role =
-        "village";
-
-      player.note =
-        villageNote;
-
-      player.alive =
-        true;
-
-    }
+  const indices = shuffle(
+    players.map((_, index) => index)
   );
-
 
   for (
     let i = 0;
-    i < undercoverCount;
+    i < gameSettings.undercoverCount;
     i++
   ) {
 
-    const player =
-      players[
-        indexes[i]
-      ];
+    const index = indices[i];
+
+    players[index].role = "undercover";
+
+    /*
+      IMPORTANT :
+      Tous les Undercover ont EXACTEMENT
+      la même note.
+    */
+
+    players[index].note = notes.undercoverNote;
+  }
+}
 
 
-    player.role =
-      "undercover";
+/* =========================================================
+   LANCER UNE PARTIE
+========================================================= */
 
-    player.note =
-      undercoverNote;
+function startGame() {
 
+  const playerCount = Number(
+    document.getElementById("playerCount").value
+  );
+
+  const undercoverCount = Number(
+    document.getElementById("undercoverCount").value
+  );
+
+  const discussionTime = Number(
+    document.getElementById("discussionTime").value
+  );
+
+  /*
+    Vérification simple :
+    il doit rester au moins un joueur non-Undercover.
+  */
+
+  if (undercoverCount >= playerCount) {
+    alert(
+      "Il faut au moins un joueur qui ne soit pas Undercover."
+    );
+
+    return;
   }
 
 
-  theme =
-    themes[
-      Math.floor(
-        Math.random() *
-        themes.length
-      )
-    ];
+  players = [];
 
+  for (let i = 0; i < playerCount; i++) {
 
-  currentPlayer =
-    0;
-
-}
-
-
-/* =========================================================
-   ECRAN DE PASSAGE DU TELEPHONE
-========================================================= */
-
-function showPrivatePassScreen() {
-
-  stopTimer();
-
-  hideAll();
-
-  document
-    .getElementById("game")
-    .classList.remove("hidden");
-
-
-  const player =
-    players[currentPlayer];
-
-
-  document
-    .getElementById(
-      "gameContent"
-    )
-    .innerHTML = `
-
-      <div class="pass-screen">
-
-        <div class="round-badge">
-          Manche ${currentRound}
-        </div>
-
-        <div class="pass-icon">
-          📱
-        </div>
-
-        <h2>
-          Passe le téléphone
-        </h2>
-
-        <div class="pass-name">
-          ${escapeHTML(player.name)}
-        </div>
-
-        <p class="pass-message">
-
-          Donne le téléphone à
-          <strong>
-            ${escapeHTML(player.name)}
-          </strong>.
-
-          <br><br>
-
-          Les autres joueurs doivent
-          regarder ailleurs.
-
-        </p>
-
-        <button
-          onclick="showPrivateCard()"
-        >
-          🔐 Je suis ${escapeHTML(player.name)}
-        </button>
-
-      </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   CARTE SECRETE
-========================================================= */
-
-function showPrivateCard() {
-
-  const player =
-    players[currentPlayer];
-
-
-  hideAll();
-
-  document
-    .getElementById("game")
-    .classList.remove("hidden");
-
-
-  document
-    .getElementById(
-      "gameContent"
-    )
-    .innerHTML = `
-
-      <div class="center">
-
-        <div class="round-badge">
-          Manche ${currentRound}
-        </div>
-
-        <div class="secret-card">
-
-          <div id="hiddenCard">
-
-            <div class="secret-lock">
-              🔒
-            </div>
-
-            <h2>
-              Carte secrète
-            </h2>
-
-            <p class="info">
-              Personne d'autre ne doit regarder.
-            </p>
-
-            <button
-              onclick="revealPrivateCard()"
-            >
-              👁️ Voir ma carte
-            </button>
-
-          </div>
-
-
-          <div
-            id="revealedCard"
-            class="hidden"
-          >
-
-            <div class="role-icon">
-              ${
-                player.role === "undercover"
-                  ? "🕵️"
-                  : "👥"
-              }
-            </div>
-
-            <div class="role">
-              ${
-                player.role === "undercover"
-                  ? "UNDERCOVER"
-                  : "VILLAGEOIS"
-              }
-            </div>
-
-            <div class="note-box">
-
-              <div class="note-label">
-                TA NOTE
-              </div>
-
-              <div class="note">
-                ${player.note}
-                <span class="note-small">
-                  /10
-                </span>
-              </div>
-
-            </div>
-
-            <p class="info">
-              Mémorise ta carte.
-              Ne la montre à personne.
-            </p>
-
-            <button
-              class="secondary"
-              onclick="hidePrivateCard()"
-            >
-              🙈 Cacher ma carte
-            </button>
-
-            <button
-              class="green"
-              onclick="nextPrivatePlayer()"
-            >
-              ✅ J'ai mémorisé ma carte
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-}
-
-
-/* =========================================================
-   REVELER
-========================================================= */
-
-function revealPrivateCard() {
-
-  document
-    .getElementById(
-      "hiddenCard"
-    )
-    .classList.add(
-      "hidden"
+    const input = document.getElementById(
+      `playerName${i}`
     );
 
+    let name = input.value.trim();
 
-  document
-    .getElementById(
-      "revealedCard"
-    )
-    .classList.remove(
-      "hidden"
-    );
+    if (!name) {
+      name = `Joueur ${i + 1}`;
+    }
 
+    players.push({
+      name,
+      alive: true,
+      role: "civil",
+      note: null
+    });
+  }
+
+
+  gameSettings.playerCount = playerCount;
+  gameSettings.undercoverCount = undercoverCount;
+  gameSettings.discussionTime = discussionTime;
+  gameSettings.difficulty = getDifficulty();
+
+
+  generateRoles();
+
+
+  currentPrivateIndex = 0;
+
+  showPassScreen();
 }
 
 
 /* =========================================================
-   CACHER
+   PASSAGE DU TÉLÉPHONE
 ========================================================= */
 
-function hidePrivateCard() {
+function showPassScreen() {
 
-  document
-    .getElementById(
-      "revealedCard"
-    )
-    .classList.add(
-      "hidden"
-    );
+  const player = players[currentPrivateIndex];
 
+  document.getElementById("passPlayerName").textContent =
+    player.name;
 
-  document
-    .getElementById(
-      "hiddenCard"
-    )
-    .classList.remove(
-      "hidden"
-    );
-
+  showScreen("passScreen");
 }
 
 
 /* =========================================================
-   JOUEUR SUIVANT
+   CARTE SECRÈTE
 ========================================================= */
+
+function showSecretCard() {
+
+  const player = players[currentPrivateIndex];
+
+  document.getElementById("secretPlayerName").textContent =
+    player.name;
+
+  /*
+    IMPORTANT :
+    On affiche uniquement la NOTE.
+
+    On ne dit jamais :
+      "Tu es villageois"
+      "Tu es Undercover"
+
+    Le joueur doit le comprendre lui-même.
+  */
+
+  const numberElement =
+    document.getElementById("secretNumber");
+
+  numberElement.textContent = player.note;
+
+  numberElement.classList.add("hidden-secret");
+
+  document.getElementById("revealButton").style.display =
+    "block";
+
+  document.getElementById("hideButton").style.display =
+    "none";
+
+  document.getElementById("nextPrivateButton").style.display =
+    "none";
+
+  showScreen("secretScreen");
+}
+
+
+function revealSecret() {
+
+  document
+    .getElementById("secretNumber")
+    .classList.remove("hidden-secret");
+
+  document.getElementById("revealButton").style.display =
+    "none";
+
+  document.getElementById("hideButton").style.display =
+    "block";
+
+  document.getElementById("nextPrivateButton").style.display =
+    "block";
+}
+
+
+function hideSecret() {
+
+  document
+    .getElementById("secretNumber")
+    .classList.add("hidden-secret");
+
+  document.getElementById("revealButton").style.display =
+    "block";
+
+  document.getElementById("hideButton").style.display =
+    "none";
+}
+
 
 function nextPrivatePlayer() {
 
-  currentPlayer++;
+  currentPrivateIndex++;
 
+  if (currentPrivateIndex >= players.length) {
 
-  if (
-    currentPlayer >=
-    players.length
-  ) {
-
-    startDiscussion();
+    showScreen("discussionStartScreen");
 
     return;
-
   }
 
-
-  showPrivatePassScreen();
-
+  showPassScreen();
 }
 
 
@@ -1450,153 +1239,69 @@ function nextPrivatePlayer() {
 
 function startDiscussion() {
 
-  stopTimer();
+  clearInterval(discussionInterval);
 
-  hideAll();
+  remainingSeconds =
+    gameSettings.discussionTime * 60;
 
-  document
-    .getElementById("game")
-    .classList.remove("hidden");
+  updateTimer();
 
+  showScreen("discussionScreen");
 
-  let seconds =
-    discussionSeconds;
+  discussionInterval = setInterval(() => {
 
+    remainingSeconds--;
 
-  document
-    .getElementById(
-      "gameContent"
-    )
-    .innerHTML = `
+    updateTimer();
 
-      <div class="center">
+    if (remainingSeconds <= 0) {
 
-        <div class="round-badge">
-          Manche ${currentRound}
-        </div>
+      clearInterval(discussionInterval);
 
-        <div class="topic">
-          ${escapeHTML(theme)}
-        </div>
+      remainingSeconds = 0;
 
-        <p class="info">
+      updateTimer();
 
-          Discutez du thème.
+      setTimeout(() => {
+        startVoting();
+      }, 600);
+    }
 
-          <br><br>
-
-          Donnez des indices concernant
-          votre note sans la révéler directement.
-
-        </p>
-
-
-        <div class="card">
-
-          <div
-            id="timer"
-            class="timer"
-          >
-            00:00
-          </div>
-
-        </div>
-
-
-        <button
-          onclick="startVoting()"
-        >
-          🗳️ Passer au vote
-        </button>
-
-      </div>
-
-    `;
-
-
-  updateTimerDisplay(
-    seconds
-  );
-
-
-  timer =
-    setInterval(
-      function() {
-
-        seconds--;
-
-        updateTimerDisplay(
-          seconds
-        );
-
-
-        if (
-          seconds <= 0
-        ) {
-
-          stopTimer();
-
-          startVoting();
-
-        }
-
-      },
-      1000
-    );
-
+  }, 1000);
 }
 
 
-function updateTimerDisplay(
-  seconds
-) {
-
-  const timerElement =
-    document.getElementById(
-      "timer"
-    );
-
-
-  if (!timerElement) {
-    return;
-  }
-
+function updateTimer() {
 
   const minutes =
-    Math.floor(
-      seconds / 60
-    );
+    Math.floor(remainingSeconds / 60);
 
+  const seconds =
+    remainingSeconds % 60;
 
-  const secs =
-    seconds % 60;
+  const formatted =
+    String(minutes).padStart(2, "0")
+    + ":"
+    + String(seconds).padStart(2, "0");
 
+  const timer =
+    document.getElementById("timer");
 
-  timerElement.textContent =
-    String(minutes).padStart(
-      2,
-      "0"
-    ) +
-    ":" +
-    String(secs).padStart(
-      2,
-      "0"
-    );
+  timer.textContent = formatted;
 
-}
+  timer.classList.remove(
+    "warning",
+    "danger"
+  );
 
-
-function stopTimer() {
-
-  if (timer) {
-
-    clearInterval(timer);
-
-    timer =
-      null;
-
+  if (remainingSeconds <= 30) {
+    timer.classList.add("warning");
   }
 
+  if (remainingSeconds <= 10) {
+    timer.classList.remove("warning");
+    timer.classList.add("danger");
+  }
 }
 
 
@@ -1606,477 +1311,346 @@ function stopTimer() {
 
 function startVoting() {
 
-  stopTimer();
+  clearInterval(discussionInterval);
 
+  currentVoterIndex = 0;
 
-  votes = {};
+  selectedVoteIndex = null;
 
-
-  const alive =
-    players.filter(
-      player =>
-        player.alive
-    );
-
-
-  let voterIndex =
-    0;
-
-
-  showVote(
-    alive,
-    voterIndex
-  );
-
+  showVoteScreen();
 }
 
 
-function showVote(
-  alive,
-  voterIndex
-) {
+function getAlivePlayers() {
+  return players.filter(player => player.alive);
+}
 
-  if (
-    voterIndex >=
-    alive.length
-  ) {
 
-    showResults();
+function showVoteScreen() {
+
+  const alivePlayers = getAlivePlayers();
+
+  /*
+    Si un seul joueur reste, la partie est terminée.
+  */
+
+  if (alivePlayers.length <= 1) {
+
+    checkWinner();
 
     return;
+  }
 
+
+  /*
+    Si le joueur actuel est éliminé,
+    on passe au suivant.
+  */
+
+  while (
+    currentVoterIndex < players.length &&
+    !players[currentVoterIndex].alive
+  ) {
+    currentVoterIndex++;
+  }
+
+
+  if (currentVoterIndex >= players.length) {
+
+    currentVoterIndex = 0;
+
+    while (
+      currentVoterIndex < players.length &&
+      !players[currentVoterIndex].alive
+    ) {
+      currentVoterIndex++;
+    }
   }
 
 
   const voter =
-    alive[voterIndex];
+    players[currentVoterIndex];
+
+  document.getElementById("voteTitle").textContent =
+    "🗳️ Vote";
+
+  document.getElementById("voteSubtitle").textContent =
+    `${voter.name}, choisis quelqu'un à éliminer.`;
 
 
-  const targets =
-    alive.filter(
-      player =>
-        player !== voter
-    );
+  selectedVoteIndex = null;
+
+  const list =
+    document.getElementById("voteList");
+
+  list.innerHTML = "";
 
 
-  let html = `
+  alivePlayers.forEach((target, index) => {
 
-    <div class="center">
+    /*
+      Un joueur ne peut pas voter contre lui-même.
+    */
 
-      <div class="round-badge">
-        Manche ${currentRound}
-      </div>
-
-      <h2>
-        🗳️ Vote
-      </h2>
-
-      <p class="info">
-
-        Passe le téléphone à
-
-        <br>
-
-        <strong>
-          ${escapeHTML(voter.name)}
-        </strong>
-
-        <br><br>
-
-        Choisis la personne que tu
-        penses être l'Undercover.
-
-      </p>
-
-    </div>
-
-    <div class="card">
-
-  `;
-
-
-  targets.forEach(
-    function(target) {
-
-      const targetIndex =
-        players.indexOf(
-          target
-        );
-
-
-      html += `
-
-        <label
-          class="vote-player"
-          onclick="selectVote(${targetIndex})"
-        >
-
-          <input
-            type="radio"
-            name="voteTarget"
-            value="${targetIndex}"
-          >
-
-          <span>
-            👤
-            ${escapeHTML(target.name)}
-          </span>
-
-        </label>
-
-      `;
-
+    if (target === voter) {
+      return;
     }
-  );
+
+    const targetIndex =
+      players.indexOf(target);
+
+    const button =
+      document.createElement("button");
+
+    button.className = "vote-button";
+
+    button.dataset.playerIndex = targetIndex;
+
+    button.innerHTML = `
+      <span>👤 ${escapeHTML(target.name)}</span>
+      <span class="vote-number">
+        Voter
+      </span>
+    `;
+
+    button.addEventListener("click", () => {
+
+      selectVote(targetIndex);
+
+    });
+
+    list.appendChild(button);
+  });
 
 
-  html += `
+  const confirm =
+    document.getElementById("confirmVoteButton");
 
-      <button
-        class="green"
-        onclick="confirmLocalVote(${voterIndex})"
-      >
-        ✅ Confirmer mon vote
-      </button>
+  confirm.disabled = true;
 
-    </div>
-
-  `;
+  confirm.style.opacity = ".5";
 
 
-  document
-    .getElementById(
-      "gameContent"
-    )
-    .innerHTML =
-      html;
-
+  showScreen("voteScreen");
 }
 
 
-function selectVote(
-  targetIndex
-) {
+function selectVote(targetIndex) {
+
+  selectedVoteIndex = targetIndex;
+
 
   document
-    .querySelectorAll(
-      ".vote-player"
-    )
-    .forEach(
-      element => {
+    .querySelectorAll(".vote-button")
+    .forEach(button => {
 
-        element.classList.remove(
-          "selected"
-        );
+      button.classList.remove("selected");
 
+      if (
+        Number(button.dataset.playerIndex)
+        === targetIndex
+      ) {
+        button.classList.add("selected");
       }
-    );
+    });
 
 
-  const selected =
-    document.querySelector(
-      `.vote-player[onclick="selectVote(${targetIndex})"]`
-    );
+  const confirm =
+    document.getElementById("confirmVoteButton");
 
+  confirm.disabled = false;
 
-  if (selected) {
-
-    selected.classList.add(
-      "selected"
-    );
-
-  }
-
-
-  const radio =
-    document.querySelector(
-      `input[value="${targetIndex}"]`
-    );
-
-
-  if (radio) {
-
-    radio.checked =
-      true;
-
-  }
-
+  confirm.style.opacity = "1";
 }
 
 
-function confirmLocalVote(
-  voterIndex
-) {
+function confirmVote() {
 
-  const selected =
-    document.querySelector(
-      'input[name="voteTarget"]:checked'
-    );
+  if (selectedVoteIndex === null) {
+    return;
+  }
+
+  const target =
+    players[selectedVoteIndex];
+
+  if (!target || !target.alive) {
+    return;
+  }
 
 
-  if (!selected) {
+  target.alive = false;
 
-    alert(
-      "Choisis un joueur."
-    );
+
+  /*
+    On passe au prochain joueur vivant.
+  */
+
+  currentVoterIndex++;
+
+  while (
+    currentVoterIndex < players.length &&
+    !players[currentVoterIndex].alive
+  ) {
+    currentVoterIndex++;
+  }
+
+
+  /*
+    Si tout le monde a voté,
+    on vérifie la victoire.
+  */
+
+  if (
+    currentVoterIndex >= players.length
+  ) {
+
+    checkWinner();
 
     return;
-
   }
 
 
-  const targetIndex =
-    Number(
-      selected.value
-    );
-
-
-  votes[targetIndex] =
-    (votes[targetIndex] || 0) + 1;
-
-
-  const alive =
-    players.filter(
-      player =>
-        player.alive
-    );
-
-
-  showVote(
-    alive,
-    voterIndex + 1
-  );
-
+  showVoteScreen();
 }
 
 
 /* =========================================================
-   RESULTATS
+   CONDITIONS DE VICTOIRE
 ========================================================= */
 
-function showResults() {
+function checkWinner() {
 
-  let highest =
-    -1;
+  const alive = getAlivePlayers();
 
-  let eliminatedIndex =
-    -1;
+  const aliveUndercover =
+    alive.filter(
+      player => player.role === "undercover"
+    ).length;
 
-
-  Object.keys(
-    votes
-  ).forEach(
-    function(index) {
-
-      const count =
-        votes[index];
-
-
-      if (
-        count >
-        highest
-      ) {
-
-        highest =
-          count;
-
-        eliminatedIndex =
-          Number(index);
-
-      }
-
-    }
-  );
-
-
-  let eliminated =
-    null;
-
-
-  if (
-    eliminatedIndex !==
-    -1
-  ) {
-
-    eliminated =
-      players[
-        eliminatedIndex
-      ];
-
-
-    eliminated.alive =
-      false;
-
-  }
-
-
-  const undercoverAlive =
-    players.filter(
-      player =>
-        player.alive &&
-        player.role ===
-        "undercover"
+  const aliveCivil =
+    alive.filter(
+      player => player.role === "civil"
     ).length;
 
 
-  const villageAlive =
-    players.filter(
-      player =>
-        player.alive &&
-        player.role ===
-        "village"
-    ).length;
+  /*
+    Les villageois gagnent si aucun Undercover
+    n'est encore vivant.
+  */
 
+  if (aliveUndercover === 0) {
 
-  let winner =
-    null;
+    showResult("civil");
 
-
-  if (
-    undercoverAlive === 0
-  ) {
-
-    winner =
-      "village";
-
-  }
-
-  else if (
-    undercoverAlive >=
-    villageAlive
-  ) {
-
-    winner =
-      "undercover";
-
+    return;
   }
 
 
-  let message =
-    "";
+  /*
+    Les Undercover gagnent s'ils sont au moins
+    aussi nombreux que les villageois restants.
+  */
+
+  if (aliveUndercover >= aliveCivil) {
+
+    showResult("undercover");
+
+    return;
+  }
 
 
-  if (eliminated) {
+  /*
+    Sinon la partie continue.
+  */
 
-    message += `
+  currentVoterIndex = 0;
 
-      <div class="eliminated">
+  showVoteScreen();
+}
 
-        <div class="result-icon">
-          💥
-        </div>
 
-        <h2>
-          ${escapeHTML(eliminated.name)}
-          est éliminé
-        </h2>
+/* =========================================================
+   RESULTAT
+========================================================= */
 
-        <p class="info">
-          Son rôle était :
-        </p>
+function showResult(winner) {
 
-        <div class="result-big">
+  const icon =
+    document.getElementById("resultIcon");
 
-          ${
-            eliminated.role === "undercover"
-              ? "🕵️ UNDERCOVER"
-              : "👥 VILLAGEOIS"
-          }
+  const title =
+    document.getElementById("resultTitle");
 
-        </div>
+  const subtitle =
+    document.getElementById("resultSubtitle");
 
-      </div>
 
+  if (winner === "civil") {
+
+    icon.textContent = "🎉";
+
+    title.textContent =
+      "Les villageois gagnent !";
+
+    subtitle.textContent =
+      "Tous les Undercover ont été éliminés.";
+  }
+
+  else {
+
+    icon.textContent = "🕵️";
+
+    title.textContent =
+      "Les Undercover gagnent !";
+
+    subtitle.textContent =
+      "Les Undercover sont encore assez nombreux pour prendre le dessus.";
+  }
+
+
+  /*
+    On révèle les rôles UNIQUEMENT maintenant,
+    à la fin de la partie.
+
+    Pendant la phase secrète, ils ne sont jamais affichés.
+  */
+
+  const container =
+    document.getElementById("playersResult");
+
+  container.innerHTML = "";
+
+
+  players.forEach(player => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "result-player";
+
+
+    const roleText =
+      player.role === "undercover"
+        ? "🕵️ Undercover"
+        : "👤 Villageois";
+
+
+    row.innerHTML = `
+      <span class="${player.alive ? "alive" : "dead"}">
+        ${escapeHTML(player.name)}
+      </span>
+
+      <span>
+        ${roleText}
+      </span>
     `;
 
-  }
+
+    container.appendChild(row);
+  });
 
 
-  if (winner) {
-
-    message += `
-
-      <div class="card">
-
-        <div class="result-icon">
-          🏆
-        </div>
-
-        <div class="result-big">
-
-          ${
-            winner === "village"
-              ? "Les Villageois gagnent !"
-              : "Les Undercover gagnent !"
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  if (!winner) {
-
-    message += `
-
-      <div class="card">
-
-        <p class="info">
-
-          La partie continue.
-
-          <br><br>
-
-          Préparez-vous pour la prochaine manche.
-
-        </p>
-
-      </div>
-
-    `;
-
-  }
-
-
-  document
-    .getElementById(
-      "gameContent"
-    )
-    .innerHTML = `
-
-      <div class="center">
-
-        <div class="round-badge">
-          Manche ${currentRound}
-        </div>
-
-        ${message}
-
-        <button
-          class="green"
-          onclick="${
-            winner
-              ? "showHome()"
-              : "nextRound()"
-          }"
-        >
-
-          ${
-            winner
-              ? "🔄 Nouvelle partie"
-              : "➡️ Manche suivante"
-          }
-
-        </button>
-
-      </div>
-
-    `;
-
+  showScreen("resultScreen");
 }
 
 
@@ -2086,23 +1660,47 @@ function showResults() {
 
 function nextRound() {
 
-  currentRound++;
+  /*
+    On remet tout le monde vivant.
+  */
+
+  players.forEach(player => {
+    player.alive = true;
+    player.role = "civil";
+    player.note = null;
+  });
+
+
+  /*
+    La configuration reste la même :
+      - nombre de joueurs
+      - nombre d'Undercover
+      - temps
+      - difficulté
+
+    On change seulement les rôles et les notes.
+  */
 
   generateRoles();
 
-  showPrivatePassScreen();
 
+  currentPrivateIndex = 0;
+  currentVoterIndex = 0;
+  selectedVoteIndex = null;
+
+
+  showPassScreen();
 }
 
 
 /* =========================================================
-   INITIALISATION
+   EMPÊCHER LE RETOUR EN ARRIÈRE PENDANT LA PARTIE
 ========================================================= */
 
-showHome();
-
+window.addEventListener("beforeunload", () => {
+  clearInterval(discussionInterval);
+});
 </script>
 
 </body>
-
 </html>
