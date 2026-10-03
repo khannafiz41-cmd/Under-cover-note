@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<meta
+  name="theme-color"
+  content="#080c18"
+>
+
+<title>Undercover Notes - Local</title>
+
+<style>
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #080c18;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+}
+
+main {
+  width: 100%;
+  max-width: 620px;
+  margin: auto;
+  padding: 18px 16px 45px;
+}
+
+header {
+  text-align: center;
+  padding: 12px 0 5px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo {
+  font-size: 62px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 42px;
+  margin: 10px 0;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+h3 {
+  margin-top: 0;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aab5ca;
+  line-height: 1.6;
+  margin: 0 auto 25px;
+  max-width: 480px;
+}
+
+.card {
+  background: #111a2e;
+  border: 1px solid #293653;
+  border-radius: 20px;
+  padding: 20px;
+  margin: 16px 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+button {
+  width: 100%;
+  padding: 17px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 14px;
+  background: #7c3aed;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button.secondary {
+  background: #18233a;
+  border: 1px solid #293653;
+}
+
+button.green {
+  background: #16a34a;
+}
+
+button.red {
+  background: #dc2626;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 7px;
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #293653;
+  background: #090f20;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: #7c3aed;
+}
+
+.players {
+  display: grid;
+  gap: 10px;
+}
+
+.player-row {
+  display: flex;
+  gap: 8px;
+}
+
+.number {
+  width: 45px;
+  min-width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #18233a;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.info {
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.warning {
+  padding: 12px;
+  border-radius: 12px;
+  background: #3a2418;
+  border: 1px solid #6b3f20;
+  color: #fed7aa;
+  margin-top: 12px;
+}
+
+.success {
+  color: #86efac;
+}
+
+.pass-screen {
+  text-align: center;
+  padding: 35px 10px;
+}
+
+.pass-icon {
+  font-size: 75px;
+  margin-bottom: 15px;
+}
+
+.pass-name {
+  font-size: 34px;
+  font-weight: bold;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.pass-message {
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+.secret-card {
+  text-align: center;
+  padding: 30px 18px;
+  background: #111a2e;
+  border: 1px solid #293653;
+  border-radius: 22px;
+  margin-top: 20px;
+}
+
+.secret-lock {
+  font-size: 65px;
+}
+
+.role-icon {
+  font-size: 65px;
+  margin-top: 10px;
+}
+
+.role {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.note-box {
+  background: #090f20;
+  border: 1px solid #293653;
+  border-radius: 18px;
+  padding: 25px 15px;
+  margin-top: 20px;
+}
+
+.note-label {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.note {
+  font-size: 70px;
+  font-weight: bold;
+}
+
+.note-small {
+  font-size: 25px;
+  color: #94a3b8;
+}
+
+.topic {
+  text-align: center;
+  font-size: 55px;
+  font-weight: bold;
+  margin: 30px 0;
+}
+
+.timer {
+  text-align: center;
+  font-size: 65px;
+  font-weight: bold;
+  margin: 20px 0;
+  letter-spacing: 2px;
+}
+
+.vote-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px;
+  margin: 9px 0;
+  border-radius: 14px;
+  background: #18233a;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.vote-player.selected {
+  border-color: #7c3aed;
+  background: #211943;
+}
+
+.vote-player input {
+  width: 20px;
+  height: 20px;
+}
+
+.result-icon {
+  font-size: 75px;
+  margin: 10px 0;
+}
+
+.result-big {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 12px 0;
+}
+
+.eliminated {
+  margin: 18px 0;
+  padding: 18px;
+  background: #090f20;
+  border-radius: 15px;
+}
+
+.round-badge {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #18233a;
+  border: 1px solid #293653;
+  border-radius: 999px;
+  color: #cbd5e1;
+}
+
+.divider {
+  height: 1px;
+  background: #293653;
+  margin: 20px 0;
+}
+
+.rules p {
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+.footer-note {
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+  margin-top: 25px;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header>
+  🕵️ Undercover Notes
+</header>
+
+
+<main>
+
+
+<!-- =====================================================
+     ACCUEIL
+===================================================== -->
+
+<section id="home">
+
+  <div class="logo">
+    🕵️
+  </div>
+
+  <h1>
+    Undercover
+    <br>
+    <span style="color:#c4b5fd;">
+      Notes
+    </span>
+  </h1>
+
+  <p class="subtitle">
+    Mode local · Un seul téléphone ·
+    Passez le téléphone à chaque joueur.
+  </p>
+
+  <button onclick="showSetup()">
+    📱 Jouer en local
+  </button>
+
+  <button
+    class="secondary"
+    onclick="showRules()"
+  >
+    📖 Comment jouer
+  </button>
+
+  <button
+    class="secondary"
+    onclick="goBack()"
+  >
+    ← Retour
+  </button>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONFIGURATION
+===================================================== -->
+
+<section
+  id="setup"
+  class="hidden"
+>
+
+  <h2>
+    🎮 Préparer la partie
+  </h2>
+
+  <div class="card">
+
+    <label for="playerCount">
+      Nombre de joueurs
+    </label>
+
+    <select id="playerCount">
+
+      <option value="3">
+        3 joueurs
+      </option>
+
+      <option value="4" selected>
+        4 joueurs
+      </option>
+
+      <option value="5">
+        5 joueurs
+      </option>
+
+      <option value="6">
+        6 joueurs
+      </option>
+
+      <option value="7">
+        7 joueurs
+      </option>
+
+      <option value="8">
+        8 joueurs
+      </option>
+
+      <option value="9">
+        9 joueurs
+      </option>
+
+      <option value="10">
+        10 joueurs
+      </option>
+
+    </select>
+
+
+    <label for="undercoverCount">
+      Nombre d'Undercover
+    </label>
+
+    <select id="undercoverCount">
+
+      <option value="1">
+        1 Undercover
+      </option>
+
+      <option value="2">
+        2 Undercover
+      </option>
+
+      <option value="3">
+        3 Undercover
+      </option>
+
+      <option value="4">
+        4 Undercover
+      </option>
+
+    </select>
+
+
+    <label for="discussionTime">
+      Temps de discussion
+    </label>
+
+    <select id="discussionTime">
+
+      <option value="60">
+        1 minute
+      </option>
+
+      <option value="120">
+        2 minutes
+      </option>
+
+      <option value="180" selected>
+        3 minutes
+      </option>
+
+      <option value="300">
+        5 minutes
+      </option>
+
+    </select>
+
+  </div>
+
+
+  <div class="card">
+
+    <h3>
+      👥 Prénoms des joueurs
+    </h3>
+
+    <p class="info">
+      Entrez les prénoms. Le téléphone sera ensuite
+      passé à chaque joueur pour révéler sa carte.
+    </p>
+
+    <div
+      id="players"
+      class="players"
+    ></div>
+
+  </div>
+
+
+  <div
+    id="setupWarning"
+    class="warning hidden"
+  ></div>
+
+
+  <button onclick="startGame()">
+    🚀 Commencer
+  </button>
+
+  <button
+    class="secondary"
+    onclick="showHome()"
+  >
+    ← Retour
+  </button>
+
+</section>
+
+
+
+<!-- =====================================================
+     REGLES
+===================================================== -->
+
+<section
+  id="rules"
+  class="hidden"
+>
+
+  <h2>
+    📖 Comment jouer
+  </h2>
+
+  <div class="card rules">
+
+    <p>
+      <b>1.</b>
+      Entrez les prénoms de tous les joueurs.
+    </p>
+
+    <p>
+      <b>2.</b>
+      Choisissez le nombre d'Undercover.
+    </p>
+
+    <p>
+      <b>3.</b>
+      Le téléphone est passé à chaque joueur.
+    </p>
+
+    <p>
+      <b>4.</b>
+      Chaque joueur découvre secrètement son rôle
+      et sa note.
+    </p>
+
+    <p>
+      <b>5.</b>
+      Tout le monde pose ensuite son téléphone
+      et la discussion commence.
+    </p>
+
+    <p>
+      <b>6.</b>
+      Chaque joueur vote à tour de rôle.
+    </p>
+
+    <p>
+      <b>7.</b>
+      Si tous les Undercover sont éliminés,
+      les Villageois gagnent.
+    </p>
+
+    <p>
+      <b>8.</b>
+      Si les Undercover sont aussi nombreux
+      ou plus nombreux que les Villageois,
+      les Undercover gagnent.
+    </p>
+
+  </div>
+
+  <button
+    class="secondary"
+    onclick="showHome()"
+  >
+    ← Retour
+  </button>
+
+</section>
+
+
+
+<!-- =====================================================
+     JEU
+===================================================== -->
+
+<section
+  id="game"
+  class="hidden"
+>
+
+  <div id="gameContent"></div>
+
+</section>
+
+
+<div class="footer-note">
+  Mode local · Aucune connexion nécessaire
+</div>
+
+
+</main>
+
+
+
+<script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let players = [];
+
+let undercoverCount = 1;
+
+let villageNote = 7;
+
+let undercoverNote = 6;
+
+let currentPlayer = 0;
+
+let currentRound = 1;
+
+let discussionSeconds = 180;
+
+let timer = null;
+
+let votes = {};
+
+let theme = "";
+
+
+/* =========================================================
+   THEMES
+========================================================= */
+
+const themes = [
+
+  "🌮 Tacos",
+  "🍕 Pizza",
+  "✈️ Voyages",
+  "🎬 Films",
+  "⚽ Sport",
+  "🎮 Jeux vidéo",
+  "🎵 Musique",
+  "🏫 École",
+  "☀️ Vacances",
+  "🐶 Animaux",
+  "📱 Téléphones",
+  "🚗 Voitures",
+  "🏠 Maison",
+  "☕ Café",
+  "👟 Mode",
+  "🍔 Fast-food",
+  "🎂 Anniversaire",
+  "🍦 Glaces",
+  "🏖️ Plage",
+  "🎁 Cadeaux"
+
+];
+
+
+/* =========================================================
+   UTILITAIRES
+========================================================= */
+
+function escapeHTML(value) {
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      function(char) {
+
+        return {
+
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+
+        }[char];
+
+      }
+    );
+
+}
+
+
+function hideAll() {
+
+  document
+    .getElementById("home")
+    .classList.add("hidden");
+
+  document
+    .getElementById("setup")
+    .classList.add("hidden");
+
+  document
+    .getElementById("rules")
+    .classList.add("hidden");
+
+  document
+    .getElementById("game")
+    .classList.add("hidden");
+
+}
+
+
+function showHome() {
+
+  stopTimer();
+
+  hideAll();
+
+  document
+    .getElementById("home")
+    .classList.remove("hidden");
+
+}
+
+
+function goBack() {
+
+  /*
+    Si la page a été ouverte depuis index.html,
+    on revient simplement à la page précédente.
+  */
+
+  if (document.referrer) {
+
+    window.history.back();
+
+  }
+
+  else {
+
+    window.location.href = "index.html";
+
+  }
+
+}
+
+
+function showSetup() {
+
+  hideAll();
+
+  document
+    .getElementById("setup")
+    .classList.remove("hidden");
+
+  generatePlayerInputs();
+
+}
+
+
+function showRules() {
+
+  hideAll();
+
+  document
+    .getElementById("rules")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   JOUEURS
+========================================================= */
+
+document
+  .getElementById("playerCount")
+  .addEventListener(
+    "change",
+    generatePlayerInputs
+  );
+
+
+function generatePlayerInputs() {
+
+  const count =
+    Number(
+      document.getElementById(
+        "playerCount"
+      ).value
+    );
+
+  const container =
+    document.getElementById(
+      "players"
+    );
+
+  /*
+    On conserve les anciens prénoms
+    quand le nombre de joueurs change.
+  */
+
+  const oldNames =
+    Array.from(
+      document.querySelectorAll(
+        ".playerName"
+      )
+    ).map(
+      input =>
+        input.value
+    );
+
+
+  container.innerHTML = "";
+
+
+  for (
+    let i = 0;
+    i < count;
+    i++
+  ) {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "player-row";
+
+
+    const number =
+      document.createElement(
+        "div"
+      );
+
+    number.className =
+      "number";
+
+    number.textContent =
+      i + 1;
+
+
+    const input =
+      document.createElement(
+        "input"
+      );
+
+    input.className =
+      "playerName";
+
+    input.type =
+      "text";
+
+    input.maxLength =
+      20;
+
+    input.placeholder =
+      "Joueur " +
+      (i + 1);
+
+    input.autocomplete =
+      "off";
+
+    input.value =
+      oldNames[i] || "";
+
+
+    row.appendChild(number);
+
+    row.appendChild(input);
+
+    container.appendChild(row);
+
+  }
+
+}
+
+
+/* =========================================================
+   DEMARRER LA PARTIE
+========================================================= */
+
+function startGame() {
+
+  const inputs =
+    document.querySelectorAll(
+      ".playerName"
+    );
+
+
+  players = [];
+
+
+  for (
+    let i = 0;
+    i < inputs.length;
+    i++
+  ) {
+
+    const name =
+      inputs[i].value.trim();
+
+
+    players.push({
+
+      name:
+        name ||
+        "Joueur " +
+        (i + 1),
+
+      alive:
+        true,
+
+      role:
+        null,
+
+      note:
+        null
+
+    });
+
+  }
+
+
+  undercoverCount =
+    Number(
+      document.getElementById(
+        "undercoverCount"
+      ).value
+    );
+
+
+  const warning =
+    document.getElementById(
+      "setupWarning"
+    );
+
+
+  warning.classList.add(
+    "hidden"
+  );
+
+
+  if (
+    undercoverCount >=
+    players.length
+  ) {
+
+    warning.textContent =
+      "Il faut garder au moins un Villageois.";
+
+    warning.classList.remove(
+      "hidden"
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Empêche par exemple 4 Undercover
+    dans une partie de 3 joueurs.
+  */
+
+  if (
+    undercoverCount >
+    Math.floor(
+      players.length / 2
+    )
+  ) {
+
+    warning.textContent =
+      "Pour garder une partie équilibrée, choisis moins d'Undercover.";
+
+    warning.classList.remove(
+      "hidden"
+    );
+
+    return;
+
+  }
+
+
+  discussionSeconds =
+    Number(
+      document.getElementById(
+        "discussionTime"
+      ).value
+    );
+
+
+  currentRound =
+    1;
+
+  generateRoles();
+
+  showPrivatePassScreen();
+
+}
+
+
+/* =========================================================
+   GENERATION DES ROLES
+========================================================= */
+
+function generateRoles() {
+
+  villageNote =
+    Math.floor(
+      Math.random() * 10
+    ) + 1;
+
+
+  /*
+    L'Undercover reçoit une note
+    différente mais proche.
+  */
+
+  if (
+    villageNote === 1
+  ) {
+
+    undercoverNote =
+      2;
+
+  }
+
+  else if (
+    villageNote === 10
+  ) {
+
+    undercoverNote =
+      9;
+
+  }
+
+  else {
+
+    undercoverNote =
+      Math.random() < 0.5
+        ? villageNote - 1
+        : villageNote + 1;
+
+  }
+
+
+  const indexes =
+    players.map(
+      (_, index) =>
+        index
+    );
+
+
+  /*
+    Mélange Fisher-Yates.
+  */
+
+  for (
+    let i = indexes.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j =
+      Math.floor(
+        Math.random() *
+        (i + 1)
+      );
+
+
+    [
+      indexes[i],
+      indexes[j]
+    ] =
+    [
+      indexes[j],
+      indexes[i]
+    ];
+
+  }
+
+
+  players.forEach(
+    player => {
+
+      player.role =
+        "village";
+
+      player.note =
+        villageNote;
+
+      player.alive =
+        true;
+
+    }
+  );
+
+
+  for (
+    let i = 0;
+    i < undercoverCount;
+    i++
+  ) {
+
+    const player =
+      players[
+        indexes[i]
+      ];
+
+
+    player.role =
+      "undercover";
+
+    player.note =
+      undercoverNote;
+
+  }
+
+
+  theme =
+    themes[
+      Math.floor(
+        Math.random() *
+        themes.length
+      )
+    ];
+
+
+  currentPlayer =
+    0;
+
+}
+
+
+/* =========================================================
+   ECRAN DE PASSAGE DU TELEPHONE
+========================================================= */
+
+function showPrivatePassScreen() {
+
+  stopTimer();
+
+  hideAll();
+
+  document
+    .getElementById("game")
+    .classList.remove("hidden");
+
+
+  const player =
+    players[currentPlayer];
+
+
+  document
+    .getElementById(
+      "gameContent"
+    )
+    .innerHTML = `
+
+      <div class="pass-screen">
+
+        <div class="round-badge">
+          Manche ${currentRound}
+        </div>
+
+        <div class="pass-icon">
+          📱
+        </div>
+
+        <h2>
+          Passe le téléphone
+        </h2>
+
+        <div class="pass-name">
+          ${escapeHTML(player.name)}
+        </div>
+
+        <p class="pass-message">
+
+          Donne le téléphone à
+          <strong>
+            ${escapeHTML(player.name)}
+          </strong>.
+
+          <br><br>
+
+          Les autres joueurs doivent
+          regarder ailleurs.
+
+        </p>
+
+        <button
+          onclick="showPrivateCard()"
+        >
+          🔐 Je suis ${escapeHTML(player.name)}
+        </button>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   CARTE SECRETE
+========================================================= */
+
+function showPrivateCard() {
+
+  const player =
+    players[currentPlayer];
+
+
+  hideAll();
+
+  document
+    .getElementById("game")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById(
+      "gameContent"
+    )
+    .innerHTML = `
+
+      <div class="center">
+
+        <div class="round-badge">
+          Manche ${currentRound}
+        </div>
+
+        <div class="secret-card">
+
+          <div id="hiddenCard">
+
+            <div class="secret-lock">
+              🔒
+            </div>
+
+            <h2>
+              Carte secrète
+            </h2>
+
+            <p class="info">
+              Personne d'autre ne doit regarder.
+            </p>
+
+            <button
+              onclick="revealPrivateCard()"
+            >
+              👁️ Voir ma carte
+            </button>
+
+          </div>
+
+
+          <div
+            id="revealedCard"
+            class="hidden"
+          >
+
+            <div class="role-icon">
+              ${
+                player.role === "undercover"
+                  ? "🕵️"
+                  : "👥"
+              }
+            </div>
+
+            <div class="role">
+              ${
+                player.role === "undercover"
+                  ? "UNDERCOVER"
+                  : "VILLAGEOIS"
+              }
+            </div>
+
+            <div class="note-box">
+
+              <div class="note-label">
+                TA NOTE
+              </div>
+
+              <div class="note">
+                ${player.note}
+                <span class="note-small">
+                  /10
+                </span>
+              </div>
+
+            </div>
+
+            <p class="info">
+              Mémorise ta carte.
+              Ne la montre à personne.
+            </p>
+
+            <button
+              class="secondary"
+              onclick="hidePrivateCard()"
+            >
+              🙈 Cacher ma carte
+            </button>
+
+            <button
+              class="green"
+              onclick="nextPrivatePlayer()"
+            >
+              ✅ J'ai mémorisé ma carte
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   REVELER
+========================================================= */
+
+function revealPrivateCard() {
+
+  document
+    .getElementById(
+      "hiddenCard"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+
+  document
+    .getElementById(
+      "revealedCard"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   CACHER
+========================================================= */
+
+function hidePrivateCard() {
+
+  document
+    .getElementById(
+      "revealedCard"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+
+  document
+    .getElementById(
+      "hiddenCard"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   JOUEUR SUIVANT
+========================================================= */
+
+function nextPrivatePlayer() {
+
+  currentPlayer++;
+
+
+  if (
+    currentPlayer >=
+    players.length
+  ) {
+
+    startDiscussion();
+
+    return;
+
+  }
+
+
+  showPrivatePassScreen();
+
+}
+
+
+/* =========================================================
+   DISCUSSION
+========================================================= */
+
+function startDiscussion() {
+
+  stopTimer();
+
+  hideAll();
+
+  document
+    .getElementById("game")
+    .classList.remove("hidden");
+
+
+  let seconds =
+    discussionSeconds;
+
+
+  document
+    .getElementById(
+      "gameContent"
+    )
+    .innerHTML = `
+
+      <div class="center">
+
+        <div class="round-badge">
+          Manche ${currentRound}
+        </div>
+
+        <div class="topic">
+          ${escapeHTML(theme)}
+        </div>
+
+        <p class="info">
+
+          Discutez du thème.
+
+          <br><br>
+
+          Donnez des indices concernant
+          votre note sans la révéler directement.
+
+        </p>
+
+
+        <div class="card">
+
+          <div
+            id="timer"
+            class="timer"
+          >
+            00:00
+          </div>
+
+        </div>
+
+
+        <button
+          onclick="startVoting()"
+        >
+          🗳️ Passer au vote
+        </button>
+
+      </div>
+
+    `;
+
+
+  updateTimerDisplay(
+    seconds
+  );
+
+
+  timer =
+    setInterval(
+      function() {
+
+        seconds--;
+
+        updateTimerDisplay(
+          seconds
+        );
+
+
+        if (
+          seconds <= 0
+        ) {
+
+          stopTimer();
+
+          startVoting();
+
+        }
+
+      },
+      1000
+    );
+
+}
+
+
+function updateTimerDisplay(
+  seconds
+) {
+
+  const timerElement =
+    document.getElementById(
+      "timer"
+    );
+
+
+  if (!timerElement) {
+    return;
+  }
+
+
+  const minutes =
+    Math.floor(
+      seconds / 60
+    );
+
+
+  const secs =
+    seconds % 60;
+
+
+  timerElement.textContent =
+    String(minutes).padStart(
+      2,
+      "0"
+    ) +
+    ":" +
+    String(secs).padStart(
+      2,
+      "0"
+    );
+
+}
+
+
+function stopTimer() {
+
+  if (timer) {
+
+    clearInterval(timer);
+
+    timer =
+      null;
+
+  }
+
+}
+
+
+/* =========================================================
+   VOTE
+========================================================= */
+
+function startVoting() {
+
+  stopTimer();
+
+
+  votes = {};
+
+
+  const alive =
+    players.filter(
+      player =>
+        player.alive
+    );
+
+
+  let voterIndex =
+    0;
+
+
+  showVote(
+    alive,
+    voterIndex
+  );
+
+}
+
+
+function showVote(
+  alive,
+  voterIndex
+) {
+
+  if (
+    voterIndex >=
+    alive.length
+  ) {
+
+    showResults();
+
+    return;
+
+  }
+
+
+  const voter =
+    alive[voterIndex];
+
+
+  const targets =
+    alive.filter(
+      player =>
+        player !== voter
+    );
+
+
+  let html = `
+
+    <div class="center">
+
+      <div class="round-badge">
+        Manche ${currentRound}
+      </div>
+
+      <h2>
+        🗳️ Vote
+      </h2>
+
+      <p class="info">
+
+        Passe le téléphone à
+
+        <br>
+
+        <strong>
+          ${escapeHTML(voter.name)}
+        </strong>
+
+        <br><br>
+
+        Choisis la personne que tu
+        penses être l'Undercover.
+
+      </p>
+
+    </div>
+
+    <div class="card">
+
+  `;
+
+
+  targets.forEach(
+    function(target) {
+
+      const targetIndex =
+        players.indexOf(
+          target
+        );
+
+
+      html += `
+
+        <label
+          class="vote-player"
+          onclick="selectVote(${targetIndex})"
+        >
+
+          <input
+            type="radio"
+            name="voteTarget"
+            value="${targetIndex}"
+          >
+
+          <span>
+            👤
+            ${escapeHTML(target.name)}
+          </span>
+
+        </label>
+
+      `;
+
+    }
+  );
+
+
+  html += `
+
+      <button
+        class="green"
+        onclick="confirmLocalVote(${voterIndex})"
+      >
+        ✅ Confirmer mon vote
+      </button>
+
+    </div>
+
+  `;
+
+
+  document
+    .getElementById(
+      "gameContent"
+    )
+    .innerHTML =
+      html;
+
+}
+
+
+function selectVote(
+  targetIndex
+) {
+
+  document
+    .querySelectorAll(
+      ".vote-player"
+    )
+    .forEach(
+      element => {
+
+        element.classList.remove(
+          "selected"
+        );
+
+      }
+    );
+
+
+  const selected =
+    document.querySelector(
+      `.vote-player[onclick="selectVote(${targetIndex})"]`
+    );
+
+
+  if (selected) {
+
+    selected.classList.add(
+      "selected"
+    );
+
+  }
+
+
+  const radio =
+    document.querySelector(
+      `input[value="${targetIndex}"]`
+    );
+
+
+  if (radio) {
+
+    radio.checked =
+      true;
+
+  }
+
+}
+
+
+function confirmLocalVote(
+  voterIndex
+) {
+
+  const selected =
+    document.querySelector(
+      'input[name="voteTarget"]:checked'
+    );
+
+
+  if (!selected) {
+
+    alert(
+      "Choisis un joueur."
+    );
+
+    return;
+
+  }
+
+
+  const targetIndex =
+    Number(
+      selected.value
+    );
+
+
+  votes[targetIndex] =
+    (votes[targetIndex] || 0) + 1;
+
+
+  const alive =
+    players.filter(
+      player =>
+        player.alive
+    );
+
+
+  showVote(
+    alive,
+    voterIndex + 1
+  );
+
+}
+
+
+/* =========================================================
+   RESULTATS
+========================================================= */
+
+function showResults() {
+
+  let highest =
+    -1;
+
+  let eliminatedIndex =
+    -1;
+
+
+  Object.keys(
+    votes
+  ).forEach(
+    function(index) {
+
+      const count =
+        votes[index];
+
+
+      if (
+        count >
+        highest
+      ) {
+
+        highest =
+          count;
+
+        eliminatedIndex =
+          Number(index);
+
+      }
+
+    }
+  );
+
+
+  let eliminated =
+    null;
+
+
+  if (
+    eliminatedIndex !==
+    -1
+  ) {
+
+    eliminated =
+      players[
+        eliminatedIndex
+      ];
+
+
+    eliminated.alive =
+      false;
+
+  }
+
+
+  const undercoverAlive =
+    players.filter(
+      player =>
+        player.alive &&
+        player.role ===
+        "undercover"
+    ).length;
+
+
+  const villageAlive =
+    players.filter(
+      player =>
+        player.alive &&
+        player.role ===
+        "village"
+    ).length;
+
+
+  let winner =
+    null;
+
+
+  if (
+    undercoverAlive === 0
+  ) {
+
+    winner =
+      "village";
+
+  }
+
+  else if (
+    undercoverAlive >=
+    villageAlive
+  ) {
+
+    winner =
+      "undercover";
+
+  }
+
+
+  let message =
+    "";
+
+
+  if (eliminated) {
+
+    message += `
+
+      <div class="eliminated">
+
+        <div class="result-icon">
+          💥
+        </div>
+
+        <h2>
+          ${escapeHTML(eliminated.name)}
+          est éliminé
+        </h2>
+
+        <p class="info">
+          Son rôle était :
+        </p>
+
+        <div class="result-big">
+
+          ${
+            eliminated.role === "undercover"
+              ? "🕵️ UNDERCOVER"
+              : "👥 VILLAGEOIS"
+          }
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (winner) {
+
+    message += `
+
+      <div class="card">
+
+        <div class="result-icon">
+          🏆
+        </div>
+
+        <div class="result-big">
+
+          ${
+            winner === "village"
+              ? "Les Villageois gagnent !"
+              : "Les Undercover gagnent !"
+          }
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  if (!winner) {
+
+    message += `
+
+      <div class="card">
+
+        <p class="info">
+
+          La partie continue.
+
+          <br><br>
+
+          Préparez-vous pour la prochaine manche.
+
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+
+  document
+    .getElementById(
+      "gameContent"
+    )
+    .innerHTML = `
+
+      <div class="center">
+
+        <div class="round-badge">
+          Manche ${currentRound}
+        </div>
+
+        ${message}
+
+        <button
+          class="green"
+          onclick="${
+            winner
+              ? "showHome()"
+              : "nextRound()"
+          }"
+        >
+
+          ${
+            winner
+              ? "🔄 Nouvelle partie"
+              : "➡️ Manche suivante"
+          }
+
+        </button>
+
+      </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   MANCHE SUIVANTE
+========================================================= */
+
+function nextRound() {
+
+  currentRound++;
+
+  generateRoles();
+
+  showPrivatePassScreen();
+
+}
+
+
+/* =========================================================
+   INITIALISATION
+========================================================= */
+
+showHome();
+
+</script>
+
+</body>
+
+</html>
